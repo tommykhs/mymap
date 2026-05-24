@@ -144,8 +144,22 @@
    padding:8px 34px 8px 10px;white-space:pre-wrap;word-break:break-word}
  .dbglog .err{color:#ff9b9b}
  .dbglog.collapsed{display:none}
- .dbglog-x{position:fixed;right:6px;bottom:6px;z-index:2001;background:#234;color:#fff;
-   border:1px solid #456;border-radius:6px;font-size:12px;padding:3px 8px;cursor:pointer}
+ .dbglog .log-copy{position:sticky;top:0;float:right;background:#234;color:#fff;
+   border:1px solid #456;border-radius:6px;font-size:11px;padding:2px 8px;cursor:pointer}
+ .dev-btn{position:fixed;left:8px;bottom:8px;z-index:2001;width:30px;height:30px;
+   display:flex;align-items:center;justify-content:center;background:rgba(27,31,36,.9);
+   border:1px solid var(--bd);color:var(--mut);border-radius:8px;cursor:pointer;opacity:.55}
+ .dev-btn:hover{opacity:1;color:var(--fg)}
+ .dev-btn .material-symbols-outlined{font-size:18px}
+ /* locate-me (GPS) button — bottom-right, above fullscreen, Google-Maps style */
+ .map-loc{position:absolute;bottom:68px;right:10px;z-index:1000;width:34px;height:34px;
+   display:flex;align-items:center;justify-content:center;cursor:pointer;
+   background:rgba(27,31,36,.95);border:1px solid var(--bd);color:var(--fg);
+   border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+ .map-loc:hover{background:var(--hv)}
+ .map-loc.busy{opacity:.5}.map-loc.on{color:#4f9bff}
+ .map-loc .material-symbols-outlined{font-size:20px}
+ body.fs .map-loc{bottom:68px}
  .loading.hidden{display:none}
  .loading .spinner{width:34px;height:34px;border:3px solid var(--bd);
    border-top-color:var(--ac);border-radius:50%;animation:mmspin .8s linear infinite}
@@ -164,9 +178,9 @@
 <script src="data.js"></script>
 <div id="map"></div>
 <div id="loading" class="loading"><div class="spinner"></div><div id="loadingMsg">Loading…</div></div>
-<div id="dbglog" class="dbglog"></div>
-<button class="dbglog-x" style="right:78px" onclick="(navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('dbglog').innerText));this.textContent='copied!';setTimeout(()=>{this.textContent='copy log'},1200)">copy log</button>
-<button class="dbglog-x" id="logToggle" onclick="var l=document.getElementById('dbglog');l.classList.toggle('collapsed');this.textContent=l.classList.contains('collapsed')?'view log':'hide log'">hide log</button>
+<div id="dbglog" class="dbglog collapsed"><button class="log-copy" onclick="(navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('dbglog-lines').innerText));this.textContent='copied!';setTimeout(()=>{this.textContent='copy'},1200)">copy</button><div id="dbglog-lines"></div></div>
+<button class="dev-btn" id="logToggle" title="dev log" onclick="document.getElementById('dbglog').classList.toggle('collapsed')"><span class="material-symbols-outlined">code</span></button>
+<button id="locBtn" class="map-loc" title="My location"><span class="material-symbols-outlined">my_location</span></button>
 <button id="fsBtn" class="map-fs" title="Fullscreen"><span class="material-symbols-outlined">fullscreen</span></button>
 <button id="panelReopen" class="panel-reopen" title="Open list"><span class="material-symbols-outlined">menu</span></button>
 <div class="panel" id="panel"><div class="pad">
@@ -201,10 +215,10 @@ const MAP_ID=(new URLSearchParams(location.search).get('id'))||'japan-cycling';
 // ---- on-screen debug log (temporary; data.js mirrors its breadcrumbs here) ----
 const __t0=Date.now();
 window.__mmlog=function(msg,isErr){
-  const el=document.getElementById('dbglog'); if(!el) return;
+  const el=document.getElementById('dbglog-lines'); if(!el) return;
   const line=document.createElement('div'); if(isErr) line.className='err';
   line.textContent='+'+(((Date.now()-__t0)/1000).toFixed(1))+'s  '+msg;
-  el.appendChild(line); el.scrollTop=el.scrollHeight;
+  el.appendChild(line); const box=document.getElementById('dbglog'); if(box) box.scrollTop=box.scrollHeight;
 };
 window.__mmlog('page start · UA: '+navigator.userAgent.slice(0,60));
 window.__mmlog('DecompressionStream: '+(typeof DecompressionStream!=='undefined'?'yes':'NO'));
@@ -638,9 +652,29 @@ function fitAll(){
 fitAll();
 hideLoading();   // routes drawn + map fitted — reveal the map
 window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
-// collapse the debug log once ready — leave just the copy / view-log buttons
-(function(){ const l=document.getElementById('dbglog'); if(l) l.classList.add('collapsed');
-  const t=document.getElementById('logToggle'); if(t) t.textContent='view log'; })();
+// ---- locate me (GPS), Google-Maps style: blue dot + accuracy ring, pan to it ----
+(function(){
+ const btn=document.getElementById('locBtn'); if(!btn) return;
+ let dot=null,ring=null;
+ btn.onclick=()=>{
+   if(!navigator.geolocation){ window.__mmlog('geolocation unsupported',true); return; }
+   btn.classList.add('busy');
+   navigator.geolocation.getCurrentPosition(pos=>{
+     btn.classList.remove('busy'); btn.classList.add('on');
+     const ll=[pos.coords.latitude,pos.coords.longitude], acc=pos.coords.accuracy||0;
+     if(!dot){
+       ring=L.circle(ll,{radius:acc,color:'#4f9bff',weight:1,fillColor:'#4f9bff',fillOpacity:.12}).addTo(map);
+       dot=L.circleMarker(ll,{radius:7,color:'#fff',weight:2,fillColor:'#1a73e8',fillOpacity:1}).addTo(map);
+     } else { ring.setLatLng(ll).setRadius(acc); dot.setLatLng(ll); }
+     dot.bringToFront();
+     map.setView(ll, Math.max(map.getZoom(),14), {animate:true});
+   }, err=>{
+     btn.classList.remove('busy');
+     window.__mmlog('location error: '+err.message,true);
+     alert('Could not get your location: '+err.message);
+   }, {enableHighAccuracy:true, timeout:10000, maximumAge:30000});
+ };
+})();
 // header counts — icons for groups / routes / pins
 const PIN_COUNT = 0;   // pins arrive with the editor; 0 for now
 document.getElementById('counts').innerHTML =
