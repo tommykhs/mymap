@@ -152,7 +152,8 @@
  body.fs .loading{top:0}
  /* mobile: don't let the panel cover the whole map, even expanded */
  @media (max-width:600px){
-   .panel{width:calc(100vw - 20px);max-width:330px;max-height:40vh}
+   /* leave room on the right for the zoom / basemap / recenter controls */
+   .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
  }
 </style></head><body>
 <div id="app-header"></div>
@@ -162,6 +163,7 @@
 <div id="map"></div>
 <div id="loading" class="loading"><div class="spinner"></div><div id="loadingMsg">Loading…</div></div>
 <div id="dbglog" class="dbglog"></div>
+<button class="dbglog-x" style="right:78px" onclick="(navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('dbglog').innerText));this.textContent='copied!';setTimeout(()=>{this.textContent='copy log'},1200)">copy log</button>
 <button class="dbglog-x" onclick="document.getElementById('dbglog').style.display='none';this.style.display='none'">hide log</button>
 <button id="fsBtn" class="map-fs" title="Fullscreen"><span class="material-symbols-outlined">fullscreen</span></button>
 <button id="panelReopen" class="panel-reopen" title="Open list"><span class="material-symbols-outlined">menu</span></button>
