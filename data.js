@@ -1,25 +1,37 @@
 // Shared data loader for MyMap, used by both index.html (gallery) and map.html (viewer).
 //   localhost / file://  -> local ./data/ files (development)
-//   *.github.io          -> GitHub gist API: map list + each geojson via SHA-pinned raw_url.
-// Deployed maps use a gzip+base64 copy (gist serves uncompressed; the 11MB plain file
-// fails to download on mobile) inflated in-browser via DecompressionStream.
+//   *.github.io          -> gist RAW files, fetched directly by filename.
+//
+// We deliberately do NOT use the GitHub API (api.github.com) — it's rate-limited to
+// 60 req/hour per IP, so visitors behind busy networks got HTTP 403. Raw gist URLs
+// (gist.githubusercontent.com/<user>/<id>/raw/<file>) are served by a CDN with no
+// rate limit. Trade-off: updates propagate in ~5 min (the raw CDN cache) instead of
+// ~60s — fine for map data.
+//
+// Large maps are gzip+base64 and split into ~400KB parts (gist serves uncompressed,
+// and some mobile proxies stall on a single multi-MB body); parts are fetched one by
+// one, concatenated, and inflated in-browser via DecompressionStream.
 //
 // Every fetch is labelled so failures surface as "<stage>: <reason> (<url>)" both on
-// screen and in the console — makes mobile "failed to fetch" diagnosable.
+// screen and in the console.
 (function(){
   var cfg = window.MYMAP_CONFIG || {};
   var DEPLOYED = /\.github\.io$/i.test(location.hostname);
-  var _files = null;
 
   function log(m){
     try{ if(window.console) console.log('[mymap] ' + m); }catch(e){}
     try{ if(window.__mmlog) window.__mmlog(m); }catch(e){}   // mirror to on-screen log
   }
 
+  // direct raw URL for a file in the data gist (no API)
+  function rawUrl(name){
+    return 'https://gist.githubusercontent.com/' + cfg.gistUser + '/' + cfg.gistId + '/raw/' + name;
+  }
+
   // fetch + body-read with a labelled error, an abort-on-stall timeout, and retry.
-  // The retry wraps BOTH the fetch AND fn(r) (the body read) — mobile failures
-  // here are the body stream stalling after headers arrive, so we abort a stuck
-  // transfer after TIMEOUT ms and try again on a fresh connection.
+  // The retry wraps BOTH the fetch AND fn(r) (the body read) — mobile failures here
+  // are the body stream stalling after headers arrive, so we abort a stuck transfer
+  // after TIMEOUT ms and try again on a fresh connection.
   var TIMEOUT = 15000, MAX_TRIES = 4;
   function step(label, url, fn, tries){
     tries = (tries == null) ? MAX_TRIES : tries;
@@ -41,16 +53,6 @@
     });
   }
 
-  function gistFiles(){
-    if(!_files){
-      // cache-bust the API so we always get the current map list (with file_gz),
-      // never a stale one that would fall back to the big uncompressed file.
-      _files = step('gist-api', 'https://api.github.com/gists/' + cfg.gistId + '?_=' + Date.now(), function(r){ return r.json(); })
-        .then(function(j){ return j.files || {}; });
-    }
-    return _files;
-  }
-
   // base64(gzip(json)) text -> Promise<parsed object> via DecompressionStream
   function gunzipB64(b64){
     log('inflating gzip+base64 (' + b64.length + ' chars)');
@@ -64,24 +66,16 @@
   // -> Promise<Array> of library entries
   function loadLibrary(){
     if(!DEPLOYED) return step('library-local', 'data/library.json', function(r){ return r.json(); });
-    return gistFiles().then(function(files){
-      var f = files['library.json'];
-      if(!f) throw new Error('library.json missing from gist ' + cfg.gistId);
-      if(f.truncated || !f.content) return step('library-raw', f.raw_url, function(r){ return r.json(); });
-      return JSON.parse(f.content);
-    });
+    return step('library', rawUrl('library.json'), function(r){ return r.json(); });
   }
 
-  // fetch the gz.b64 parts one at a time (small bodies stream reliably on mobile)
-  // and concatenate them back into the full base64 string.
-  function loadParts(files, parts){
+  // fetch the gz.b64 parts one at a time and concatenate them back into the base64
+  function loadParts(parts){
     var acc = '', i = 0, N = parts.length;
     function next(){
       if(i >= N) return Promise.resolve(acc);
-      var nm = parts[i], f = files[nm];
-      if(!f) throw new Error('part missing from gist: ' + nm);
       if(window.setLoading) window.setLoading('Downloading map… ' + (i + 1) + ' / ' + N);
-      return step('part ' + (i + 1) + '/' + N, f.raw_url, function(r){ return r.text(); })
+      return step('part ' + (i + 1) + '/' + N, rawUrl(parts[i]), function(r){ return r.text(); })
         .then(function(t){ acc += t; i++; return next(); });
     }
     return next();
@@ -91,15 +85,11 @@
   function loadMap(entry){
     var name = (entry && entry.file) || '';
     if(!DEPLOYED) return step('geojson-local', 'data/maps/' + name, function(r){ return r.json(); });
-    return gistFiles().then(function(files){
-      var parts = entry && entry.file_gz_parts;
-      if(parts && parts.length && typeof DecompressionStream !== 'undefined'){
-        return loadParts(files, parts).then(gunzipB64);
-      }
-      var f = files[name];   // fallback: plain (uncompressed) geojson
-      if(!f) throw new Error('geojson "' + name + '" missing from gist ' + cfg.gistId);
-      return step('geojson-plain', f.raw_url, function(r){ return r.json(); });
-    });
+    var parts = entry && entry.file_gz_parts;
+    if(parts && parts.length && typeof DecompressionStream !== 'undefined'){
+      return loadParts(parts).then(gunzipB64);
+    }
+    return step('geojson-plain', rawUrl(name), function(r){ return r.json(); });   // fallback: plain geojson
   }
 
   window.MyMapData = { loadLibrary: loadLibrary, loadMap: loadMap, deployed: DEPLOYED };
