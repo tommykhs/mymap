@@ -16,21 +16,28 @@
     try{ if(window.__mmlog) window.__mmlog(m); }catch(e){}   // mirror to on-screen log
   }
 
-  // fetch with a labelled error + automatic retry on network drops (mobile-friendly):
-  // retries the TypeError/"Failed to fetch" case a few times before giving up.
+  // fetch + body-read with a labelled error, an abort-on-stall timeout, and retry.
+  // The retry wraps BOTH the fetch AND fn(r) (the body read) — mobile failures
+  // here are the body stream stalling after headers arrive, so we abort a stuck
+  // transfer after TIMEOUT ms and try again on a fresh connection.
+  var TIMEOUT = 15000, MAX_TRIES = 4;
   function step(label, url, fn, tries){
-    tries = (tries == null) ? 3 : tries;
-    log(label + ' -> ' + url + (tries < 3 ? ' [retry]' : ''));
-    return fetch(url).then(function(r){
-      if(!r.ok) throw new Error(label + ': HTTP ' + r.status + ' (' + url + ')');  // don't retry HTTP errors
-      log(label + ' ok (' + (r.headers.get('content-length') || '?') + ' B)');
-      return fn(r);
-    }, function(err){
-      if(tries > 1){
-        return new Promise(function(res){ setTimeout(res, 800); })
-          .then(function(){ return step(label, url, fn, tries - 1); });
+    tries = (tries == null) ? MAX_TRIES : tries;
+    log(label + ' -> ' + url + (tries < MAX_TRIES ? ' [retry ' + (MAX_TRIES - tries + 1) + ']' : ''));
+    var ctrl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ log(label + ' stalled — aborting'); ctrl.abort(); }, TIMEOUT) : null;
+    return fetch(url, ctrl ? {signal: ctrl.signal} : {}).then(function(r){
+      if(!r.ok){ if(timer) clearTimeout(timer); throw new Error(label + ': HTTP ' + r.status + ' (' + url + ')'); }
+      log(label + ' headers ok (' + (r.headers.get('content-length') || '?') + ' B) — reading…');
+      return Promise.resolve(fn(r)).then(function(v){ if(timer) clearTimeout(timer); return v; });
+    }).catch(function(err){
+      if(timer) clearTimeout(timer);
+      var msg = (err && err.message) || String(err);
+      if(tries > 1 && !/: HTTP \d/.test(msg)){
+        log(label + ' failed (' + msg + ') — retrying');
+        return new Promise(function(res){ setTimeout(res, 600); }).then(function(){ return step(label, url, fn, tries - 1); });
       }
-      throw new Error(label + ': ' + ((err && err.message) || err) + ' (' + url + ')');
+      throw new Error(label + ': ' + msg + ' (' + url + ')');
     });
   }
 
