@@ -143,6 +143,7 @@
    background:rgba(0,0,0,.85);color:#9fe7ff;font:11px/1.45 ui-monospace,Menlo,monospace;
    padding:8px 34px 8px 10px;white-space:pre-wrap;word-break:break-word}
  .dbglog .err{color:#ff9b9b}
+ .dbglog.collapsed{display:none}
  .dbglog-x{position:fixed;right:6px;bottom:6px;z-index:2001;background:#234;color:#fff;
    border:1px solid #456;border-radius:6px;font-size:12px;padding:3px 8px;cursor:pointer}
  .loading.hidden{display:none}
@@ -165,7 +166,7 @@
 <div id="loading" class="loading"><div class="spinner"></div><div id="loadingMsg">Loading…</div></div>
 <div id="dbglog" class="dbglog"></div>
 <button class="dbglog-x" style="right:78px" onclick="(navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('dbglog').innerText));this.textContent='copied!';setTimeout(()=>{this.textContent='copy log'},1200)">copy log</button>
-<button class="dbglog-x" onclick="document.getElementById('dbglog').style.display='none';this.style.display='none'">hide log</button>
+<button class="dbglog-x" id="logToggle" onclick="var l=document.getElementById('dbglog');l.classList.toggle('collapsed');this.textContent=l.classList.contains('collapsed')?'view log':'hide log'">hide log</button>
 <button id="fsBtn" class="map-fs" title="Fullscreen"><span class="material-symbols-outlined">fullscreen</span></button>
 <button id="panelReopen" class="panel-reopen" title="Open list"><span class="material-symbols-outlined">menu</span></button>
 <div class="panel" id="panel"><div class="pad">
@@ -619,16 +620,27 @@ Object.keys(groups).sort().forEach(gn=>{
 // Leaflet sizes the zoom to the current viewport; we just inset the left
 // edge by the panel width (when open) so routes aren't hidden behind it.
 function fitAll(){
+ try{ map.invalidateSize(false); }catch(e){}   // recompute container size first (fixes the "needs a 2nd click" zoom)
  const panel=document.getElementById('panel');
  const open=panel && !panel.classList.contains('collapsed') &&
             getComputedStyle(panel).display!=='none';
- const padL=open ? Math.round(panel.getBoundingClientRect().width)+24 : 24;
- try{ map.fitBounds(bounds,{paddingTopLeft:[padL,24],paddingBottomRight:[24,24]}); }
+ const mobile=window.matchMedia && window.matchMedia('(max-width:600px)').matches;
+ let tl=[24,24];
+ if(open){
+   const r=panel.getBoundingClientRect();
+   // desktop: panel is a tall LEFT sidebar -> inset the left by its width.
+   // mobile: panel is a short box at the TOP -> inset the top by its height.
+   tl = mobile ? [24, Math.round(r.height)+24] : [Math.round(r.width)+24, 24];
+ }
+ try{ map.fitBounds(bounds,{paddingTopLeft:tl,paddingBottomRight:[24,24],animate:false}); }
  catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
 }
 fitAll();
 hideLoading();   // routes drawn + map fitted — reveal the map
 window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
+// collapse the debug log once ready — leave just the copy / view-log buttons
+(function(){ const l=document.getElementById('dbglog'); if(l) l.classList.add('collapsed');
+  const t=document.getElementById('logToggle'); if(t) t.textContent='view log'; })();
 // header counts — icons for groups / routes / pins
 const PIN_COUNT = 0;   // pins arrive with the editor; 0 for now
 document.getElementById('counts').innerHTML =
