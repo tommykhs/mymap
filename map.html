@@ -1,0 +1,651 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyMaps</title>
+<link rel="icon" type="image/png" href="https://cdn.iconscout.com/icon/free/png-512/free-google-my-maps-logo-icon-svg-download-png-3955526.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="header.css"/>
+<style>
+ :root{--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d}
+ html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
+   font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif}
+ #map{position:absolute;top:44px;left:0;right:0;bottom:0;background:#0e1116}
+ /* floating fullscreen button (bottom-right, Google-Maps style) */
+ .map-fs{position:absolute;bottom:26px;right:10px;z-index:1000;width:34px;height:34px;
+   display:flex;align-items:center;justify-content:center;cursor:pointer;
+   background:rgba(27,31,36,.95);border:1px solid var(--bd);color:var(--fg);
+   border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+ .map-fs:hover{background:var(--hv)}
+ .map-fs .material-symbols-outlined{font-size:20px}
+ /* fullscreen: hide header, let the map fill the screen */
+ body.fs .app-header{display:none}
+ body.fs #map{top:0}
+ body.fs .panel{top:10px}
+ body.fs .panel-reopen{top:10px}
+ /* on-map basemap + theme control (mirrors MyMap) */
+ .mm-basectl{position:relative;display:flex;flex-direction:column;
+   box-shadow:0 2px 10px rgba(0,0,0,.5);border-radius:8px}
+ .mm-iconbtn{width:32px;height:32px;display:flex;align-items:center;
+   justify-content:center;background:rgba(27,31,36,.95);
+   border:1px solid var(--bd);color:var(--fg);font-size:15px;
+   line-height:1;cursor:pointer;padding:0}
+ .mm-iconbtn:first-of-type{border-radius:8px 8px 0 0}
+ .mm-iconbtn:last-of-type{border-radius:0 0 8px 8px;border-top:none}
+ .mm-iconbtn:hover{background:var(--hv)}
+ .mm-basemenu{position:absolute;right:38px;top:0;display:none;
+   flex-direction:column;gap:4px;background:rgba(27,31,36,.97);
+   border:1px solid var(--bd);border-radius:8px;padding:6px;
+   box-shadow:0 4px 14px rgba(0,0,0,.55)}
+ .mm-basemenu.open{display:flex}
+ .mm-basemenu button{font:inherit;font-size:12px;color:var(--fg);
+   background:var(--bg2);border:1px solid var(--bd);border-radius:6px;
+   padding:5px 10px;cursor:pointer;text-align:left;white-space:nowrap}
+ .mm-basemenu button:hover{background:var(--hv)}
+ .mm-basemenu button.on{outline:2px solid var(--ac)}
+ .material-symbols-outlined{font-family:'Material Symbols Outlined';
+   font-weight:normal;font-style:normal;line-height:1;vertical-align:middle;
+   -webkit-font-feature-settings:'liga';font-feature-settings:'liga';user-select:none}
+ .mm-iconbtn .material-symbols-outlined{font-size:19px}
+ .panel{position:absolute;top:54px;left:10px;z-index:1000;width:330px;
+   background:rgba(27,31,36,.95);border:1px solid var(--bd);border-radius:10px;
+   box-shadow:0 4px 18px rgba(0,0,0,.55);max-height:92vh;font-size:13px;
+   display:flex;flex-direction:column;overflow:hidden}
+ .panel.collapsed{display:none}
+ .panel .pad{flex:0 0 auto}                 /* sticky header (title + buttons) */
+ .panel #list{flex:1 1 auto;overflow-y:auto;overflow-x:hidden}  /* only the list scrolls */
+ .panel-reopen{position:absolute;top:54px;left:10px;z-index:1001;display:none;
+   width:38px;height:38px;border-radius:8px;background:rgba(27,31,36,.95);
+   border:1px solid var(--bd);color:var(--fg);cursor:pointer;
+   align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.5)}
+ .panel-reopen.show{display:flex}
+ .panel-reopen .material-symbols-outlined{font-size:20px}
+ .pad{padding:10px 12px}
+ .pad .titlebar{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+ .pad h1{margin:0;font-size:16px;color:#fff;flex:1}
+ .home-link{display:inline-flex;align-items:center;color:var(--mut);text-decoration:none;
+   padding:2px;border-radius:4px}
+ .home-link:hover{color:var(--fg);background:var(--hv)}
+ .home-link .material-symbols-outlined{font-size:18px}
+ .pad .counts{color:var(--mut);font-size:12px;display:flex;align-items:center;
+   gap:3px;margin-top:8px}
+ .pad .counts .mi{font-family:'Material Symbols Outlined';font-weight:normal;font-size:15px;
+   line-height:1;vertical-align:-2px;margin-left:14px;margin-right:2px;
+   -webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+ .pad .counts .mi:first-child{margin-left:0}
+ .panel-collapse{background:none;border:none;color:var(--mut);cursor:pointer;
+   padding:2px;line-height:1;display:flex;align-items:center}
+ .panel-collapse:hover{color:var(--fg)}
+ .panel-collapse .material-symbols-outlined{font-size:20px}
+ .sub{color:var(--mut);font-size:11px;line-height:1.5;margin:4px 0 0}
+ .grp{border-top:1px solid var(--bd);padding:8px 12px}
+ .gh{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;color:#fff}
+ .gh .tw{color:var(--mut);font-size:10px;width:10px}
+ .gh .gn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .gh .gp-eye{cursor:pointer;display:inline-flex;align-items:center;
+   color:var(--mut);padding:2px 4px;border-radius:4px;line-height:1}
+ .gh .gp-eye:hover{color:var(--fg);background:var(--hv)}
+ .gh .gp-eye .material-symbols-outlined{font-size:16px}
+ .gh .gcount{color:var(--mut);font-size:11px;min-width:20px;text-align:right;
+   font-weight:normal}
+ .it{display:flex;align-items:center;gap:7px;padding:3px 4px 3px 22px;cursor:pointer;
+   border-radius:6px;line-height:1.25;border-left:2px solid transparent}
+ .it:hover{background:var(--hv)}
+ .it.active{background:rgba(96,165,250,.18);border-left-color:var(--ac);font-weight:600}
+ .sw{width:18px;height:3px;border-radius:2px;flex:0 0 auto}
+ .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .it .it-dl{flex:0 0 auto;opacity:.25;cursor:pointer;color:var(--mut);
+   padding:1px 3px;border-radius:4px;display:inline-flex;align-items:center}
+ .it:hover .it-dl{opacity:1}
+ .it .it-dl:hover{color:var(--fg);background:var(--hv)}
+ .it .it-dl .material-symbols-outlined{font-size:15px}
+ .btns{display:flex;gap:6px;margin:8px 0 0}
+ .btns button{flex:1;font:inherit;font-size:12px;color:var(--fg);background:var(--bg2);
+   border:1px solid var(--bd);border-radius:6px;padding:5px;cursor:pointer;
+   display:flex;align-items:center;justify-content:center}
+ .btns button:hover{background:var(--hv)}
+ .btns button .material-symbols-outlined{font-size:18px}
+ .rt-tip{background:rgba(27,31,36,.95)!important;color:var(--fg)!important;
+   border:1px solid var(--bd)!important;font-size:11px!important;padding:3px 8px!important}
+ .rt-tip:before{border-top-color:var(--bd)!important}
+ .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--bg2);color:var(--fg)}
+ /* keep Leaflet's own width sizing (min/maxWidth from bindPopup); only allow CJK
+    long names to wrap naturally — DO NOT force width:auto or word-break:break-word
+    on CJK (that collapses the popup to 1 character per line). */
+ .leaflet-popup-content{margin:10px 14px;line-height:1.4;overflow-wrap:anywhere}
+ .leaflet-popup-content b{display:block;font-size:13px;cursor:move}
+ .leaflet-popup-content-wrapper{cursor:default}
+ .leaflet-popup-content-wrapper.rt-dragging{opacity:.92}
+ .rt-links{margin-top:4px;font-size:11px}
+ .rt-desc{margin-top:6px;font-size:11px;color:#c9d0d8}
+ .rt-stats{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#9aa4b0;
+   align-items:center}
+ .rt-stats .mi{font-family:'Material Symbols Outlined';font-weight:normal;font-size:14px;
+   line-height:1;vertical-align:-2px;letter-spacing:0;
+   -webkit-font-feature-settings:'liga';font-feature-settings:'liga';
+   margin-right:1px}
+ .rt-dl{margin-top:7px;display:flex;align-items:center;gap:6px;font-size:11px}
+ .rt-dl .mi{font-family:'Material Symbols Outlined';font-weight:normal;font-size:15px;
+   line-height:1;vertical-align:-3px;color:var(--mut);
+   -webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+ .leaflet-popup-content a{color:var(--ac)} a{color:var(--ac)}
+ .leaflet-bar a{background:var(--bg2);color:var(--fg);border-color:var(--bd)}
+</style></head><body>
+<div id="app-header"></div>
+<script src="header.js"></script>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<div id="map"></div>
+<button id="fsBtn" class="map-fs" title="全画面表示"><span class="material-symbols-outlined">fullscreen</span></button>
+<button id="panelReopen" class="panel-reopen" title="リストを開く"><span class="material-symbols-outlined">menu</span></button>
+<div class="panel" id="panel"><div class="pad">
+ <div class="titlebar">
+  <h1 id="mapTitle">読み込み中…</h1>
+  <button id="panelCollapse" class="panel-collapse" title="リストを閉じる"><span class="material-symbols-outlined">left_panel_close</span></button>
+ </div>
+ <p class="sub" id="mapDesc" hidden></p>
+ <div class="counts" id="counts"></div>
+ <div class="btns">
+  <button id="aon"    title="全部顯示"><span class="material-symbols-outlined">visibility</span></button>
+  <button id="aoff"   title="全部隱藏"><span class="material-symbols-outlined">visibility_off</span></button>
+  <button id="grpToggle" title="全部展開／收合"><span class="material-symbols-outlined">unfold_less</span></button>
+ </div>
+</div><div id="list"></div>
+</div>
+<script>
+// Route data is loaded at runtime from data/routes_base.geojson (keeps this
+// file tiny). Convert each GeoJSON Feature back to the internal route shape.
+let R=[];
+function featureToRoute(f){
+ const p=f.properties||{};
+ const co=(f.geometry&&f.geometry.coordinates)||[];
+ const polys=co.map(line=>line.map(c=>c.length>2?[c[1],c[0],c[2]]:[c[1],c[0]]));
+ return {id:p.id,name:p.name,group:p.group,source:p.source,distance_km:p.distance_km,
+   elev_up_m:p.elev_up_m,intro_url:p.intro_url,difficulty:p.difficulty,profile:p.profile,
+   rwgps_url:p.rwgps_url,strava_url:p.strava_url,desc:p.desc,
+   weight:p.weight||3,opacity:(p.opacity!=null?p.opacity:0.9),
+   dash:p.dash||[0,0],style:p.style||'solid',polys:polys};
+}
+const MAP_ID=(new URLSearchParams(location.search).get('id'))||'japan-cycling';
+// Apply this map's title/desc (from library.json) to the tab, header and subtitle.
+function applyMeta(meta){
+ meta=meta||{};
+ const title=meta.title||MAP_ID;
+ document.title=title+' — MyMaps';
+ const h=document.getElementById('mapTitle'); if(h) h.textContent=title;
+ const d=document.getElementById('mapDesc');
+ if(d){ if(meta.desc){ d.textContent=meta.desc; d.hidden=false; } else { d.hidden=true; } }
+}
+// Look up the library entry (via MyMapData: local files in dev, gist API when
+// deployed) so we know the map's metadata + which geojson file to load.
+MyMapData.loadLibrary()
+ .then(maps=>(maps||[]).find(m=>m.id===MAP_ID)||null)
+ .catch(()=>null)
+ .then(meta=>{
+   applyMeta(meta);
+   // fall back to the conventional filename if there's no library entry
+   return MyMapData.loadMap(meta||{file:MAP_ID+'.geojson'});
+ }).then(fc=>{
+ R=(fc.features||[]).map(featureToRoute).filter(r=>r.polys&&r.polys.length);
+ boot();
+}).catch(e=>{
+ document.body.insertAdjacentHTML('beforeend',
+   '<div style="position:absolute;top:12px;left:12px;z-index:9999;color:#f88;'
+   +'background:#1b1f24;padding:10px;border-radius:8px">データ読み込み失敗: '+e+'</div>');
+});
+function boot(){
+// canvas renderer scales better with many polylines
+const map=L.map('map',{preferCanvas:true});
+map.zoomControl.setPosition('topright');   // panel lives on the left now
+// ---- basemaps: each key has a real light & a real dark variant ----
+// single light tile layer per provider — dark mode applies a CSS filter
+// to the tile pane (labels preserved; routes in the overlay pane unaffected)
+const bases={
+ osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+   {maxZoom:19,attribution:'&copy; OSM · routes: Setouchi Velo/PlatinumMaps'}),
+ 'esri-street': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+   {maxZoom:19,attribution:'Tiles &copy; Esri · routes: Setouchi Velo/PlatinumMaps'})
+};
+const DARK_FILTER='invert(1) hue-rotate(180deg) brightness(.97) contrast(1.05) saturate(.9)';
+// ---- persisted state (basemap + theme) ----
+const LSK='sv.state';
+const loadS=()=>{try{return JSON.parse(localStorage.getItem(LSK))||{}}catch(e){return {}}};
+const saveS=(p)=>{try{localStorage.setItem(LSK,JSON.stringify(Object.assign(loadS(),p)))}catch(e){}};
+const ST=loadS();
+let darkMap=(typeof ST.dark==='boolean')?ST.dark:false;   // light by default; remembers last choice
+// single accent colour for all routes, with a light-mode and a dark-mode tone
+const ROUTE_LIGHT='#1d4ed8';   // strong indigo — pops on light tiles
+const ROUTE_DARK ='#60a5fa';   // bright sky — pops on dark tiles
+const accent=()=>darkMap?ROUTE_DARK:ROUTE_LIGHT;
+function recolorRoutes(){
+ const c=accent();
+ // skip the currently-selected route so its highlight stays visible
+ Object.keys(lg||{}).forEach(k=>{
+   if(+k===selectedIdx) return;
+   lg[k].eachLayer(p=>p.setStyle&&p.setStyle({color:c}));
+ });
+ document.querySelectorAll('#list .sw').forEach(s=>s.style.background=c);
+}
+let curBase=null,curKey='',baseCtlEl=null;
+function setBase(key){
+ const lyr=bases[key]; if(!lyr) return;
+ if(curBase) map.removeLayer(curBase);
+ curBase=lyr; curKey=key; curBase.addTo(map); curBase.bringToBack();
+ applyTheme();
+ if(baseCtlEl)[...baseCtlEl.querySelectorAll('button[data-b]')]
+   .forEach(b=>b.classList.toggle('on',b.dataset.b===key));
+ saveS({base:key});
+}
+function applyTheme(){
+ // target the whole tile pane (parent of all tile layers) — most reliable
+ const p=document.querySelector('.leaflet-tile-pane');
+ if(p) p.style.filter = darkMap ? DARK_FILTER : '';
+ // diagnostic in DevTools console so we can see if the toggle is firing
+ try{ console.log('[mymap] applyTheme darkMap=',darkMap,' filter=',p&&p.style.filter); }catch(e){}
+}
+// ---- on-map control (layers menu + theme toggle, under the +/-) ----
+const Ctl=L.Control.extend({options:{position:'topright'},
+ onAdd(){const d=L.DomUtil.create('div','mm-basectl');
+  L.DomEvent.disableClickPropagation(d); L.DomEvent.disableScrollPropagation(d);
+  baseCtlEl=d; return d}});
+map.addControl(new Ctl());
+const baseBtn=document.createElement('button');
+baseBtn.className='mm-iconbtn'; baseBtn.title='Basemap';
+baseBtn.innerHTML='<span class="material-symbols-outlined">layers</span>';
+const themeBtn=document.createElement('button');
+themeBtn.className='mm-iconbtn'; themeBtn.title='Dark / light';
+const themeIcon=()=>themeBtn.innerHTML='<span class="material-symbols-outlined">'+(darkMap?'dark_mode':'light_mode')+'</span>';
+themeIcon();
+themeBtn.onclick=()=>{ darkMap=!darkMap; themeIcon(); applyTheme(); recolorRoutes(); saveS({dark:darkMap}); };
+// recenter: re-fit the map to all routes (resets pan/zoom to the overview)
+const recenterBtn=document.createElement('button');
+recenterBtn.className='mm-iconbtn'; recenterBtn.title='全体表示にリセット';
+recenterBtn.innerHTML='<span class="material-symbols-outlined">center_focus_strong</span>';
+recenterBtn.onclick=()=>fitAll();
+const menu=document.createElement('div'); menu.className='mm-basemenu';
+const baseLabels={'osm':'OSM','esri-street':'Esri Street'};
+Object.keys(baseLabels).forEach(k=>{
+ const b=document.createElement('button'); b.textContent=baseLabels[k]; b.dataset.b=k;
+ b.onclick=()=>{ setBase(k); menu.classList.remove('open'); };
+ menu.appendChild(b);
+});
+baseBtn.onclick=()=>menu.classList.toggle('open');
+// Map-background click: close basemap menu AND deselect any active route
+map.on('click',()=>{
+ menu.classList.remove('open');
+ if(selectedIdx!=null){
+   styleRoute(selectedIdx,false);
+   const it=itemByIdx[selectedIdx]; if(it) it.classList.remove('active');
+   selectedIdx=null;
+ }
+});
+// Closing the popup also clears selection
+map.on('popupclose',()=>{
+ if(selectedIdx!=null){
+   styleRoute(selectedIdx,false);
+   const it=itemByIdx[selectedIdx]; if(it) it.classList.remove('active');
+   selectedIdx=null;
+ }
+});
+// Make popups draggable so they don't permanently cover the route
+map.on('popupopen', (e) => {
+ const popup = e.popup;
+ const wrapper = popup._container && popup._container.querySelector('.leaflet-popup-content-wrapper');
+ const titleEl = wrapper && wrapper.querySelector('b');
+ if (!wrapper) return;
+ // Stop map drag/scroll when interacting with the popup
+ L.DomEvent.disableClickPropagation(wrapper);
+ L.DomEvent.disableScrollPropagation(wrapper);
+ // Drag handle: the title <b>. (clicking links/text inside still works normally)
+ const handle = titleEl || wrapper;
+ handle.title = 'ドラッグして移動';
+ let dragging=false, sx=0, sy=0, bx=0, by=0;
+ const onMove = (ev) => {
+   if(!dragging) return;
+   const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+   const cy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+   wrapper.style.transform = 'translate('+(bx+cx-sx)+'px,'+(by+cy-sy)+'px)';
+ };
+ const onUp = (ev) => {
+   if(!dragging) return;
+   const cx = (ev.changedTouches?ev.changedTouches[0].clientX:ev.clientX);
+   const cy = (ev.changedTouches?ev.changedTouches[0].clientY:ev.clientY);
+   bx += cx-sx; by += cy-sy; dragging=false;
+   wrapper.classList.remove('rt-dragging');
+   document.removeEventListener('mousemove', onMove);
+   document.removeEventListener('mouseup',   onUp);
+   document.removeEventListener('touchmove', onMove);
+   document.removeEventListener('touchend',  onUp);
+ };
+ const onDown = (ev) => {
+   if (ev.target.closest && ev.target.closest('a, .leaflet-popup-close-button, button')) return;
+   dragging=true;
+   sx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+   sy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+   wrapper.classList.add('rt-dragging');
+   document.addEventListener('mousemove', onMove);
+   document.addEventListener('mouseup',   onUp);
+   document.addEventListener('touchmove', onMove, {passive:false});
+   document.addEventListener('touchend',  onUp);
+   ev.preventDefault();
+ };
+ handle.addEventListener('mousedown', onDown);
+ handle.addEventListener('touchstart', onDown, {passive:false});
+});
+baseCtlEl.appendChild(baseBtn); baseCtlEl.appendChild(themeBtn); baseCtlEl.appendChild(recenterBtn); baseCtlEl.appendChild(menu);
+// initial base (restored from localStorage if present)
+let startBase=ST.base||'osm'; if(!bases[startBase]) startBase='osm';
+setBase(startBase);
+const groups={},layers={},bounds=L.latLngBounds([]);
+R.forEach((r,i)=>{(groups[r.group]=groups[r.group]||[]).push(i)});
+function sparkline(p){
+ // viewBox-based SVG so the profile stretches to the popup's actual width
+ const VW=300,VH=44;
+ const xMax=(p[p.length-1][0])||0;
+ if(xMax<0.001) return '';
+ const ys=p.map(x=>x[1]); const yMin=Math.min(...ys), yMax=Math.max(...ys);
+ const ny=Math.max(yMax-yMin,1);
+ const pts=p.map(([x,y])=>{
+   const sx=(x/xMax)*(VW-2)+1;
+   const sy=VH-((y-yMin)/ny)*(VH-6)-3;
+   return sx.toFixed(1)+','+sy.toFixed(1);
+ }).join(' ');
+ return '<svg viewBox="0 0 '+VW+' '+VH+'" preserveAspectRatio="none" '
+   +'style="width:100%;height:44px;display:block;margin-top:6px">'
+   +'<polyline points="'+pts+'" fill="none" stroke="#9aa4b0" stroke-width="1.4" vector-effect="non-scaling-stroke"/>'
+   +'</svg>';
+}
+function sourceLink(r){
+ const s=(r.source||'');
+ if(s==='TABIRIN') return 'TABIRIN';
+ if(s==='HokkaidoWilds') return 'HokkaidoWilds';
+ if(s==='CycleKyushu') return 'Cycle Kyushu';
+ if(s==='自転車王国とくしま') return '自転車王国とくしま';
+ if(s==='青森サイクリング') return '青森サイクリング';
+ if(s==='WAKAYAMA800') return 'WAKAYAMA800';
+ if(s==='岩手県広域サイクリングルート') return '岩手県広域';
+ if(s==='とやまサイクルナビ') return 'とやまサイクルナビ';
+ if(s==='ふくツー') return 'ふくツー';
+ if(s==='しずおかサイクルシティ') return 'しずおかサイクルシティ';
+ if(s==='トカプチ400') return 'トカプチ400';
+ if(s==='Japan NCR') return 'NCR (公式)';
+ if(s==='太平洋岸自転車道') return '太平洋岸自転車道';
+ if(s==='山梨県サイクリングマップ') return '山梨県';
+ if(s==='南房総 cycle tourism') return '南房総';
+ if(s==='にいがた観光ナビ') return 'にいがた観光ナビ';
+ return '詳細';
+}
+function statsLine(r){
+ // Only show max elevation when the profile carries real altitude data
+ let yMax=null, yMin=null;
+ if(r.profile && r.profile.length){
+   const ys=r.profile.map(p=>p[1]);
+   yMax=Math.max(...ys); yMin=Math.min(...ys);
+ }
+ const hasRelief = (yMax!=null && yMin!=null && (yMax-yMin)>1);
+ const parts=[];
+ if(r.distance_km) parts.push('<span class="mi">straighten</span>'+r.distance_km+' km');
+ if(r.elev_up_m)   parts.push('<span class="mi">trending_up</span>'+r.elev_up_m+' m');
+ if(hasRelief)     parts.push('<span class="mi">terrain</span>'+Math.round(yMax)+' m');
+ if(!parts.length) return '';
+ return '<div class="rt-stats">'+parts.join('<span style="opacity:.5">·</span>')+'</div>';
+}
+function popupHTML(r,idx){
+ let h='<b>'+r.name+'</b>';
+ const lnks=[];
+ if(r.intro_url)  lnks.push('<a href="'+r.intro_url+'" target="_blank">'+sourceLink(r)+' ↗</a>');
+ if(r.rwgps_url)  lnks.push('<a href="'+r.rwgps_url+'" target="_blank">RWGPS ↗</a>');
+ if(r.strava_url) lnks.push('<a href="'+r.strava_url+'" target="_blank">Strava ↗</a>');
+ if(lnks.length) h+='<div class="rt-links">'+lnks.join(' · ')+'</div>';
+ if(r.desc){
+   const d=r.desc.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+     .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>')
+     .replace(/\r?\n/g,'<br>');
+   h+='<div class="rt-desc">'+d+'</div>';
+ }
+ // Sparkline only when profile carries real altitude variation
+ if(r.profile && r.profile.length>1){
+   const ys=r.profile.map(p=>p[1]);
+   if(Math.max(...ys)-Math.min(...ys) > 1) h+=sparkline(r.profile);
+ }
+ h+=statsLine(r);
+ if(idx!=null){
+   h+='<div class="rt-dl"><span class="mi">download</span>'
+     +'<a href="#" onclick="dlRoute('+idx+',&#39;gpx&#39;);return false">GPX</a>'
+     +'<span style="opacity:.4">·</span>'
+     +'<a href="#" onclick="dlRoute('+idx+',&#39;geojson&#39;);return false">GeoJSON</a></div>';
+ }
+ return h;
+}
+// ---- route export (runtime conversion, no server) ----
+function escXml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));}
+function toGPX(r){
+ let s='<?xml version="1.0" encoding="UTF-8"?>\n'
+   +'<gpx version="1.1" creator="Japan Cycling Map" xmlns="http://www.topografix.com/GPX/1/1">\n'
+   +'<trk><name>'+escXml(r.name)+'</name>';
+ (r.polys||[]).forEach(poly=>{
+   s+='<trkseg>';
+   poly.forEach(pt=>{
+     s+='<trkpt lat="'+pt[0]+'" lon="'+pt[1]+'">';
+     if(pt.length>2) s+='<ele>'+pt[2]+'</ele>';
+     s+='</trkpt>';
+   });
+   s+='</trkseg>';
+ });
+ s+='</trk></gpx>';
+ return s;
+}
+function toFeature(r){
+ const coords=(r.polys||[]).map(poly=>poly.map(pt=>pt.length>2?[pt[1],pt[0],pt[2]]:[pt[1],pt[0]]));
+ const props={};
+ ['id','name','group','source','distance_km','elev_up_m','intro_url','difficulty','profile'].forEach(k=>{
+   if(r[k]!=null) props[k]=r[k];
+ });
+ return {type:'Feature',geometry:{type:'MultiLineString',coordinates:coords},properties:props};
+}
+function dlRoute(idx,fmt){
+ const r=R[idx]; if(!r) return;
+ let body,mime,ext;
+ if(fmt==='gpx'){ body=toGPX(r); mime='application/gpx+xml'; ext='gpx'; }
+ else { body=JSON.stringify(toFeature(r)); mime='application/geo+json'; ext='geojson'; }
+ const safe=(r.name||'route').replace(/[\\/:*?"<>|]+/g,'_').slice(0,80);
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob([body],{type:mime}));
+ a.download=safe+'.'+ext;
+ document.body.appendChild(a); a.click();
+ setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);
+}
+const lg={},polysByIdx={},itemByIdx={},boxByIdx={},headerByIdx={};
+let selectedIdx=null;
+// safe HTML escape for tooltips
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const baseWeight=r=>Math.max(r.weight||3,3);
+R.forEach((r,i)=>{
+ const g=L.layerGroup();
+ const opt={color:accent(),weight:baseWeight(r),opacity:r.opacity};
+ if(r.style!=='solid'||r.dash[0])opt.dashArray=(r.dash[0]||8)+','+(r.dash[1]||6);
+ const plList=[];
+ const tip=esc(r.name);
+ r.polys.forEach(p=>{
+   // wider invisible hit-target so clicks land easily even on thin routes
+   const hit=L.polyline(p,{weight:14,opacity:0,color:'#000',interactive:true});
+   hit.bindPopup(popupHTML(r,i),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
+   hit.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
+   hit.on('click',()=>selectRoute(i,{fromMap:true}));
+   hit.addTo(g);
+   // visible polyline drawn on top
+   const pl=L.polyline(p,opt);
+   pl.bindPopup(popupHTML(r,i),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
+   pl.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
+   pl.on('click',()=>selectRoute(i,{fromMap:true}));
+   pl.addTo(g); bounds.extend(pl.getBounds());
+   plList.push(pl);
+ });
+ polysByIdx[i]=plList;
+ lg[i]=g; g.addTo(map);
+});
+// route-level highlight: bump weight modestly + switch to accent orange
+function styleRoute(i,sel){
+ const base=accent();
+ (polysByIdx[i]||[]).forEach(pl=>{
+   if(sel){ pl.setStyle({color:'#f59e0b',weight:baseWeight(R[i])+2,opacity:1}); pl.bringToFront(); }
+   else  { pl.setStyle({color:base,weight:baseWeight(R[i]),opacity:R[i].opacity}); }
+ });
+}
+function selectRoute(i,opts){
+ opts=opts||{};
+ if(selectedIdx===i){ // toggle off on second map-click of the same route
+   if(opts.fromMap){ styleRoute(i,false); const it=itemByIdx[i]; if(it) it.classList.remove('active'); selectedIdx=null; return; }
+ }
+ if(selectedIdx!=null && selectedIdx!==i){
+   styleRoute(selectedIdx,false);
+   const prev=itemByIdx[selectedIdx]; if(prev) prev.classList.remove('active');
+ }
+ selectedIdx=i;
+ // ensure the route's layer is on the map (in case it was hidden via list-click)
+ if(!map.hasLayer(lg[i])) map.addLayer(lg[i]);
+ styleRoute(i,true);
+ const it=itemByIdx[i]; if(it) it.classList.add('active');
+ // expand collapsed group + scroll into view when triggered from the map
+ if(opts.fromMap){
+   const box=boxByIdx[i];
+   if(box && box.style.display==='none'){
+     box.style.display=''; const tw=headerByIdx[i]&&headerByIdx[i].querySelector('.tw'); if(tw) tw.textContent='▼';
+   }
+   if(it) it.scrollIntoView({behavior:'smooth',block:'nearest'});
+ }
+}
+const list=document.getElementById('list');
+Object.keys(groups).sort().forEach(gn=>{
+ const wrap=document.createElement('div');wrap.className='grp';
+ const h=document.createElement('div');h.className='gh';
+ const indices=groups[gn];
+ h.innerHTML='<span class="tw">▼</span>'
+   +'<span class="gn">'+(gn||'(route)')+'</span>'
+   +'<span class="gp-eye" title="このグループの表示／非表示"><span class="material-symbols-outlined">visibility</span></span>'
+   +'<span class="gcount">'+indices.length+'</span>';
+ const eyeBtn=h.querySelector('.gp-eye');
+ const eyeIcon=eyeBtn.querySelector('.material-symbols-outlined');
+ function refreshEye(){
+   const anyOn=indices.some(i=>map.hasLayer(lg[i]));
+   eyeIcon.textContent = anyOn ? 'visibility' : 'visibility_off';
+ }
+ eyeBtn.onclick=(ev)=>{
+   ev.stopPropagation();
+   const anyOn=indices.some(i=>map.hasLayer(lg[i]));
+   indices.forEach(i=>{
+     if(anyOn){ map.removeLayer(lg[i]); }
+     else     { map.addLayer(lg[i]); }
+   });
+   // update list-item opacity to reflect visibility
+   indices.forEach(i=>{
+     const it=itemByIdx[i];
+     if(it) it.style.opacity = anyOn ? 0.4 : 1;
+   });
+   refreshEye();
+ };
+ const box=document.createElement('div');
+ groups[gn].forEach(i=>{const r=R[i];
+   const it=document.createElement('div');it.className='it';
+   it.innerHTML='<span class="sw" style="background:'+accent()+'"></span>'+
+     '<span class="nm">'+r.name+'</span>'+
+     '<span class="it-dl" title="GPXダウンロード"><span class="material-symbols-outlined">download</span></span>';
+   it.onclick=()=>{
+     // shift/cmd-click → toggle visibility (legacy show/hide). Plain click → select+zoom.
+     if(map.hasLayer(lg[i])){
+       try{map.fitBounds(lg[i].getLayers()[0].getBounds().pad(.2))}catch(e){}
+     }else{
+       map.addLayer(lg[i]); it.style.opacity=1;
+     }
+     selectRoute(i,{fromMap:false});
+   };
+   it.querySelector('.it-dl').onclick=(ev)=>{ ev.stopPropagation(); dlRoute(i,'gpx'); };
+   itemByIdx[i]=it; boxByIdx[i]=box; headerByIdx[i]=h;
+   box.appendChild(it);
+ });
+ h.onclick=()=>{const v=box.style.display==='none';box.style.display=v?'':'none';
+   h.querySelector('.tw').textContent=v?'▼':'▶';};
+ wrap.appendChild(h);wrap.appendChild(box);list.appendChild(wrap);
+});
+// Fit all routes into the part of the map NOT covered by the panel.
+// Leaflet sizes the zoom to the current viewport; we just inset the left
+// edge by the panel width (when open) so routes aren't hidden behind it.
+function fitAll(){
+ const panel=document.getElementById('panel');
+ const open=panel && !panel.classList.contains('collapsed') &&
+            getComputedStyle(panel).display!=='none';
+ const padL=open ? Math.round(panel.getBoundingClientRect().width)+24 : 24;
+ try{ map.fitBounds(bounds,{paddingTopLeft:[padL,24],paddingBottomRight:[24,24]}); }
+ catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
+}
+fitAll();
+// header counts — icons for groups / routes / pins
+const PIN_COUNT = 0;   // pins arrive with the editor; 0 for now
+document.getElementById('counts').innerHTML =
+  '<span class="mi" title="グループ">layers</span>'+Object.keys(groups).length
+ +'<span class="mi" title="ルート">route</span>'+R.length
+ +'<span class="mi" title="ピン">location_on</span>'+PIN_COUNT;
+// ---- panel collapse / expand ----
+(function(){
+ const panel=document.getElementById('panel');
+ const reopen=document.getElementById('panelReopen');
+ function setPanel(open){
+   panel.classList.toggle('collapsed',!open);
+   reopen.classList.toggle('show',!open);
+   saveS({panelOpen:open});
+ }
+ document.getElementById('panelCollapse').onclick=()=>setPanel(false);
+ reopen.onclick=()=>setPanel(true);
+ setPanel(ST.panelOpen!==false);   // default open, remembers last choice
+})();
+document.getElementById('aon').onclick=()=>{
+ R.forEach((r,i)=>map.addLayer(lg[i]));
+ document.querySelectorAll('#list .it').forEach(it=>it.style.opacity=1);
+ document.querySelectorAll('#list .gp-eye .material-symbols-outlined').forEach(e=>e.textContent='visibility');
+};
+document.getElementById('aoff').onclick=()=>{
+ R.forEach((r,i)=>map.removeLayer(lg[i]));
+ document.querySelectorAll('#list .it').forEach(it=>it.style.opacity=0.4);
+ document.querySelectorAll('#list .gp-eye .material-symbols-outlined').forEach(e=>e.textContent='visibility_off');
+};
+// single toggle: expand all groups if any are collapsed, else collapse all.
+// the icon shows the action the NEXT click performs.
+(function(){
+  const btn=document.getElementById('grpToggle');
+  const ic=btn.querySelector('.material-symbols-outlined');
+  const heads=()=>[...document.querySelectorAll('#list .gh')];
+  const anyCollapsed=()=>heads().some(h=>{const b=h.nextElementSibling;return b&&b.style.display==='none';});
+  function setAll(expand){
+    heads().forEach(h=>{
+      const box=h.nextElementSibling; if(box) box.style.display=expand?'':'none';
+      const tw=h.querySelector('.tw'); if(tw) tw.textContent=expand?'▼':'▶';
+    });
+    syncIcon();
+  }
+  function syncIcon(){
+    const collapsed=anyCollapsed();   // if anything collapsed, next click expands
+    ic.textContent=collapsed?'unfold_more':'unfold_less';
+    btn.title=collapsed?'全部展開':'全部収合';
+  }
+  btn.onclick=()=>setAll(anyCollapsed());
+  syncIcon();   // reflect current state on load
+})();
+// expose for inline onclick in popups
+window.dlRoute=dlRoute;
+// ---- fullscreen toggle ----
+(function(){
+ const btn=document.getElementById('fsBtn'); if(!btn) return;
+ const ic=btn.querySelector('.material-symbols-outlined');
+ btn.onclick=()=>{
+   if(!document.fullscreenElement){ (document.documentElement.requestFullscreen||(()=>{})).call(document.documentElement); }
+   else { document.exitFullscreen&&document.exitFullscreen(); }
+ };
+ document.addEventListener('fullscreenchange',()=>{
+   const on=!!document.fullscreenElement;
+   document.body.classList.toggle('fs',on);   // hides header, map fills screen
+   ic.textContent=on?'fullscreen_exit':'fullscreen';
+   setTimeout(()=>map.invalidateSize(),120);   // re-fit Leaflet after resize
+ });
+})();
+}  // end boot()
+</script></body></html>

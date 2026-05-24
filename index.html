@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MyMaps</title>
+<link rel="icon" type="image/png" href="https://cdn.iconscout.com/icon/free/png-512/free-google-my-maps-logo-icon-svg-download-png-3955526.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+<link rel="stylesheet" href="header.css"/>
+<style>
+ :root{--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d}
+ *{box-sizing:border-box}
+ html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);
+   font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif}
+ body{padding-top:44px}                 /* clear the fixed shared header */
+ .grid{display:grid;gap:16px;padding:18px 20px 40px;
+   grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+ .card{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;
+   cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;
+   transition:transform .12s,border-color .12s,box-shadow .12s}
+ .card:hover{transform:translateY(-3px);border-color:var(--ac);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+ .thumb{height:130px;position:relative;background:#11151a;overflow:hidden}
+ .thumb svg{width:100%;height:100%;display:block}
+ .thumb .material-symbols-outlined{position:absolute;right:10px;bottom:8px;
+   font-size:32px;color:rgba(255,255,255,.5)}
+ .card .body{padding:12px 14px}
+ .card h2{margin:0;font-size:16px;color:#fff}
+ .card .desc{margin:5px 0 0;color:var(--mut);font-size:12px;line-height:1.45}
+ .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;color:var(--mut);font-size:12px}
+ .stats .s{display:inline-flex;align-items:center;gap:3px}
+ .stats .mi{font-family:'Material Symbols Outlined';font-size:15px;vertical-align:-2px;
+   -webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+ .empty{padding:40px 28px;color:var(--mut)}
+ a{color:var(--ac)}
+</style></head><body>
+<div id="app-header"></div>
+<div class="grid" id="grid"><div class="empty">読み込み中…</div></div>
+<script src="header.js"></script>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script>
+function previewSVG(p){
+ if(!p||!p.lines||!p.lines.length) return '<span class="material-symbols-outlined">map</span>';
+ const polys=p.lines.map(l=>'<polyline points="'+l+'" fill="none" stroke="#60a5fa" '
+   +'stroke-width="0.7" stroke-opacity="0.85" vector-effect="non-scaling-stroke"/>').join('');
+ return '<svg viewBox="0 0 '+p.w+' '+p.h+'" preserveAspectRatio="xMidYMid meet">'+polys+'</svg>';
+}
+MyMapData.loadLibrary().then(maps=>{
+ const grid=document.getElementById('grid');
+ if(!maps||!maps.length){ grid.innerHTML='<div class="empty">マップがありません。</div>'; return; }
+ grid.innerHTML='';
+ maps.forEach(m=>{
+   const a=document.createElement('a');
+   a.className='card'; a.href='map.html?id='+encodeURIComponent(m.id);
+   const km=(m.distance_km||0).toLocaleString();
+   a.innerHTML=
+     '<div class="thumb">'+previewSVG(m.preview)+'</div>'+
+     '<div class="body"><h2>'+(m.title||m.id)+'</h2>'+
+     (m.desc?'<div class="desc">'+m.desc+'</div>':'')+
+     '<div class="stats">'+
+       '<span class="s"><span class="mi">route</span>'+(m.routes||0)+'</span>'+
+       '<span class="s"><span class="mi">layers</span>'+(m.groups||0)+'</span>'+
+       '<span class="s"><span class="mi">straighten</span>'+km+' km</span>'+
+     '</div></div>';
+   grid.appendChild(a);
+ });
+}).catch(e=>{
+ document.getElementById('grid').innerHTML='<div class="empty">library.json 読み込み失敗: '+e+'</div>';
+});
+</script></body></html>

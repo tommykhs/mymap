@@ -1,0 +1,12 @@
+/* Shared MyMaps top header — used by index.html (gallery) and map.html (viewer).
+   Single source of truth so the brand never shifts between pages.
+   Relies on the page's :root vars (--bd) being defined. */
+.app-header{position:fixed;top:0;left:0;right:0;height:44px;z-index:1100;
+  display:flex;align-items:center;gap:10px;padding:0 20px;
+  background:rgba(27,31,36,.96);border-bottom:1px solid var(--bd);
+  backdrop-filter:blur(6px)}
+.app-header .brand{display:inline-flex;align-items:center;gap:10px;
+  text-decoration:none;color:#fff}
+.app-header .brand img{width:24px;height:24px;display:block}
+.app-header .brand span{font-size:18px;font-weight:600;color:#fff;line-height:1}
+.app-header .sep{flex:1}
