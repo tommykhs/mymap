@@ -130,12 +130,29 @@
    -webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
  .leaflet-popup-content a{color:var(--ac)} a{color:var(--ac)}
  .leaflet-bar a{background:var(--bg2);color:var(--fg);border-color:var(--bd)}
+ /* loading overlay over the map area. spinner uses a transform animation so it
+    keeps spinning on the compositor even while the main thread builds routes. */
+ .loading{position:absolute;top:44px;left:0;right:0;bottom:0;z-index:1500;
+   display:flex;flex-direction:column;align-items:center;justify-content:center;
+   gap:14px;background:rgba(14,17,22,.85);color:var(--fg);font-size:14px;
+   text-align:center;padding:24px}
+ .loading.hidden{display:none}
+ .loading .spinner{width:34px;height:34px;border:3px solid var(--bd);
+   border-top-color:var(--ac);border-radius:50%;animation:mmspin .8s linear infinite}
+ .loading.err{color:#f88}.loading.err .spinner{display:none}
+ @keyframes mmspin{to{transform:rotate(360deg)}}
+ body.fs .loading{top:0}
+ /* mobile: don't let the panel cover the whole map, even expanded */
+ @media (max-width:600px){
+   .panel{width:calc(100vw - 20px);max-width:330px;max-height:40vh}
+ }
 </style></head><body>
 <div id="app-header"></div>
 <script src="header.js"></script>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <div id="map"></div>
+<div id="loading" class="loading"><div class="spinner"></div><div id="loadingMsg">読み込み中…</div></div>
 <button id="fsBtn" class="map-fs" title="全画面表示"><span class="material-symbols-outlined">fullscreen</span></button>
 <button id="panelReopen" class="panel-reopen" title="リストを開く"><span class="material-symbols-outlined">menu</span></button>
 <div class="panel" id="panel"><div class="pad">
@@ -167,6 +184,10 @@ function featureToRoute(f){
    dash:p.dash||[0,0],style:p.style||'solid',polys:polys};
 }
 const MAP_ID=(new URLSearchParams(location.search).get('id'))||'japan-cycling';
+// ---- loading overlay helpers ----
+function setLoading(msg){ const el=document.getElementById('loadingMsg'); if(el) el.textContent=msg; }
+function hideLoading(){ const el=document.getElementById('loading'); if(el) el.classList.add('hidden'); }
+function errorLoading(msg){ const el=document.getElementById('loading'); if(el){ el.classList.remove('hidden'); el.classList.add('err'); } setLoading(msg); }
 // Apply this map's title/desc (from library.json) to the tab, header and subtitle.
 function applyMeta(meta){
  meta=meta||{};
@@ -183,19 +204,21 @@ MyMapData.loadLibrary()
  .catch(()=>null)
  .then(meta=>{
    applyMeta(meta);
+   setLoading('ルートを読み込み中…');
    // fall back to the conventional filename if there's no library entry
    return MyMapData.loadMap(meta||{file:MAP_ID+'.geojson'});
  }).then(fc=>{
+ setLoading('ルートを準備中…');
  R=(fc.features||[]).map(featureToRoute).filter(r=>r.polys&&r.polys.length);
  boot();
 }).catch(e=>{
- document.body.insertAdjacentHTML('beforeend',
-   '<div style="position:absolute;top:12px;left:12px;z-index:9999;color:#f88;'
-   +'background:#1b1f24;padding:10px;border-radius:8px">データ読み込み失敗: '+e+'</div>');
+ errorLoading('読み込み失敗: '+((e&&e.message)||e));
 });
-function boot(){
+async function boot(){
 // canvas renderer scales better with many polylines
-const map=L.map('map',{preferCanvas:true});
+// canvas renderer with a click tolerance so a single thin line is still easy to
+// tap — replaces the old per-route invisible "hit" polyline (halves the geometry).
+const map=L.map('map',{preferCanvas:true,renderer:L.canvas({tolerance:12})});
 map.zoomControl.setPosition('topright');   // panel lives on the left now
 // ---- basemaps: each key has a real light & a real dark variant ----
 // single light tile layer per provider — dark mode applies a CSS filter
@@ -460,29 +483,31 @@ let selectedIdx=null;
 // safe HTML escape for tooltips
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const baseWeight=r=>Math.max(r.weight||3,3);
-R.forEach((r,i)=>{
- const g=L.layerGroup();
- const opt={color:accent(),weight:baseWeight(r),opacity:r.opacity};
- if(r.style!=='solid'||r.dash[0])opt.dashArray=(r.dash[0]||8)+','+(r.dash[1]||6);
- const plList=[];
- const tip=esc(r.name);
- r.polys.forEach(p=>{
-   // wider invisible hit-target so clicks land easily even on thin routes
-   const hit=L.polyline(p,{weight:14,opacity:0,color:'#000',interactive:true});
-   hit.bindPopup(popupHTML(r,i),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
-   hit.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
-   hit.on('click',()=>selectRoute(i,{fromMap:true}));
-   hit.addTo(g);
-   // visible polyline drawn on top
-   const pl=L.polyline(p,opt);
-   pl.bindPopup(popupHTML(r,i),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
-   pl.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
-   pl.on('click',()=>selectRoute(i,{fromMap:true}));
-   pl.addTo(g); bounds.extend(pl.getBounds());
-   plList.push(pl);
- });
- polysByIdx[i]=plList;
- lg[i]=g; g.addTo(map);
+// Build routes in small batches (via requestAnimationFrame) so the page stays
+// responsive, the loading progress updates, and routes appear progressively.
+await new Promise(resolve=>{
+ let i=0; const N=R.length, BATCH=25;
+ (function chunk(){
+   const end=Math.min(i+BATCH,N);
+   for(;i<end;i++){
+     const idx=i, r=R[idx];
+     const g=L.layerGroup();
+     const opt={color:accent(),weight:baseWeight(r),opacity:r.opacity};
+     if(r.style!=='solid'||r.dash[0])opt.dashArray=(r.dash[0]||8)+','+(r.dash[1]||6);
+     const plList=[]; const tip=esc(r.name);
+     r.polys.forEach(p=>{
+       const pl=L.polyline(p,opt);
+       pl.bindPopup(popupHTML(r,idx),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
+       pl.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
+       pl.on('click',()=>selectRoute(idx,{fromMap:true}));
+       pl.addTo(g); bounds.extend(pl.getBounds());
+       plList.push(pl);
+     });
+     polysByIdx[idx]=plList; lg[idx]=g; g.addTo(map);
+   }
+   setLoading('ルートを描画中… '+Math.min(i,N)+' / '+N);
+   if(i<N) requestAnimationFrame(chunk); else resolve();
+ })();
 });
 // route-level highlight: bump weight modestly + switch to accent orange
 function styleRoute(i,sel){
@@ -579,6 +604,7 @@ function fitAll(){
  catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
 }
 fitAll();
+hideLoading();   // routes drawn + map fitted — reveal the map
 // header counts — icons for groups / routes / pins
 const PIN_COUNT = 0;   // pins arrive with the editor; 0 for now
 document.getElementById('counts').innerHTML =
