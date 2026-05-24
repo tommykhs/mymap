@@ -72,16 +72,31 @@
     });
   }
 
+  // fetch the gz.b64 parts one at a time (small bodies stream reliably on mobile)
+  // and concatenate them back into the full base64 string.
+  function loadParts(files, parts){
+    var acc = '', i = 0, N = parts.length;
+    function next(){
+      if(i >= N) return Promise.resolve(acc);
+      var nm = parts[i], f = files[nm];
+      if(!f) throw new Error('part missing from gist: ' + nm);
+      if(window.setLoading) window.setLoading('Downloading map… ' + (i + 1) + ' / ' + N);
+      return step('part ' + (i + 1) + '/' + N, f.raw_url, function(r){ return r.text(); })
+        .then(function(t){ acc += t; i++; return next(); });
+    }
+    return next();
+  }
+
   // entry: one library row. -> Promise<FeatureCollection>
   function loadMap(entry){
     var name = (entry && entry.file) || '';
     if(!DEPLOYED) return step('geojson-local', 'data/maps/' + name, function(r){ return r.json(); });
     return gistFiles().then(function(files){
-      var gz = entry && entry.file_gz;
-      if(gz && files[gz] && typeof DecompressionStream !== 'undefined'){
-        return step('geojson-gz', files[gz].raw_url, function(r){ return r.text(); }).then(gunzipB64);
+      var parts = entry && entry.file_gz_parts;
+      if(parts && parts.length && typeof DecompressionStream !== 'undefined'){
+        return loadParts(files, parts).then(gunzipB64);
       }
-      var f = files[name];
+      var f = files[name];   // fallback: plain (uncompressed) geojson
       if(!f) throw new Error('geojson "' + name + '" missing from gist ' + cfg.gistId);
       return step('geojson-plain', f.raw_url, function(r){ return r.json(); });
     });
