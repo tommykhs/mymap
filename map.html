@@ -113,7 +113,11 @@
     long names to wrap naturally — DO NOT force width:auto or word-break:break-word
     on CJK (that collapses the popup to 1 character per line). */
  .leaflet-popup-content{margin:10px 14px;line-height:1.4;overflow-wrap:anywhere}
- .leaflet-popup-content b{display:block;font-size:13px;cursor:move}
+ .leaflet-popup-content b{display:block;font-size:13px;cursor:text}   /* title is selectable now */
+ .leaflet-popup-pane{z-index:1100}   /* popups above the floating buttons/controls */
+ .rt-drag{float:right;margin:-4px -6px 0 6px;color:var(--mut);cursor:move;
+   font-size:14px;line-height:1;padding:2px 4px;border-radius:4px;user-select:none}
+ .rt-drag:hover{color:var(--fg);background:var(--hv)}
  .leaflet-popup-content-wrapper{cursor:default}
  .leaflet-popup-content-wrapper.rt-dragging{opacity:.92}
  .rt-links{margin-top:4px;font-size:11px}
@@ -352,14 +356,12 @@ map.on('popupclose',()=>{
 map.on('popupopen', (e) => {
  const popup = e.popup;
  const wrapper = popup._container && popup._container.querySelector('.leaflet-popup-content-wrapper');
- const titleEl = wrapper && wrapper.querySelector('b');
  if (!wrapper) return;
  // Stop map drag/scroll when interacting with the popup
  L.DomEvent.disableClickPropagation(wrapper);
  L.DomEvent.disableScrollPropagation(wrapper);
- // Drag handle: the title <b>. (clicking links/text inside still works normally)
- const handle = titleEl || wrapper;
- handle.title = 'Drag to move';
+ // Drag from the ⠿ grip only, so the title text stays selectable/copyable.
+ const handle = wrapper.querySelector('.rt-drag') || wrapper;
  let dragging=false, sx=0, sy=0, bx=0, by=0;
  const onMove = (ev) => {
    if(!dragging) return;
@@ -452,7 +454,7 @@ function statsLine(r){
  return '<div class="rt-stats">'+parts.join('<span style="opacity:.5">·</span>')+'</div>';
 }
 function popupHTML(r,idx){
- let h='<b>'+r.name+'</b>';
+ let h='<span class="rt-drag" title="Drag to move">⠿</span><b>'+r.name+'</b>';
  const lnks=[];
  if(r.intro_url)  lnks.push('<a href="'+r.intro_url+'" target="_blank">'+sourceLink(r)+' ↗</a>');
  if(r.rwgps_url)  lnks.push('<a href="'+r.rwgps_url+'" target="_blank">RWGPS ↗</a>');
