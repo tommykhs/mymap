@@ -11,7 +11,10 @@
   var DEPLOYED = /\.github\.io$/i.test(location.hostname);
   var _files = null;
 
-  function log(m){ try{ if(window.console) console.log('[mymap] ' + m); }catch(e){} }
+  function log(m){
+    try{ if(window.console) console.log('[mymap] ' + m); }catch(e){}
+    try{ if(window.__mmlog) window.__mmlog(m); }catch(e){}   // mirror to on-screen log
+  }
 
   // fetch with a labelled error + automatic retry on network drops (mobile-friendly):
   // retries the TypeError/"Failed to fetch" case a few times before giving up.
@@ -20,6 +23,7 @@
     log(label + ' -> ' + url + (tries < 3 ? ' [retry]' : ''));
     return fetch(url).then(function(r){
       if(!r.ok) throw new Error(label + ': HTTP ' + r.status + ' (' + url + ')');  // don't retry HTTP errors
+      log(label + ' ok (' + (r.headers.get('content-length') || '?') + ' B)');
       return fn(r);
     }, function(err){
       if(tries > 1){
@@ -47,7 +51,7 @@
     var bytes = new Uint8Array(bin.length);
     for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
     var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
-    return new Response(stream).text().then(function(t){ return JSON.parse(t); });
+    return new Response(stream).text().then(function(t){ log('inflated -> ' + t.length + ' chars'); return JSON.parse(t); });
   }
 
   // -> Promise<Array> of library entries

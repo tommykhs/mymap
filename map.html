@@ -137,6 +137,13 @@
    gap:14px;background:rgba(14,17,22,.85);color:var(--fg);font-size:14px;
    text-align:center;padding:24px}
  .loading #loadingMsg{max-width:92%;word-break:break-word;line-height:1.5}
+ /* on-screen debug log (temporary, for mobile diagnosis) */
+ .dbglog{position:fixed;left:0;right:0;bottom:0;z-index:2000;max-height:40vh;overflow:auto;
+   background:rgba(0,0,0,.85);color:#9fe7ff;font:11px/1.45 ui-monospace,Menlo,monospace;
+   padding:8px 34px 8px 10px;white-space:pre-wrap;word-break:break-word}
+ .dbglog .err{color:#ff9b9b}
+ .dbglog-x{position:fixed;right:6px;bottom:6px;z-index:2001;background:#234;color:#fff;
+   border:1px solid #456;border-radius:6px;font-size:12px;padding:3px 8px;cursor:pointer}
  .loading.hidden{display:none}
  .loading .spinner{width:34px;height:34px;border:3px solid var(--bd);
    border-top-color:var(--ac);border-radius:50%;animation:mmspin .8s linear infinite}
@@ -154,6 +161,8 @@
 <script src="data.js"></script>
 <div id="map"></div>
 <div id="loading" class="loading"><div class="spinner"></div><div id="loadingMsg">Loading…</div></div>
+<div id="dbglog" class="dbglog"></div>
+<button class="dbglog-x" onclick="document.getElementById('dbglog').style.display='none';this.style.display='none'">hide log</button>
 <button id="fsBtn" class="map-fs" title="Fullscreen"><span class="material-symbols-outlined">fullscreen</span></button>
 <button id="panelReopen" class="panel-reopen" title="Open list"><span class="material-symbols-outlined">menu</span></button>
 <div class="panel" id="panel"><div class="pad">
@@ -185,10 +194,20 @@ function featureToRoute(f){
    dash:p.dash||[0,0],style:p.style||'solid',polys:polys};
 }
 const MAP_ID=(new URLSearchParams(location.search).get('id'))||'japan-cycling';
+// ---- on-screen debug log (temporary; data.js mirrors its breadcrumbs here) ----
+const __t0=Date.now();
+window.__mmlog=function(msg,isErr){
+  const el=document.getElementById('dbglog'); if(!el) return;
+  const line=document.createElement('div'); if(isErr) line.className='err';
+  line.textContent='+'+(((Date.now()-__t0)/1000).toFixed(1))+'s  '+msg;
+  el.appendChild(line); el.scrollTop=el.scrollHeight;
+};
+window.__mmlog('page start · UA: '+navigator.userAgent.slice(0,60));
+window.__mmlog('DecompressionStream: '+(typeof DecompressionStream!=='undefined'?'yes':'NO'));
 // ---- loading overlay helpers ----
 function setLoading(msg){ const el=document.getElementById('loadingMsg'); if(el) el.textContent=msg; }
 function hideLoading(){ const el=document.getElementById('loading'); if(el) el.classList.add('hidden'); }
-function errorLoading(msg){ const el=document.getElementById('loading'); if(el){ el.classList.remove('hidden'); el.classList.add('err'); } setLoading(msg); }
+function errorLoading(msg){ const el=document.getElementById('loading'); if(el){ el.classList.remove('hidden'); el.classList.add('err'); } setLoading(msg); window.__mmlog('ERROR: '+msg,true); }
 // Apply this map's title/desc (from library.json) to the tab, header and subtitle.
 function applyMeta(meta){
  meta=meta||{};
@@ -507,7 +526,7 @@ await new Promise(resolve=>{
      polysByIdx[idx]=plList; lg[idx]=g; g.addTo(map);
    }
    setLoading('Drawing routes… '+Math.min(i,N)+' / '+N);
-   if(i<N) requestAnimationFrame(chunk); else resolve();
+   if(i<N) requestAnimationFrame(chunk); else { window.__mmlog('all '+N+' routes drawn'); resolve(); }
  })();
 });
 // route-level highlight: bump weight modestly + switch to accent orange
@@ -606,6 +625,7 @@ function fitAll(){
 }
 fitAll();
 hideLoading();   // routes drawn + map fitted — reveal the map
+window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
 // header counts — icons for groups / routes / pins
 const PIN_COUNT = 0;   // pins arrive with the editor; 0 for now
 document.getElementById('counts').innerHTML =
