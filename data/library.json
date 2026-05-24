@@ -4,6 +4,7 @@
   "title": "Japan Cycling Routes",
   "desc": "",
   "file": "japan-cycling.geojson",
+  "file_gz": "japan-cycling.geojson.gz.b64",
   "routes": 682,
   "groups": 47,
   "distance_km": 42906,

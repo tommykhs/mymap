@@ -32,11 +32,28 @@
     });
   }
 
+  // base64(gzip(json)) text -> Promise<parsed object>, via the browser's
+  // DecompressionStream. This is what makes big maps load on mobile: gist serves
+  // geojson UNCOMPRESSED (verified), so we ship a ~3.4MB .gz.b64 instead of 11MB.
+  function gunzipB64(b64){
+    var bin = atob(b64.trim());
+    var bytes = new Uint8Array(bin.length);
+    for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+    var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return new Response(stream).text().then(function(t){ return JSON.parse(t); });
+  }
+
   // entry: one library row; entry.file is the bare filename. -> Promise<FeatureCollection>
   function loadMap(entry){
     var name = (entry && entry.file) || '';
     if(!DEPLOYED) return fetch('data/maps/' + name).then(function(r){ return r.json(); });
     return gistFiles().then(function(files){
+      // Prefer the compressed copy (~3.4MB) when the browser can inflate it;
+      // fall back to the plain geojson otherwise.
+      var gz = entry && entry.file_gz;
+      if(gz && files[gz] && typeof DecompressionStream !== 'undefined'){
+        return fetch(files[gz].raw_url).then(function(r){ return r.text(); }).then(gunzipB64);
+      }
       var f = files[name];
       if(!f) throw new Error('geojson "' + name + '" missing from gist ' + cfg.gistId);
       return fetch(f.raw_url).then(function(r){ return r.json(); });  // SHA-pinned, full, fresh
