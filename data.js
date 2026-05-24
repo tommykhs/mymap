@@ -13,21 +13,28 @@
 
   function log(m){ try{ if(window.console) console.log('[mymap] ' + m); }catch(e){} }
 
-  // fetch with a labelled error (HTTP status AND network/CORS rejection), then apply fn(response)
-  function step(label, url, fn){
-    log(label + ' -> ' + url);
+  // fetch with a labelled error + automatic retry on network drops (mobile-friendly):
+  // retries the TypeError/"Failed to fetch" case a few times before giving up.
+  function step(label, url, fn, tries){
+    tries = (tries == null) ? 3 : tries;
+    log(label + ' -> ' + url + (tries < 3 ? ' [retry]' : ''));
     return fetch(url).then(function(r){
-      if(!r.ok) throw new Error(label + ': HTTP ' + r.status + ' (' + url + ')');
+      if(!r.ok) throw new Error(label + ': HTTP ' + r.status + ' (' + url + ')');  // don't retry HTTP errors
       return fn(r);
     }, function(err){
-      // network-level failure (TypeError: Failed to fetch) lands here
+      if(tries > 1){
+        return new Promise(function(res){ setTimeout(res, 800); })
+          .then(function(){ return step(label, url, fn, tries - 1); });
+      }
       throw new Error(label + ': ' + ((err && err.message) || err) + ' (' + url + ')');
     });
   }
 
   function gistFiles(){
     if(!_files){
-      _files = step('gist-api', 'https://api.github.com/gists/' + cfg.gistId, function(r){ return r.json(); })
+      // cache-bust the API so we always get the current map list (with file_gz),
+      // never a stale one that would fall back to the big uncompressed file.
+      _files = step('gist-api', 'https://api.github.com/gists/' + cfg.gistId + '?_=' + Date.now(), function(r){ return r.json(); })
         .then(function(j){ return j.files || {}; });
     }
     return _files;

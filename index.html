@@ -31,7 +31,7 @@
  a{color:var(--ac)}
 </style></head><body>
 <div id="app-header"></div>
-<div class="grid" id="grid"><div class="empty">読み込み中…</div></div>
+<div class="grid" id="grid"><div class="empty">Loading…</div></div>
 <script src="header.js"></script>
 <script src="config.js"></script>
 <script src="data.js"></script>
@@ -44,7 +44,7 @@ function previewSVG(p){
 }
 MyMapData.loadLibrary().then(maps=>{
  const grid=document.getElementById('grid');
- if(!maps||!maps.length){ grid.innerHTML='<div class="empty">マップがありません。</div>'; return; }
+ if(!maps||!maps.length){ grid.innerHTML='<div class="empty">No maps yet.</div>'; return; }
  grid.innerHTML='';
  maps.forEach(m=>{
    const a=document.createElement('a');
@@ -62,6 +62,6 @@ MyMapData.loadLibrary().then(maps=>{
    grid.appendChild(a);
  });
 }).catch(e=>{
- document.getElementById('grid').innerHTML='<div class="empty">library.json 読み込み失敗: '+e+'</div>';
+ document.getElementById('grid').innerHTML='<div class="empty">Failed to load library.json: '+e+'</div>';
 });
 </script></body></html>

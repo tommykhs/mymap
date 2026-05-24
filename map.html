@@ -136,6 +136,7 @@
    display:flex;flex-direction:column;align-items:center;justify-content:center;
    gap:14px;background:rgba(14,17,22,.85);color:var(--fg);font-size:14px;
    text-align:center;padding:24px}
+ .loading #loadingMsg{max-width:92%;word-break:break-word;line-height:1.5}
  .loading.hidden{display:none}
  .loading .spinner{width:34px;height:34px;border:3px solid var(--bd);
    border-top-color:var(--ac);border-radius:50%;animation:mmspin .8s linear infinite}
@@ -152,20 +153,20 @@
 <script src="config.js"></script>
 <script src="data.js"></script>
 <div id="map"></div>
-<div id="loading" class="loading"><div class="spinner"></div><div id="loadingMsg">読み込み中…</div></div>
-<button id="fsBtn" class="map-fs" title="全画面表示"><span class="material-symbols-outlined">fullscreen</span></button>
-<button id="panelReopen" class="panel-reopen" title="リストを開く"><span class="material-symbols-outlined">menu</span></button>
+<div id="loading" class="loading"><div class="spinner"></div><div id="loadingMsg">Loading…</div></div>
+<button id="fsBtn" class="map-fs" title="Fullscreen"><span class="material-symbols-outlined">fullscreen</span></button>
+<button id="panelReopen" class="panel-reopen" title="Open list"><span class="material-symbols-outlined">menu</span></button>
 <div class="panel" id="panel"><div class="pad">
  <div class="titlebar">
-  <h1 id="mapTitle">読み込み中…</h1>
-  <button id="panelCollapse" class="panel-collapse" title="リストを閉じる"><span class="material-symbols-outlined">left_panel_close</span></button>
+  <h1 id="mapTitle">Loading…</h1>
+  <button id="panelCollapse" class="panel-collapse" title="Close list"><span class="material-symbols-outlined">left_panel_close</span></button>
  </div>
  <p class="sub" id="mapDesc" hidden></p>
  <div class="counts" id="counts"></div>
  <div class="btns">
-  <button id="aon"    title="全部顯示"><span class="material-symbols-outlined">visibility</span></button>
-  <button id="aoff"   title="全部隱藏"><span class="material-symbols-outlined">visibility_off</span></button>
-  <button id="grpToggle" title="全部展開／收合"><span class="material-symbols-outlined">unfold_less</span></button>
+  <button id="aon"    title="Show all"><span class="material-symbols-outlined">visibility</span></button>
+  <button id="aoff"   title="Hide all"><span class="material-symbols-outlined">visibility_off</span></button>
+  <button id="grpToggle" title="Expand / collapse all"><span class="material-symbols-outlined">unfold_less</span></button>
  </div>
 </div><div id="list"></div>
 </div>
@@ -204,15 +205,15 @@ MyMapData.loadLibrary()
  .catch(()=>null)
  .then(meta=>{
    applyMeta(meta);
-   setLoading('ルートを読み込み中…');
+   setLoading('Loading routes…');
    // fall back to the conventional filename if there's no library entry
    return MyMapData.loadMap(meta||{file:MAP_ID+'.geojson'});
  }).then(fc=>{
- setLoading('ルートを準備中…');
+ setLoading('Preparing routes…');
  R=(fc.features||[]).map(featureToRoute).filter(r=>r.polys&&r.polys.length);
  boot();
 }).catch(e=>{
- errorLoading('読み込み失敗: '+((e&&e.message)||e));
+ errorLoading('Load failed: '+((e&&e.message)||e));
 });
 async function boot(){
 // canvas renderer scales better with many polylines
@@ -282,7 +283,7 @@ themeIcon();
 themeBtn.onclick=()=>{ darkMap=!darkMap; themeIcon(); applyTheme(); recolorRoutes(); saveS({dark:darkMap}); };
 // recenter: re-fit the map to all routes (resets pan/zoom to the overview)
 const recenterBtn=document.createElement('button');
-recenterBtn.className='mm-iconbtn'; recenterBtn.title='全体表示にリセット';
+recenterBtn.className='mm-iconbtn'; recenterBtn.title='Reset view';
 recenterBtn.innerHTML='<span class="material-symbols-outlined">center_focus_strong</span>';
 recenterBtn.onclick=()=>fitAll();
 const menu=document.createElement('div'); menu.className='mm-basemenu';
@@ -321,7 +322,7 @@ map.on('popupopen', (e) => {
  L.DomEvent.disableScrollPropagation(wrapper);
  // Drag handle: the title <b>. (clicking links/text inside still works normally)
  const handle = titleEl || wrapper;
- handle.title = 'ドラッグして移動';
+ handle.title = 'Drag to move';
  let dragging=false, sx=0, sy=0, bx=0, by=0;
  const onMove = (ev) => {
    if(!dragging) return;
@@ -505,7 +506,7 @@ await new Promise(resolve=>{
      });
      polysByIdx[idx]=plList; lg[idx]=g; g.addTo(map);
    }
-   setLoading('ルートを描画中… '+Math.min(i,N)+' / '+N);
+   setLoading('Drawing routes… '+Math.min(i,N)+' / '+N);
    if(i<N) requestAnimationFrame(chunk); else resolve();
  })();
 });
@@ -547,7 +548,7 @@ Object.keys(groups).sort().forEach(gn=>{
  const indices=groups[gn];
  h.innerHTML='<span class="tw">▼</span>'
    +'<span class="gn">'+(gn||'(route)')+'</span>'
-   +'<span class="gp-eye" title="このグループの表示／非表示"><span class="material-symbols-outlined">visibility</span></span>'
+   +'<span class="gp-eye" title="Show / hide this group"><span class="material-symbols-outlined">visibility</span></span>'
    +'<span class="gcount">'+indices.length+'</span>';
  const eyeBtn=h.querySelector('.gp-eye');
  const eyeIcon=eyeBtn.querySelector('.material-symbols-outlined');
@@ -574,7 +575,7 @@ Object.keys(groups).sort().forEach(gn=>{
    const it=document.createElement('div');it.className='it';
    it.innerHTML='<span class="sw" style="background:'+accent()+'"></span>'+
      '<span class="nm">'+r.name+'</span>'+
-     '<span class="it-dl" title="GPXダウンロード"><span class="material-symbols-outlined">download</span></span>';
+     '<span class="it-dl" title="Download GPX"><span class="material-symbols-outlined">download</span></span>';
    it.onclick=()=>{
      // shift/cmd-click → toggle visibility (legacy show/hide). Plain click → select+zoom.
      if(map.hasLayer(lg[i])){
@@ -608,9 +609,9 @@ hideLoading();   // routes drawn + map fitted — reveal the map
 // header counts — icons for groups / routes / pins
 const PIN_COUNT = 0;   // pins arrive with the editor; 0 for now
 document.getElementById('counts').innerHTML =
-  '<span class="mi" title="グループ">layers</span>'+Object.keys(groups).length
- +'<span class="mi" title="ルート">route</span>'+R.length
- +'<span class="mi" title="ピン">location_on</span>'+PIN_COUNT;
+  '<span class="mi" title="Groups">layers</span>'+Object.keys(groups).length
+ +'<span class="mi" title="Routes">route</span>'+R.length
+ +'<span class="mi" title="Pins">location_on</span>'+PIN_COUNT;
 // ---- panel collapse / expand ----
 (function(){
  const panel=document.getElementById('panel');
@@ -651,7 +652,7 @@ document.getElementById('aoff').onclick=()=>{
   function syncIcon(){
     const collapsed=anyCollapsed();   // if anything collapsed, next click expands
     ic.textContent=collapsed?'unfold_more':'unfold_less';
-    btn.title=collapsed?'全部展開':'全部収合';
+    btn.title=collapsed?'Expand all':'Collapse all';
   }
   btn.onclick=()=>setAll(anyCollapsed());
   syncIcon();   // reflect current state on load
