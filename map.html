@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MyMaps</title>
+<title>MyMap</title>
 <link rel="icon" type="image/png" href="https://cdn.iconscout.com/icon/free/png-512/free-google-my-maps-logo-icon-svg-download-png-3955526.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -115,9 +115,11 @@
  .leaflet-popup-content{margin:10px 14px;line-height:1.4;overflow-wrap:anywhere}
  .leaflet-popup-content b{display:block;font-size:13px;cursor:text}   /* title is selectable now */
  .leaflet-popup-pane{z-index:1100}   /* popups above the floating buttons/controls */
- .rt-drag{float:right;margin:-4px -6px 0 6px;color:var(--mut);cursor:move;
-   font-size:14px;line-height:1;padding:2px 4px;border-radius:4px;user-select:none}
+ .rt-drag{float:left;margin:0 7px 0 -2px;color:var(--mut);cursor:move;
+   font-size:16px;line-height:1.15;padding:2px 6px;border-radius:4px;user-select:none;
+   touch-action:none;-webkit-user-select:none}   /* touch-action:none = drag works on mobile */
  .rt-drag:hover{color:var(--fg);background:var(--hv)}
+ .rt-drag:active{background:var(--hv);color:var(--fg)}
  .leaflet-popup-content-wrapper{cursor:default}
  .leaflet-popup-content-wrapper.rt-dragging{opacity:.92}
  .rt-links{margin-top:4px;font-size:11px}
@@ -128,9 +130,14 @@
    line-height:1;vertical-align:-2px;letter-spacing:0;
    -webkit-font-feature-settings:'liga';font-feature-settings:'liga';
    margin-right:1px}
- .rt-dl{margin-top:7px;display:flex;align-items:center;gap:6px;font-size:11px}
- .rt-dl .mi{font-family:'Material Symbols Outlined';font-weight:normal;font-size:15px;
-   line-height:1;vertical-align:-3px;color:var(--mut);
+ /* same muted look as the stats row; flex gap spaces items so wraps stay left-aligned */
+ .rt-dl{margin-top:8px;display:flex;flex-wrap:wrap;justify-content:flex-start;
+   align-items:center;gap:6px 14px;font-size:11px;color:var(--mut)}
+ .rt-dl a{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;
+   color:var(--mut);text-decoration:none}
+ .rt-dl a:hover{color:var(--ac)}
+ .rt-dl .mi{font-family:'Material Symbols Outlined';font-weight:normal;font-size:14px;
+   line-height:1;vertical-align:-2px;color:var(--mut);
    -webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
  .leaflet-popup-content a{color:var(--ac)} a{color:var(--ac)}
  .leaflet-bar a{background:var(--bg2);color:var(--fg);border-color:var(--bd)}
@@ -234,7 +241,7 @@ function errorLoading(msg){ const el=document.getElementById('loading'); if(el){
 function applyMeta(meta){
  meta=meta||{};
  const title=meta.title||MAP_ID;
- document.title=title+' — MyMaps';
+ document.title=title+' — MyMap';
  const h=document.getElementById('mapTitle'); if(h) h.textContent=title;
  const d=document.getElementById('mapDesc');
  if(d){ if(meta.desc){ d.textContent=meta.desc; d.hidden=false; } else { d.hidden=true; } }
@@ -436,7 +443,7 @@ function sourceLink(r){
  if(s==='山梨県サイクリングマップ') return '山梨県';
  if(s==='南房総 cycle tourism') return '南房総';
  if(s==='にいがた観光ナビ') return 'にいがた観光ナビ';
- return '詳細';
+ return 'Details';
 }
 function statsLine(r){
  // Only show max elevation when the profile carries real altitude data
@@ -455,11 +462,6 @@ function statsLine(r){
 }
 function popupHTML(r,idx){
  let h='<span class="rt-drag" title="Drag to move">⠿</span><b>'+r.name+'</b>';
- const lnks=[];
- if(r.intro_url)  lnks.push('<a href="'+r.intro_url+'" target="_blank">'+sourceLink(r)+' ↗</a>');
- if(r.rwgps_url)  lnks.push('<a href="'+r.rwgps_url+'" target="_blank">RWGPS ↗</a>');
- if(r.strava_url) lnks.push('<a href="'+r.strava_url+'" target="_blank">Strava ↗</a>');
- if(lnks.length) h+='<div class="rt-links">'+lnks.join(' · ')+'</div>';
  if(r.desc){
    const d=r.desc.replace(/&/g,'&amp;').replace(/</g,'&lt;')
      .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>')
@@ -472,12 +474,16 @@ function popupHTML(r,idx){
    if(Math.max(...ys)-Math.min(...ys) > 1) h+=sparkline(r.profile);
  }
  h+=statsLine(r);
+ // bottom row: downloads first (⬇), then source / external links (↗)
+ const row=[];
  if(idx!=null){
-   h+='<div class="rt-dl"><span class="mi">download</span>'
-     +'<a href="#" onclick="dlRoute('+idx+',&#39;gpx&#39;);return false">GPX</a>'
-     +'<span style="opacity:.4">·</span>'
-     +'<a href="#" onclick="dlRoute('+idx+',&#39;geojson&#39;);return false">GeoJSON</a></div>';
+   row.push('<a href="#" onclick="dlRoute('+idx+',&#39;gpx&#39;);return false"><span class="mi">download</span>GPX</a>');
+   row.push('<a href="#" onclick="dlRoute('+idx+',&#39;geojson&#39;);return false"><span class="mi">download</span>GeoJSON</a>');
  }
+ if(r.intro_url)  row.push('<a href="'+r.intro_url+'" target="_blank"><span class="mi">open_in_new</span>'+sourceLink(r)+'</a>');
+ if(r.rwgps_url)  row.push('<a href="'+r.rwgps_url+'" target="_blank"><span class="mi">open_in_new</span>RWGPS</a>');
+ if(r.strava_url) row.push('<a href="'+r.strava_url+'" target="_blank"><span class="mi">open_in_new</span>Strava</a>');
+ if(row.length) h+='<div class="rt-dl">'+row.join('')+'</div>';
  return h;
 }
 // ---- route export (runtime conversion, no server) ----
