@@ -622,12 +622,14 @@ Object.keys(groups).sort().forEach(gn=>{
      '<span class="nm">'+r.name+'</span>'+
      '<span class="it-dl" title="Download GPX"><span class="material-symbols-outlined">download</span></span>';
    it.onclick=()=>{
-     // shift/cmd-click → toggle visibility (legacy show/hide). Plain click → select+zoom.
-     if(map.hasLayer(lg[i])){
-       try{map.fitBounds(lg[i].getLayers()[0].getBounds().pad(.2))}catch(e){}
-     }else{
-       map.addLayer(lg[i]); it.style.opacity=1;
-     }
+     if(!map.hasLayer(lg[i])){ map.addLayer(lg[i]); it.style.opacity=1; }
+     // Open this route's info box FIRST — Leaflet auto-closes any previously open
+     // popup (firing popupclose, which clears the old selection). Doing it before
+     // selectRoute() means the NEW selection set below survives. Result: always
+     // exactly one box for the newest route, whether clicked from list or map.
+     const pl=(polysByIdx[i]||[])[0];
+     if(pl){ try{ pl.openPopup(pl.getCenter()); }catch(e){ try{ pl.openPopup(); }catch(_){} } }
+     try{ map.fitBounds(lg[i].getLayers()[0].getBounds().pad(.2)); }catch(e){}
      selectRoute(i,{fromMap:false});
    };
    it.querySelector('.it-dl').onclick=(ev)=>{ ev.stopPropagation(); dlRoute(i,'gpx'); };
