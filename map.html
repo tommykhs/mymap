@@ -7,14 +7,17 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link rel="stylesheet" href="header.css"/>
 <style>
- :root{--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d}
+ :root{--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d;
+   --surface:rgba(27,31,36,.95);--surface2:rgba(27,31,36,.96);--mapbg:#0e1116;--overlay:rgba(14,17,22,.85)}
+ html.light{--bg:#eef1f5;--bg2:#ffffff;--fg:#1b2430;--mut:#5b6675;--bd:#d3d8e0;--ac:#1d4ed8;--hv:#e8ecf2;
+   --surface:rgba(255,255,255,.96);--surface2:rgba(255,255,255,.97);--mapbg:#e8eaed;--overlay:rgba(245,247,250,.92)}
  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
    font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif}
- #map{position:absolute;top:44px;left:0;right:0;bottom:0;background:#0e1116}
+ #map{position:absolute;top:44px;left:0;right:0;bottom:0;background:var(--mapbg)}
  /* floating fullscreen button (bottom-right, Google-Maps style) */
  .map-fs{position:absolute;bottom:26px;right:10px;z-index:1000;width:34px;height:34px;
    display:flex;align-items:center;justify-content:center;cursor:pointer;
-   background:rgba(27,31,36,.95);border:1px solid var(--bd);color:var(--fg);
+   background:var(--surface);border:1px solid var(--bd);color:var(--fg);
    border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.5)}
  .map-fs:hover{background:var(--hv)}
  .map-fs .material-symbols-outlined{font-size:20px}
@@ -27,14 +30,14 @@
  .mm-basectl{position:relative;display:flex;flex-direction:column;
    box-shadow:0 2px 10px rgba(0,0,0,.5);border-radius:8px}
  .mm-iconbtn{width:32px;height:32px;display:flex;align-items:center;
-   justify-content:center;background:rgba(27,31,36,.95);
+   justify-content:center;background:var(--surface);
    border:1px solid var(--bd);color:var(--fg);font-size:15px;
    line-height:1;cursor:pointer;padding:0}
  .mm-iconbtn:first-of-type{border-radius:8px 8px 0 0}
  .mm-iconbtn:last-of-type{border-radius:0 0 8px 8px;border-top:none}
  .mm-iconbtn:hover{background:var(--hv)}
  .mm-basemenu{position:absolute;right:38px;top:0;display:none;
-   flex-direction:column;gap:4px;background:rgba(27,31,36,.97);
+   flex-direction:column;gap:4px;background:var(--surface);
    border:1px solid var(--bd);border-radius:8px;padding:6px;
    box-shadow:0 4px 14px rgba(0,0,0,.55)}
  .mm-basemenu.open{display:flex}
@@ -48,21 +51,21 @@
    -webkit-font-feature-settings:'liga';font-feature-settings:'liga';user-select:none}
  .mm-iconbtn .material-symbols-outlined{font-size:19px}
  .panel{position:absolute;top:54px;left:10px;z-index:1000;width:330px;
-   background:rgba(27,31,36,.95);border:1px solid var(--bd);border-radius:10px;
+   background:var(--surface);border:1px solid var(--bd);border-radius:10px;
    box-shadow:0 4px 18px rgba(0,0,0,.55);max-height:92vh;font-size:13px;
    display:flex;flex-direction:column;overflow:hidden}
  .panel.collapsed{display:none}
  .panel .pad{flex:0 0 auto}                 /* sticky header (title + buttons) */
  .panel #list{flex:1 1 auto;overflow-y:auto;overflow-x:hidden}  /* only the list scrolls */
  .panel-reopen{position:absolute;top:54px;left:10px;z-index:1001;display:none;
-   width:38px;height:38px;border-radius:8px;background:rgba(27,31,36,.95);
+   width:38px;height:38px;border-radius:8px;background:var(--surface);
    border:1px solid var(--bd);color:var(--fg);cursor:pointer;
    align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.5)}
  .panel-reopen.show{display:flex}
  .panel-reopen .material-symbols-outlined{font-size:20px}
  .pad{padding:10px 12px}
  .pad .titlebar{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
- .pad h1{margin:0;font-size:16px;color:#fff;flex:1}
+ .pad h1{margin:0;font-size:16px;color:var(--fg);flex:1}
  .home-link{display:inline-flex;align-items:center;color:var(--mut);text-decoration:none;
    padding:2px;border-radius:4px}
  .home-link:hover{color:var(--fg);background:var(--hv)}
@@ -79,7 +82,7 @@
  .panel-collapse .material-symbols-outlined{font-size:20px}
  .sub{color:var(--mut);font-size:11px;line-height:1.5;margin:4px 0 0}
  .grp{border-top:1px solid var(--bd);padding:8px 12px}
- .gh{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;color:#fff}
+ .gh{display:flex;align-items:center;gap:6px;cursor:pointer;font-weight:600;color:var(--fg)}
  .gh .tw{color:var(--mut);font-size:10px;width:10px}
  .gh .gn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
  .gh .gp-eye{cursor:pointer;display:inline-flex;align-items:center;
@@ -105,7 +108,7 @@
    display:flex;align-items:center;justify-content:center}
  .btns button:hover{background:var(--hv)}
  .btns button .material-symbols-outlined{font-size:18px}
- .rt-tip{background:rgba(27,31,36,.95)!important;color:var(--fg)!important;
+ .rt-tip{background:var(--surface)!important;color:var(--fg)!important;
    border:1px solid var(--bd)!important;font-size:11px!important;padding:3px 8px!important}
  .rt-tip:before{border-top-color:var(--bd)!important}
  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--bg2);color:var(--fg)}
@@ -146,7 +149,7 @@
     keeps spinning on the compositor even while the main thread builds routes. */
  .loading{position:absolute;top:44px;left:0;right:0;bottom:0;z-index:1500;
    display:flex;flex-direction:column;align-items:center;justify-content:center;
-   gap:14px;background:rgba(14,17,22,.85);color:var(--fg);font-size:14px;
+   gap:14px;background:var(--overlay);color:var(--fg);font-size:14px;
    text-align:center;padding:24px}
  .loading #loadingMsg{max-width:92%;word-break:break-word;line-height:1.5}
  /* on-screen debug log (temporary, for mobile diagnosis) */
@@ -158,14 +161,14 @@
  .dbglog .log-copy{position:sticky;top:0;float:right;background:#234;color:#fff;
    border:1px solid #456;border-radius:6px;font-size:11px;padding:2px 8px;cursor:pointer}
  .dev-btn{position:fixed;left:8px;bottom:8px;z-index:2001;width:30px;height:30px;
-   display:flex;align-items:center;justify-content:center;background:rgba(27,31,36,.9);
+   display:flex;align-items:center;justify-content:center;background:var(--surface);
    border:1px solid var(--bd);color:var(--mut);border-radius:8px;cursor:pointer;opacity:.55}
  .dev-btn:hover{opacity:1;color:var(--fg)}
  .dev-btn .material-symbols-outlined{font-size:18px}
  /* locate-me (GPS) button — bottom-right, above fullscreen, Google-Maps style */
  .map-loc{position:absolute;bottom:68px;right:10px;z-index:1000;width:34px;height:34px;
    display:flex;align-items:center;justify-content:center;cursor:pointer;
-   background:rgba(27,31,36,.95);border:1px solid var(--bd);color:var(--fg);
+   background:var(--surface);border:1px solid var(--bd);color:var(--fg);
    border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.5)}
  .map-loc:hover{background:var(--hv)}
  .map-loc.busy{opacity:.5}.map-loc.on{color:#4f9bff}
@@ -267,7 +270,10 @@ async function boot(){
 // canvas renderer scales better with many polylines
 // canvas renderer with a click tolerance so a single thin line is still easy to
 // tap — replaces the old per-route invisible "hit" polyline (halves the geometry).
-const map=L.map('map',{preferCanvas:true,renderer:L.canvas({tolerance:12})});
+// closePopupOnClick:false so clicking another route opens its box directly
+// (Leaflet won't consume the click just to close the current one). We close the
+// popup ourselves on a background click (see map 'click' handler below).
+const map=L.map('map',{preferCanvas:true,renderer:L.canvas({tolerance:12}),closePopupOnClick:false});
 map.zoomControl.setPosition('topright');   // panel lives on the left now
 // ---- basemaps: each key has a real light & a real dark variant ----
 // single light tile layer per provider — dark mode applies a CSS filter
@@ -284,7 +290,7 @@ const LSK='sv.state';
 const loadS=()=>{try{return JSON.parse(localStorage.getItem(LSK))||{}}catch(e){return {}}};
 const saveS=(p)=>{try{localStorage.setItem(LSK,JSON.stringify(Object.assign(loadS(),p)))}catch(e){}};
 const ST=loadS();
-let darkMap=(typeof ST.dark==='boolean')?ST.dark:false;   // light by default; remembers last choice
+let darkMap=(typeof ST.dark==='boolean')?ST.dark:true;   // dark by default; remembers last choice
 // single accent colour for all routes, with a light-mode and a dark-mode tone
 const ROUTE_LIGHT='#1d4ed8';   // strong indigo — pops on light tiles
 const ROUTE_DARK ='#60a5fa';   // bright sky — pops on dark tiles
@@ -310,6 +316,7 @@ function setBase(key){
 }
 function applyTheme(){
  // target the whole tile pane (parent of all tile layers) — most reliable
+ document.documentElement.classList.toggle('light', !darkMap);
  const p=document.querySelector('.leaflet-tile-pane');
  if(p) p.style.filter = darkMap ? DARK_FILTER : '';
  // diagnostic in DevTools console so we can see if the toggle is firing
@@ -345,6 +352,7 @@ baseBtn.onclick=()=>menu.classList.toggle('open');
 // Map-background click: close basemap menu AND deselect any active route
 map.on('click',()=>{
  menu.classList.remove('open');
+ map.closePopup();   // background click closes the open box (route clicks open the next one directly)
  if(selectedIdx!=null){
    styleRoute(selectedIdx,false);
    const it=itemByIdx[selectedIdx]; if(it) it.classList.remove('active');
@@ -443,6 +451,7 @@ function sourceLink(r){
  if(s==='山梨県サイクリングマップ') return '山梨県';
  if(s==='南房総 cycle tourism') return '南房総';
  if(s==='にいがた観光ナビ') return 'にいがた観光ナビ';
+ if(s==='touring-shimanami') return 'touring-shimanami';
  return 'Details';
 }
 function statsLine(r){
@@ -528,7 +537,27 @@ const lg={},polysByIdx={},itemByIdx={},boxByIdx={},headerByIdx={};
 let selectedIdx=null;
 // safe HTML escape for tooltips
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const baseWeight=r=>Math.max(r.weight||3,3);
+// zoom-adaptive line thickness: thin when zoomed out (so 682 routes don't merge
+// into blobs), thicker when zoomed in (easy to see/tap).
+function zoomWeight(){
+ const z=map.getZoom();
+ if(z==null||isNaN(z)) return 3;
+ if(z<=7) return 1.5;
+ if(z<=9) return 2;
+ if(z<=11) return 3;
+ if(z<=13) return 4;
+ return 5;
+}
+const baseWeight=r=>zoomWeight();   // (per-route weight overrides removed in favour of zoom)
+// re-apply weights to every route on zoom (selected route stays a touch thicker)
+function applyWeights(){
+ const w=zoomWeight();
+ Object.keys(lg||{}).forEach(k=>{
+   const i=+k, sel=(i===selectedIdx);
+   (polysByIdx[i]||[]).forEach(pl=>pl.setStyle&&pl.setStyle({weight: sel ? w+2 : w}));
+ });
+}
+map.on('zoomend', applyWeights);
 // Build routes in small batches (via requestAnimationFrame) so the page stays
 // responsive, the loading progress updates, and routes appear progressively.
 await new Promise(resolve=>{
@@ -660,6 +689,7 @@ function fitAll(){
  catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
 }
 fitAll();
+applyWeights();  // set line thickness for the initial zoom
 hideLoading();   // routes drawn + map fitted — reveal the map
 window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
 // ---- locate me (GPS), Google-Maps style: blue dot + accuracy ring, pan to it ----
