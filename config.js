@@ -8,5 +8,8 @@
 // Google base map + place search and fall back to free OSM / Esri maps.
 window.MYMAP_CONFIG = {
   googleMapsApiKey: "AIzaSyDBYbqFsFJF6OBylMihGdhmbS1rpw3zVSU",
-  googleMapType: "roadmap"        // roadmap | satellite | hybrid | terrain
+  googleMapType: "roadmap",       // roadmap | satellite | hybrid | terrain
+  // Target repo for the admin "Save pins to repo" button (writes data/maps/<id>/pins.json
+  // via the GitHub API using a token YOU paste at runtime — the token is NOT stored here).
+  repo: { owner: "tommykhs", name: "mymap", branch: "master" }
 };
