@@ -621,7 +621,7 @@ await new Promise(resolve=>{
 function styleRoute(i,sel){
  const base=R[i].color||accent();
  (polysByIdx[i]||[]).forEach(pl=>{
-   if(sel){ pl.setStyle({color:'#2979ff',weight:baseWeight(R[i])+2,opacity:1}); pl.bringToFront(); }
+   if(sel){ pl.setStyle({color:'#2979ff',weight:baseWeight(R[i])+1,opacity:1}); pl.bringToFront(); }
    else  { pl.setStyle({color:base,weight:baseWeight(R[i]),opacity:R[i].opacity}); }
  });
 }
