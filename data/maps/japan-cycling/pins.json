@@ -1,7 +1,10 @@
 [
   {
     "name": "尾道駅 (Onomichi Station)",
-    "coords": [34.40558, 133.19473],
+    "coords": [
+      34.40558,
+      133.19473
+    ],
     "place": {
       "address": "1-1 Higashigoshocho, Onomichi, Hiroshima — Shimanami start",
       "url": "https://www.google.com/maps/search/?api=1&query=34.40558,133.19473"
@@ -9,7 +12,10 @@
   },
   {
     "name": "サイクリストの聖地 記念碑 (Cyclist's Sanctuary, Tatara)",
-    "coords": [34.27361, 133.06861],
+    "coords": [
+      34.27361,
+      133.06861
+    ],
     "place": {
       "address": "Omishima, Imabari, Ehime — monument by the Tatara Bridge",
       "url": "https://www.google.com/maps/search/?api=1&query=34.27361,133.06861"
@@ -17,7 +23,10 @@
   },
   {
     "name": "大山祇神社 (Oyamazumi Shrine)",
-    "coords": [34.24972, 133.00861],
+    "coords": [
+      34.24972,
+      133.00861
+    ],
     "place": {
       "address": "3327 Omishima-cho Miyaura, Imabari, Ehime",
       "url": "https://www.google.com/maps/search/?api=1&query=34.24972,133.00861"
@@ -25,7 +34,10 @@
   },
   {
     "name": "来島海峡大橋 (Kurushima-Kaikyo Bridge)",
-    "coords": [34.11667, 132.99306],
+    "coords": [
+      34.11667,
+      132.99306
+    ],
     "place": {
       "address": "Imabari, Ehime — world's first triple suspension bridge",
       "url": "https://www.google.com/maps/search/?api=1&query=34.11667,132.99306"
@@ -33,7 +45,10 @@
   },
   {
     "name": "今治駅 (Imabari Station)",
-    "coords": [34.06472, 132.99778],
+    "coords": [
+      34.06472,
+      132.99778
+    ],
     "place": {
       "address": "1-1 Kitahorai-cho, Imabari, Ehime — Shimanami end",
       "url": "https://www.google.com/maps/search/?api=1&query=34.06472,132.99778"
