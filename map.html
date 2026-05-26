@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.14.0/dist/Leaflet.GoogleMutant.js"></script>
 <link rel="stylesheet" href="header.css"/>
 <style>
  :root{--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d;
@@ -215,6 +216,28 @@
  .exp-go{background:var(--ac);color:#fff;border:none;border-radius:8px;
    padding:7px 18px;font:inherit;font-weight:600;cursor:pointer}
  .exp-go:hover{filter:brightness(1.08)}
+ /* ---- add-place search box (feature: place search -> add pin) ---- */
+ .searchbox{margin:8px 0 0}
+ .searchbox .srow{display:flex;gap:6px}
+ .searchbox input{flex:1;font:inherit;font-size:13px;color:var(--fg);background:var(--bg2);
+   border:1px solid var(--bd);border-radius:6px;padding:6px 8px;box-sizing:border-box}
+ .searchbox button{font:inherit;color:var(--fg);background:var(--bg2);border:1px solid var(--bd);
+   border-radius:6px;padding:0 9px;cursor:pointer;display:flex;align-items:center}
+ .searchbox button:hover{background:var(--hv)}
+ .searchbox button .material-symbols-outlined{font-size:18px}
+ #psresults{margin-top:6px;max-height:200px;overflow:auto}
+ #psresults .pr{padding:5px 7px;border-radius:6px;cursor:pointer;font-size:12px}
+ #psresults .pr:hover{background:var(--hv)}
+ #psresults .pr b{color:var(--fg)}
+ #psresults .pr .a{color:var(--mut);font-size:11px;display:block;
+   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .ps-add{margin-top:8px;font:inherit;font-size:12px;color:#fff;background:var(--ac);
+   border:none;border-radius:6px;padding:6px 12px;cursor:pointer}
+ .ps-add:hover{filter:brightness(1.08)}
+ /* ---- saved-place pin marker ---- */
+ .mm-pin{background:none;border:none}
+ .mm-pin .material-symbols-outlined{font-size:30px;color:#2979ff;line-height:1;
+   text-shadow:0 0 2px #fff,0 1px 3px rgba(0,0,0,.5)}
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
@@ -257,7 +280,16 @@
   <button id="aon"    title="Show all"><span class="material-symbols-outlined">visibility</span></button>
   <button id="aoff"   title="Hide all"><span class="material-symbols-outlined">visibility_off</span></button>
   <button id="grpToggle" title="Expand / collapse all"><span class="material-symbols-outlined">unfold_less</span></button>
+  <button id="addPlaceBtn" title="Search a place &amp; add a pin"><span class="material-symbols-outlined">add_location_alt</span></button>
   <button id="exportBtn" title="Export (KML / KMZ)"><span class="material-symbols-outlined">ios_share</span></button>
+ </div>
+ <div id="searchBox" class="searchbox" hidden>
+  <div class="srow">
+   <input type="text" id="psq" placeholder="Search a place…">
+   <button id="psgo" title="Search"><span class="material-symbols-outlined">search</span></button>
+  </div>
+  <div id="psresults"></div>
+  <p class="sub" id="psmsg"></p>
  </div>
 </div><div id="list"></div>
 </div>
@@ -276,6 +308,50 @@ function featureToRoute(f){
    dash:p.dash||[0,0],style:p.style||'solid',polys:polys};
 }
 const MAP_ID=(new URLSearchParams(location.search).get('id'))||'japan-cycling';
+// ---- Google integration (basemap + place search) ----
+// config.js sets window.MYMAP_CONFIG.googleMapsApiKey. It's a CLIENT key for a
+// public static site (visible by design); it is safe only because it's locked
+// down in Cloud Console with an HTTP-referrer restriction + API restriction.
+// With no key, Google features stay off and the free OSM/Esri maps still work.
+const CFG=window.MYMAP_CONFIG||{};
+let _googleLoad=null;
+function loadGoogle(){
+ if(_googleLoad) return _googleLoad;
+ if(!CFG.googleMapsApiKey) return Promise.reject(new Error('no Google API key in config.js'));
+ _googleLoad=new Promise((res,rej)=>{
+   const s=document.createElement('script');
+   s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(CFG.googleMapsApiKey)
+        +'&libraries=places&v=quarterly&loading=async';
+   s.async=true;
+   s.onload=()=>res();
+   s.onerror=()=>rej(new Error('Google Maps failed to load (check API key / referrer restriction / billing)'));
+   document.head.appendChild(s);
+ });
+ return _googleLoad;
+}
+// native Google night cartography (true dark map, not a CSS filter)
+const GOOGLE_DARK=[
+ {elementType:'geometry',stylers:[{color:'#26303b'}]},
+ {elementType:'labels.text.fill',stylers:[{color:'#d6dde8'}]},
+ {elementType:'labels.text.stroke',stylers:[{color:'#0f141a'}]},
+ {featureType:'landscape',elementType:'geometry',stylers:[{color:'#21342a'}]},
+ {featureType:'landscape.man_made',elementType:'geometry',stylers:[{color:'#283a30'}]},
+ {featureType:'poi',elementType:'labels.text.fill',stylers:[{color:'#8b95a2'}]},
+ {featureType:'poi.business',elementType:'labels',stylers:[{visibility:'off'}]},
+ {featureType:'poi.park',elementType:'geometry',stylers:[{color:'#1c4630'}]},
+ {featureType:'poi.park',elementType:'labels.text.fill',stylers:[{color:'#86b894'}]},
+ {featureType:'road',elementType:'geometry',stylers:[{color:'#424e5b'}]},
+ {featureType:'road',elementType:'geometry.stroke',stylers:[{color:'#222a33'}]},
+ {featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#c6cdd8'}]},
+ {featureType:'road.highway',elementType:'geometry',stylers:[{color:'#5a6675'}]},
+ {featureType:'road.highway',elementType:'geometry.stroke',stylers:[{color:'#283039'}]},
+ {featureType:'road.highway',elementType:'labels.text.fill',stylers:[{color:'#e8edf3'}]},
+ {featureType:'transit',elementType:'geometry',stylers:[{color:'#37434f'}]},
+ {featureType:'water',elementType:'geometry',stylers:[{color:'#1a5b7d'}]},
+ {featureType:'water',elementType:'labels.text.fill',stylers:[{color:'#9cc6da'}]},
+ {featureType:'administrative',elementType:'geometry',stylers:[{color:'#4a5563'}]},
+ {featureType:'administrative.land_parcel',stylers:[{visibility:'off'}]}
+];
 // ---- on-screen debug log (temporary; data.js mirrors its breadcrumbs here) ----
 const __t0=Date.now();
 window.__mmlog=function(msg,isErr){
@@ -355,23 +431,46 @@ function recolorRoutes(){
  });
  Object.keys(itemByIdx||{}).forEach(i=>{const sw=itemByIdx[i].querySelector('.sw'); if(sw) sw.style.background=R[i].color||c;});
 }
-let curBase=null,curKey='',baseCtlEl=null;
+let curBase=null,curKey='',baseCtlEl=null,googleLayer=null;
+// Google base map (lazy: only built once the user picks it). Uses native night
+// cartography in dark mode, so it must NOT also get the CSS dark filter.
+function buildGoogle(){
+ googleLayer=L.gridLayer.googleMutant({type:CFG.googleMapType||'roadmap',styles:darkMap?GOOGLE_DARK:[]});
+ googleLayer._mmDark=darkMap;
+ return googleLayer;
+}
+function markBaseBtn(key){ if(baseCtlEl)[...baseCtlEl.querySelectorAll('button[data-b]')]
+ .forEach(b=>b.classList.toggle('on',b.dataset.b===key)); }
 function setBase(key){
+ if(key==='google'){
+   loadGoogle().then(()=>{
+     if(curBase) map.removeLayer(curBase);
+     buildGoogle(); curBase=googleLayer; curKey='google';
+     curBase.addTo(map); curBase.bringToBack();
+     applyTheme(); markBaseBtn('google'); saveS({base:'google'});
+   }).catch(e=>{ window.__mmlog('google basemap: '+(e.message||e),true);
+     alert('Google base map unavailable: '+(e.message||e)); markBaseBtn(curKey); });
+   return;
+ }
  const lyr=bases[key]; if(!lyr) return;
  if(curBase) map.removeLayer(curBase);
  curBase=lyr; curKey=key; curBase.addTo(map); curBase.bringToBack();
- applyTheme();
- if(baseCtlEl)[...baseCtlEl.querySelectorAll('button[data-b]')]
-   .forEach(b=>b.classList.toggle('on',b.dataset.b===key));
- saveS({base:key});
+ applyTheme(); markBaseBtn(key); saveS({base:key});
 }
 function applyTheme(){
  // target the whole tile pane (parent of all tile layers) — most reliable
  document.documentElement.classList.toggle('light', !darkMap);
  const p=document.querySelector('.leaflet-tile-pane');
- if(p) p.style.filter = darkMap ? DARK_FILTER : '';
- // diagnostic in DevTools console so we can see if the toggle is firing
- try{ console.log('[mymap] applyTheme darkMap=',darkMap,' filter=',p&&p.style.filter); }catch(e){}
+ if(curKey==='google'){
+   if(p) p.style.filter='';   // Google has real dark cartography — no CSS filter
+   if(googleLayer && googleLayer._mmDark!==darkMap){   // re-style on theme flip
+     map.removeLayer(googleLayer); buildGoogle();
+     curBase=googleLayer; curBase.addTo(map); curBase.bringToBack();
+   }
+ } else if(p){
+   p.style.filter = darkMap ? DARK_FILTER : '';
+ }
+ try{ console.log('[mymap] applyTheme darkMap=',darkMap,' base=',curKey); }catch(e){}
 }
 // ---- on-map control (layers menu + theme toggle, under the +/-) ----
 const Ctl=L.Control.extend({options:{position:'topright'},
@@ -394,6 +493,7 @@ recenterBtn.innerHTML='<span class="material-symbols-outlined">center_focus_stro
 recenterBtn.onclick=()=>fitAll();
 const menu=document.createElement('div'); menu.className='mm-basemenu';
 const baseLabels={'osm':'OSM','esri-street':'Esri Street'};
+if(CFG.googleMapsApiKey) baseLabels['google']='Google';   // only when a key is configured
 Object.keys(baseLabels).forEach(k=>{
  const b=document.createElement('button'); b.textContent=baseLabels[k]; b.dataset.b=k;
  b.onclick=()=>{ setBase(k); menu.classList.remove('open'); };
@@ -403,6 +503,7 @@ baseBtn.onclick=()=>menu.classList.toggle('open');
 // Map-background click: close basemap menu AND deselect any active route
 map.on('click',()=>{
  menu.classList.remove('open');
+ clearPreview();     // dismiss any place-search preview marker
  map.closePopup();   // background click closes the open box (route clicks open the next one directly)
  if(selectedIdx!=null){
    styleRoute(selectedIdx,false);
@@ -463,7 +564,9 @@ map.on('popupopen', (e) => {
 });
 baseCtlEl.appendChild(baseBtn); baseCtlEl.appendChild(themeBtn); baseCtlEl.appendChild(recenterBtn); baseCtlEl.appendChild(menu);
 // initial base (restored from localStorage if present)
-let startBase=ST.base||'osm'; if(!bases[startBase]) startBase='osm';
+let startBase=ST.base||'osm';
+if(startBase==='google'){ if(!CFG.googleMapsApiKey) startBase='osm'; }
+else if(!bases[startBase]) startBase='osm';
 setBase(startBase);
 const groups={},layers={},bounds=L.latLngBounds([]);
 R.forEach((r,i)=>{(groups[r.group]=groups[r.group]||[]).push(i)});
@@ -747,12 +850,158 @@ window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
    }, {enableHighAccuracy:true, timeout:10000, maximumAge:30000});
  };
 })();
-// header counts — icons for groups / routes / pins
-const PIN_COUNT = 0;   // pins arrive with the editor; 0 for now
-document.getElementById('counts').innerHTML =
-  '<span class="mi" title="Groups">layers</span>'+Object.keys(groups).length
- +'<span class="mi" title="Routes">route</span>'+R.length
- +'<span class="mi" title="Pins">location_on</span>'+PIN_COUNT;
+// ---- saved places (pins) ---------------------------------------------------
+// Personal pins live in THIS browser's localStorage (keyed by map id): the repo
+// data is read-only for visitors, so added places can't be written back to a
+// file without a token. (Export currently covers routes only — pins are local.)
+const PIN_KEY='mymap.pins.'+MAP_ID;
+let PINS=[], pinSeq=1;
+const pinLayer=L.layerGroup().addTo(map);
+// null = never saved on this browser (-> show the shipped sample pins);
+// [] = the user cleared them (respect that, don't re-seed).
+function loadPins(){ try{ const v=localStorage.getItem(PIN_KEY); return v==null?null:(JSON.parse(v)||[]); }catch(e){ return null; } }
+function savePins(){ try{ localStorage.setItem(PIN_KEY,JSON.stringify(
+  PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})))); }catch(e){} }
+function pinIcon(){ return L.divIcon({className:'mm-pin',
+  html:'<span class="material-symbols-outlined">location_on</span>',
+  iconSize:[30,30],iconAnchor:[15,30],popupAnchor:[0,-28]}); }
+function pinPopupHTML(p){
+ let h='<b>'+esc(p.name)+'</b>';
+ const pl=p.place||{};
+ if(pl.address) h+='<div class="rt-desc">'+esc(pl.address)+'</div>';
+ if(pl.rating)  h+='<div class="rt-stats">★ '+esc(pl.rating)+'</div>';
+ const row=[];
+ if(pl.website) row.push('<a href="'+esc(pl.website)+'" target="_blank"><span class="mi">language</span>Website</a>');
+ if(pl.url)     row.push('<a href="'+esc(pl.url)+'" target="_blank"><span class="mi">open_in_new</span>Google Maps</a>');
+ if(row.length) h+='<div class="rt-dl">'+row.join('')+'</div>';
+ h+='<div class="rt-dl"><a href="#" onclick="pinRename('+p.id+');return false"><span class="mi">edit</span>Rename</a>'
+   +'<a href="#" onclick="pinDelete('+p.id+');return false"><span class="mi">delete</span>Delete</a></div>';
+ return h;
+}
+function addPin(o){
+ const p={id:pinSeq++,name:o.name||'New place',coords:o.coords,place:o.place||null};
+ const m=L.marker(p.coords,{icon:pinIcon(),draggable:true});
+ m.bindPopup(pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
+ m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
+ m.addTo(pinLayer); p.marker=m; PINS.push(p);
+ return p;
+}
+function focusPin(p){ map.flyTo(p.coords,Math.max(map.getZoom(),15),{duration:.5}); p.marker.openPopup(); }
+function renderPinsList(){
+ let sec=document.getElementById('pinsSection');
+ if(!PINS.length){ if(sec) sec.remove(); updateCounts(); return; }
+ if(!sec){ sec=document.createElement('div'); sec.className='grp'; sec.id='pinsSection';
+   list.insertBefore(sec,list.firstChild); }
+ sec.innerHTML='';
+ const h=document.createElement('div'); h.className='gh';
+ h.innerHTML='<span class="tw">▼</span><span class="gn">'
+   +'<span class="material-symbols-outlined" style="font-size:15px;vertical-align:-3px;color:#2979ff">push_pin</span> My places</span>'
+   +'<span class="gp-eye" title="Show / hide"><span class="material-symbols-outlined">visibility</span></span>'
+   +'<span class="gcount">'+PINS.length+'</span>';
+ const box=document.createElement('div');
+ PINS.forEach(p=>{ const it=document.createElement('div'); it.className='it';
+   it.innerHTML='<span class="material-symbols-outlined" style="font-size:16px;width:18px;color:#2979ff">location_on</span>'
+     +'<span class="nm">'+esc(p.name)+'</span>';
+   it.onclick=()=>focusPin(p); box.appendChild(it); });
+ const eye=h.querySelector('.gp-eye'), eyeIc=eye.querySelector('.material-symbols-outlined');
+ eye.onclick=ev=>{ ev.stopPropagation();
+   const on=map.hasLayer(pinLayer);
+   if(on) map.removeLayer(pinLayer); else map.addLayer(pinLayer);
+   eyeIc.textContent=on?'visibility_off':'visibility'; box.style.opacity=on?.4:1; };
+ h.onclick=()=>{ const v=box.style.display==='none'; box.style.display=v?'':'none';
+   h.querySelector('.tw').textContent=v?'▼':'▶'; };
+ sec.appendChild(h); sec.appendChild(box);
+ updateCounts();
+}
+window.pinRename=function(id){ const p=PINS.find(x=>x.id===id); if(!p) return;
+ const v=prompt('Rename place:',p.name); if(v==null) return;
+ p.name=v.trim()||p.name; p.marker.setPopupContent(pinPopupHTML(p)); savePins(); renderPinsList(); };
+window.pinDelete=function(id){ const i=PINS.findIndex(x=>x.id===id); if(i<0) return;
+ pinLayer.removeLayer(PINS[i].marker); PINS.splice(i,1); map.closePopup(); savePins(); renderPinsList(); };
+
+// ---- place search (Google Places via the Maps JS SDK; referrer-restricted) --
+let previewMarker=null;
+function clearPreview(){ if(previewMarker){ map.removeLayer(previewMarker); previewMarker=null; } }
+async function placeSearch(q){
+ const msg=document.getElementById('psmsg'), box=document.getElementById('psresults');
+ box.innerHTML=''; clearPreview(); q=(q||'').trim();
+ if(!q){ msg.textContent=''; return; }
+ if(!CFG.googleMapsApiKey){ msg.textContent='No Google API key in config.js'; return; }
+ msg.textContent='Searching…';
+ try{
+   await loadGoogle();
+   const {Place}=await google.maps.importLibrary('places');
+   const b=map.getBounds();
+   const {places}=await Place.searchByText({
+     textQuery:q,
+     fields:['displayName','formattedAddress','location','rating','websiteURI','googleMapsURI'],
+     locationBias:b?{north:b.getNorth(),south:b.getSouth(),east:b.getEast(),west:b.getWest()}:undefined,
+     maxResultCount:10, language:'ja', region:'jp'
+   });
+   if(!places||!places.length){ msg.textContent='No results (try panning to the area)'; return; }
+   msg.textContent=places.length+' result'+(places.length>1?'s':'')+' — click to preview';
+   places.forEach(pl=>{
+     const nm=pl.displayName||'(no name)';
+     const d=document.createElement('div'); d.className='pr';
+     d.innerHTML='<b>'+esc(nm)+'</b>'+(pl.rating?' ★'+pl.rating:'')
+       +'<span class="a">'+esc(pl.formattedAddress||'')+'</span>';
+     d.onclick=()=>previewPlace(pl,nm); box.appendChild(d);
+   });
+ }catch(e){ msg.textContent='Search failed: '+(e.message||e); window.__mmlog('place search: '+(e.message||e),true); }
+}
+function previewPlace(pl,nm){
+ clearPreview();
+ const loc=pl.location, ll=[loc.lat(),loc.lng()];
+ previewMarker=L.circleMarker(ll,{radius:9,color:'#fff',weight:2,dashArray:'3',
+   fillColor:'#2979ff',fillOpacity:.55}).addTo(map);
+ map.flyTo(ll,Math.max(map.getZoom(),15),{duration:.5});
+ const box=document.createElement('div');
+ box.innerHTML='<b>'+esc(nm)+'</b>'+(pl.rating?' ★'+pl.rating:'')
+   +(pl.formattedAddress?'<div class="rt-desc">'+esc(pl.formattedAddress)+'</div>':'')
+   +(pl.googleMapsURI?'<div class="rt-dl"><a href="'+esc(pl.googleMapsURI)+'" target="_blank"><span class="mi">open_in_new</span>Google Maps</a></div>':'');
+ const btn=document.createElement('button'); btn.className='ps-add'; btn.textContent='＋ Add pin';
+ btn.onclick=()=>{
+   const p=addPin({name:nm,coords:ll,place:{address:pl.formattedAddress||'',rating:pl.rating||'',
+     website:pl.websiteURI||'',url:pl.googleMapsURI||''}});
+   savePins(); renderPinsList(); clearPreview(); map.closePopup();
+   document.getElementById('psmsg').textContent='Added "'+nm+'"';
+   focusPin(p);
+ };
+ box.appendChild(btn);
+ L.popup({offset:[0,-10]}).setLatLng(ll).setContent(box).openOn(map);
+}
+// search box toggle + triggers
+document.getElementById('addPlaceBtn').onclick=()=>{
+ const sb=document.getElementById('searchBox'); sb.hidden=!sb.hidden;
+ if(!sb.hidden) document.getElementById('psq').focus();
+};
+document.getElementById('psgo').onclick=()=>placeSearch(document.getElementById('psq').value);
+document.getElementById('psq').addEventListener('keydown',e=>{ if(e.key==='Enter') placeSearch(e.target.value); });
+
+// header counts — icons for groups / routes / pins (pins update live)
+function updateCounts(){
+ document.getElementById('counts').innerHTML =
+   '<span class="mi" title="Groups">layers</span>'+Object.keys(groups).length
+  +'<span class="mi" title="Routes">route</span>'+R.length
+  +'<span class="mi" title="Pins">location_on</span>'+PINS.length;
+}
+// restore pins saved in this browser; on a first visit, seed the sample pins
+// shipped beside the map data (data/maps/<id>/pins.json). Seeded pins are NOT
+// written to localStorage until the user edits, so they keep tracking the file.
+(function(){
+ const saved=loadPins();
+ if(saved && saved.length){
+   saved.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));
+   renderPinsList(); updateCounts();
+ } else if(saved===null){
+   fetch('data/maps/'+MAP_ID+'/pins.json').then(r=>r.ok?r.json():[]).then(seed=>{
+     if(Array.isArray(seed)) seed.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));
+     renderPinsList(); updateCounts();
+   }).catch(()=>{ renderPinsList(); updateCounts(); });
+ } else {
+   renderPinsList(); updateCounts();   // saved===[] : user cleared, respect it
+ }
+})();
 // ---- panel collapse / expand ----
 (function(){
  const panel=document.getElementById('panel');
