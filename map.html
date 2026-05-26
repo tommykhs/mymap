@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
 <link rel="stylesheet" href="header.css"/>
 <style>
  :root{--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d;
@@ -181,6 +182,39 @@
  @keyframes mmspin{to{transform:rotate(360deg)}}
  body.fs .loading{top:0}
  /* mobile: don't let the panel cover the whole map, even expanded */
+ /* export modal */
+ .exp-modal{position:fixed;inset:0;z-index:1600;display:flex;align-items:center;
+   justify-content:center;background:rgba(0,0,0,.45);padding:16px}
+ .exp-modal[hidden]{display:none}
+ .exp-dialog{width:380px;max-width:100%;max-height:86vh;display:flex;flex-direction:column;
+   background:var(--bg2);color:var(--fg);border:1px solid var(--bd);border-radius:12px;
+   box-shadow:0 10px 40px rgba(0,0,0,.5);font-size:13px;overflow:hidden}
+ .exp-head{display:flex;align-items:center;justify-content:space-between;
+   padding:12px 14px;border-bottom:1px solid var(--bd);font-weight:600;font-size:15px}
+ .exp-x{background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;line-height:1}
+ .exp-x:hover{color:var(--fg)}
+ .exp-scopes{display:flex;flex-direction:column;gap:6px;padding:12px 14px 6px}
+ .exp-scopes label{display:flex;align-items:center;gap:8px;cursor:pointer}
+ .exp-tree{flex:1 1 auto;overflow-y:auto;padding:4px 14px;border-top:1px solid var(--bd)}
+ .exp-grp{padding:4px 0}
+ .exp-grp>label{display:flex;align-items:center;gap:7px;font-weight:600;cursor:pointer}
+ .exp-grp .gcnt{margin-left:auto;color:var(--mut);font-weight:normal;font-size:11px}
+ .exp-rts{margin:2px 0 4px 22px;display:none}
+ .exp-rts.open{display:block}
+ .exp-rts label{display:flex;align-items:center;gap:7px;cursor:pointer;line-height:1.5;color:var(--fg)}
+ .exp-rts .gcnt{margin-left:auto;color:var(--mut);font-size:11px}
+ .exp-grp .tw{cursor:pointer;color:var(--mut);font-size:10px;width:12px;text-align:center;user-select:none}
+ .exp-meter{padding:10px 14px;border-top:1px solid var(--bd);font-size:12px;color:var(--mut)}
+ .exp-meter .mi{font-family:'Material Symbols Outlined';font-weight:normal;font-size:16px;
+   vertical-align:-3px;margin-right:3px;-webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+ .exp-meter .over{color:#e0564f;font-weight:600}
+ .exp-meter .warn{color:#e0564f;font-weight:600;margin-bottom:3px}
+ .exp-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;
+   padding:12px 14px;border-top:1px solid var(--bd)}
+ .exp-fmt label{margin-left:8px;cursor:pointer}
+ .exp-go{background:var(--ac);color:#fff;border:none;border-radius:8px;
+   padding:7px 18px;font:inherit;font-weight:600;cursor:pointer}
+ .exp-go:hover{filter:brightness(1.08)}
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
@@ -196,6 +230,21 @@
 <button class="dev-btn" id="logToggle" title="dev log" onclick="document.getElementById('dbglog').classList.toggle('collapsed')"><span class="material-symbols-outlined">code</span></button>
 <button id="locBtn" class="map-loc" title="My location"><span class="material-symbols-outlined">my_location</span></button>
 <button id="fsBtn" class="map-fs" title="Fullscreen"><span class="material-symbols-outlined">fullscreen</span></button>
+<div id="expModal" class="exp-modal" hidden><div class="exp-dialog">
+  <div class="exp-head"><span>Export to file</span><button id="expClose" class="exp-x">&times;</button></div>
+  <div class="exp-scopes">
+    <label><input type="radio" name="expScope" value="all" checked> Whole map</label>
+    <label><input type="radio" name="expScope" value="sel"> Select</label>
+  </div>
+  <div id="expTree" class="exp-tree" hidden></div>
+  <div id="expMeter" class="exp-meter"></div>
+  <div class="exp-foot">
+    <span class="exp-fmt">Format
+      <label><input type="radio" name="expFmt" value="kml" checked> KML</label>
+      <label><input type="radio" name="expFmt" value="kmz"> KMZ</label></span>
+    <button id="expGo" class="exp-go">Export</button>
+  </div>
+</div></div>
 <button id="panelReopen" class="panel-reopen" title="Open list"><span class="material-symbols-outlined">menu</span></button>
 <div class="panel" id="panel"><div class="pad">
  <div class="titlebar">
@@ -208,6 +257,7 @@
   <button id="aon"    title="Show all"><span class="material-symbols-outlined">visibility</span></button>
   <button id="aoff"   title="Hide all"><span class="material-symbols-outlined">visibility_off</span></button>
   <button id="grpToggle" title="Expand / collapse all"><span class="material-symbols-outlined">unfold_less</span></button>
+  <button id="exportBtn" title="Export (KML / KMZ)"><span class="material-symbols-outlined">ios_share</span></button>
  </div>
 </div><div id="list"></div>
 </div>
@@ -222,7 +272,7 @@ function featureToRoute(f){
  return {id:p.id,name:p.name,group:p.group,source:p.source,distance_km:p.distance_km,
    elev_up_m:p.elev_up_m,intro_url:p.intro_url,difficulty:p.difficulty,profile:p.profile,
    rwgps_url:p.rwgps_url,strava_url:p.strava_url,desc:p.desc,
-   weight:p.weight||3,opacity:(p.opacity!=null?p.opacity:0.9),
+   weight:p.weight||2,color:p.color,opacity:(p.opacity!=null?p.opacity:0.9),
    dash:p.dash||[0,0],style:p.style||'solid',polys:polys};
 }
 const MAP_ID=(new URLSearchParams(location.search).get('id'))||'japan-cycling';
@@ -292,17 +342,18 @@ const saveS=(p)=>{try{localStorage.setItem(LSK,JSON.stringify(Object.assign(load
 const ST=loadS();
 let darkMap=(typeof ST.dark==='boolean')?ST.dark:true;   // dark by default; remembers last choice
 // single accent colour for all routes, with a light-mode and a dark-mode tone
-const ROUTE_LIGHT='#1d4ed8';   // strong indigo — pops on light tiles
-const ROUTE_DARK ='#60a5fa';   // bright sky — pops on dark tiles
-const accent=()=>darkMap?ROUTE_DARK:ROUTE_LIGHT;
+const ROUTE_LIGHT='#fc4c02';   // Strava orange — pops on light AND dark tiles
+const ROUTE_DARK ='#fc4c02';
+const accent=()=>ROUTE_LIGHT;  // single orange in both themes
 function recolorRoutes(){
  const c=accent();
  // skip the currently-selected route so its highlight stays visible
  Object.keys(lg||{}).forEach(k=>{
    if(+k===selectedIdx) return;
-   lg[k].eachLayer(p=>p.setStyle&&p.setStyle({color:c}));
+   const rc=R[+k].color||c;
+   lg[k].eachLayer(p=>p.setStyle&&p.setStyle({color:rc}));
  });
- document.querySelectorAll('#list .sw').forEach(s=>s.style.background=c);
+ Object.keys(itemByIdx||{}).forEach(i=>{const sw=itemByIdx[i].querySelector('.sw'); if(sw) sw.style.background=R[i].color||c;});
 }
 let curBase=null,curKey='',baseCtlEl=null;
 function setBase(key){
@@ -537,27 +588,9 @@ const lg={},polysByIdx={},itemByIdx={},boxByIdx={},headerByIdx={};
 let selectedIdx=null;
 // safe HTML escape for tooltips
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-// zoom-adaptive line thickness: thin when zoomed out (so 682 routes don't merge
-// into blobs), thicker when zoomed in (easy to see/tap).
-function zoomWeight(){
- const z=map.getZoom();
- if(z==null||isNaN(z)) return 3;
- if(z<=7) return 1.5;
- if(z<=9) return 2;
- if(z<=11) return 3;
- if(z<=13) return 4;
- return 5;
-}
-const baseWeight=r=>zoomWeight();   // (per-route weight overrides removed in favour of zoom)
-// re-apply weights to every route on zoom (selected route stays a touch thicker)
-function applyWeights(){
- const w=zoomWeight();
- Object.keys(lg||{}).forEach(k=>{
-   const i=+k, sel=(i===selectedIdx);
-   (polysByIdx[i]||[]).forEach(pl=>pl.setStyle&&pl.setStyle({weight: sel ? w+2 : w}));
- });
-}
-map.on('zoomend', applyWeights);
+// per-route line weight (constant px, Google-My-Maps style); default 2, override
+// per route via its `weight` property (ready for per-route widths later).
+const baseWeight=r=>(r.weight||2);
 // Build routes in small batches (via requestAnimationFrame) so the page stays
 // responsive, the loading progress updates, and routes appear progressively.
 await new Promise(resolve=>{
@@ -567,7 +600,7 @@ await new Promise(resolve=>{
    for(;i<end;i++){
      const idx=i, r=R[idx];
      const g=L.layerGroup();
-     const opt={color:accent(),weight:baseWeight(r),opacity:r.opacity};
+     const opt={color:(r.color||accent()),weight:baseWeight(r),opacity:r.opacity};
      if(r.style!=='solid'||r.dash[0])opt.dashArray=(r.dash[0]||8)+','+(r.dash[1]||6);
      const plList=[]; const tip=esc(r.name);
      r.polys.forEach(p=>{
@@ -586,9 +619,9 @@ await new Promise(resolve=>{
 });
 // route-level highlight: bump weight modestly + switch to accent orange
 function styleRoute(i,sel){
- const base=accent();
+ const base=R[i].color||accent();
  (polysByIdx[i]||[]).forEach(pl=>{
-   if(sel){ pl.setStyle({color:'#f59e0b',weight:baseWeight(R[i])+2,opacity:1}); pl.bringToFront(); }
+   if(sel){ pl.setStyle({color:'#2979ff',weight:baseWeight(R[i])+2,opacity:1}); pl.bringToFront(); }
    else  { pl.setStyle({color:base,weight:baseWeight(R[i]),opacity:R[i].opacity}); }
  });
 }
@@ -647,7 +680,7 @@ Object.keys(groups).sort().forEach(gn=>{
  const box=document.createElement('div');
  groups[gn].forEach(i=>{const r=R[i];
    const it=document.createElement('div');it.className='it';
-   it.innerHTML='<span class="sw" style="background:'+accent()+'"></span>'+
+   it.innerHTML='<span class="sw" style="background:'+(r.color||accent())+'"></span>'+
      '<span class="nm">'+r.name+'</span>'+
      '<span class="it-dl" title="Download GPX"><span class="material-symbols-outlined">download</span></span>';
    it.onclick=()=>{
@@ -689,7 +722,6 @@ function fitAll(){
  catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
 }
 fitAll();
-applyWeights();  // set line thickness for the initial zoom
 hideLoading();   // routes drawn + map fitted — reveal the map
 window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
 // ---- locate me (GPS), Google-Maps style: blue dot + accuracy ring, pan to it ----
@@ -782,6 +814,120 @@ window.dlRoute=dlRoute;
    ic.textContent=on?'fullscreen_exit':'fullscreen';
    setTimeout(()=>map.invalidateSize(),120);   // re-fit Leaflet after resize
  });
+})();
+// ---- export to KML / KMZ (Google My Maps + Google Earth / QGIS) ----
+(function(){
+ const EXP_COLOR='#fc4c02';   // Strava orange; uses r.color per-route when set (future)
+ const L_LAYERS=10, L_PTS=50000, L_FEAT=10000, L_PER=2000;
+ const modal=document.getElementById('expModal'), tree=document.getElementById('expTree'),
+       meter=document.getElementById('expMeter');
+ if(!modal) return;
+ const ptsOf=r=>(r.polys||[]).reduce((s,p)=>s+p.length,0);
+ const fmtN=n=>n.toLocaleString();
+ function havKm(a,b){const R=6371,dla=(b[0]-a[0])*Math.PI/180,dln=(b[1]-a[1])*Math.PI/180,
+   la1=a[0]*Math.PI/180,la2=b[0]*Math.PI/180;
+   const x=Math.sin(dla/2)**2+Math.cos(la1)*Math.cos(la2)*Math.sin(dln/2)**2;
+   return 2*R*Math.asin(Math.sqrt(x));}
+ function altAt(prof,km){
+   if(!prof||!prof.length) return 0;
+   if(km<=prof[0][0]) return prof[0][1];
+   for(let i=1;i<prof.length;i++){ if(km<=prof[i][0]){
+     const a=prof[i-1],b=prof[i],t=(b[0]-a[0])?(km-a[0])/(b[0]-a[0]):0;
+     return Math.round(a[1]+(b[1]-a[1])*t); } }
+   return prof[prof.length-1][1];
+ }
+ const kmlColor=hex=>{const h=(hex||EXP_COLOR).replace('#','');return 'ff'+h.slice(4,6)+h.slice(2,4)+h.slice(0,2);};
+ const cdata=s=>`<![CDATA[${String(s==null?'':s).replace(/]]>/g,']]]]><![CDATA[>')}]]>`;
+ function routeKML(r){
+   let cum=0,last=null;   // bake altitude (interpolated from profile) into 3-D coords
+   const segs=(r.polys||[]).map(poly=>poly.map(pt=>{
+     if(last) cum+=havKm(last,pt); last=pt;
+     return pt[1]+','+pt[0]+','+altAt(r.profile,cum);
+   }).join(' '));
+   const geom=segs.length>1
+     ? `<MultiGeometry>${segs.map(s=>`<LineString><tessellate>1</tessellate><coordinates>${s}</coordinates></LineString>`).join('')}</MultiGeometry>`
+     : `<LineString><tessellate>1</tessellate><coordinates>${segs[0]||''}</coordinates></LineString>`;
+   const maxE=(r.profile&&r.profile.length)?Math.max(...r.profile.map(p=>p[1])):null;
+   const bits=[];
+   if(r.distance_km) bits.push(r.distance_km+' km');
+   if(r.elev_up_m)   bits.push('&#8593;'+r.elev_up_m+' m');
+   if(maxE!=null)    bits.push('max '+Math.round(maxE)+' m');
+   let dh=bits.join(' &#183; ');
+   if(r.intro_url)   dh+=(dh?'<br/>':'')+`<a href="${esc(r.intro_url)}">Source &#8599;</a>`;   // just the link; name is in the source field
+   const ed=`<ExtendedData><Data name="category"><value>${cdata(r.group||'')}</value></Data>`
+     +(r.source?`<Data name="source"><value>${cdata(r.source)}</value></Data>`:'')
+     +(r.distance_km?`<Data name="distance_km"><value>${r.distance_km}</value></Data>`:'')
+     +(r.elev_up_m?`<Data name="elev_up_m"><value>${r.elev_up_m}</value></Data>`:'')
+     +`</ExtendedData>`;
+   return `<Placemark><name>${esc(r.name||'')}</name><description>${cdata(dh)}</description>`
+     +`<Style><LineStyle><color>${kmlColor(r.color)}</color><width>${r.weight||2}</width></LineStyle></Style>`
+     +ed+geom+`</Placemark>`;
+ }
+ function buildKML(idx){
+   const byG={}; idx.forEach(i=>{const g=R[i].group||'Routes';(byG[g]=byG[g]||[]).push(i);});
+   let body=''; Object.keys(byG).forEach(g=>{
+     body+=`<Folder><name>${esc(g)}</name>`+byG[g].map(i=>routeKML(R[i])).join('')+`</Folder>`; });
+   return `<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2">`
+     +`<Document><name>MyMap export</name>${body}</Document></kml>`;
+ }
+ function dl(name,content,type){const a=document.createElement('a');
+   a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;
+   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},0);}
+ const scope=()=>(document.querySelector('input[name="expScope"]:checked')||{}).value||'all';
+ const selIdx=()=> scope()==='all' ? R.map((_,i)=>i)
+   : [...tree.querySelectorAll('input.exp-rt:checked')].map(c=>+c.dataset.i);
+ function updateMeter(){
+   const idx=selIdx();
+   const layers=new Set(idx.map(i=>R[i].group)).size, feat=idx.length;
+   const pts=idx.reduce((s,i)=>s+ptsOf(R[i]),0);
+   const per={}; idx.forEach(i=>{const g=R[i].group;per[g]=(per[g]||0)+1;});
+   const maxPer=idx.length?Math.max(...Object.values(per)):0;
+   const over=layers>L_LAYERS||pts>L_PTS||feat>L_FEAT||maxPer>L_PER;
+   const g=(v,l)=>`<span class="${v>l?'over':''}">${fmtN(v)}/${fmtN(l)}</span>`;
+   const ic=n=>`<span class="mi">${n}</span>`;
+   meter.innerHTML=(over?`<div class="warn">&#9888; Exceeds Google My Maps</div>`:'')
+     +`${ic('layers')}${g(layers,L_LAYERS)} &nbsp; ${ic('polyline')}${g(pts,L_PTS)} &nbsp; ${ic('route')}${g(feat,L_FEAT)}`;
+ }
+ function buildTree(){
+   tree.innerHTML='';
+   Object.keys(groups).sort().forEach(gn=>{
+     const idxs=groups[gn], pts=idxs.reduce((s,i)=>s+ptsOf(R[i]),0);
+     const wrap=document.createElement('div');wrap.className='exp-grp';
+     wrap.innerHTML=`<label><span class="tw">&#9654;</span><input type="checkbox" class="exp-g"> ${esc(gn)}`
+       +`<span class="gcnt">${idxs.length} &#183; ${fmtN(pts)} pts</span></label>`
+       +`<div class="exp-rts">`+idxs.map(i=>`<label><input type="checkbox" class="exp-rt" data-i="${i}"> ${esc(R[i].name)}`
+         +`<span class="gcnt">${fmtN(ptsOf(R[i]))}</span></label>`).join('')+`</div>`;
+     const gchk=wrap.querySelector('.exp-g'),rts=wrap.querySelector('.exp-rts'),tw=wrap.querySelector('.tw');
+     tw.onclick=e=>{e.preventDefault();rts.classList.toggle('open');tw.innerHTML=rts.classList.contains('open')?'&#9660;':'&#9654;';};
+     gchk.onchange=()=>{rts.querySelectorAll('.exp-rt').forEach(c=>c.checked=gchk.checked);gchk.indeterminate=false;updateMeter();};
+     rts.querySelectorAll('.exp-rt').forEach(c=>c.onchange=()=>{
+       const all=[...rts.querySelectorAll('.exp-rt')];
+       gchk.checked=all.every(x=>x.checked); gchk.indeterminate=!gchk.checked&&all.some(x=>x.checked);
+       updateMeter();
+     });
+     tree.appendChild(wrap);
+   });
+ }
+ document.getElementById('exportBtn').onclick=()=>{ modal.hidden=false; updateMeter(); };
+ document.getElementById('expClose').onclick=()=>{ modal.hidden=true; };
+ modal.onclick=e=>{ if(e.target===modal) modal.hidden=true; };
+ document.querySelectorAll('input[name="expScope"]').forEach(rd=>rd.onchange=()=>{
+   const sel=scope()==='sel'; tree.hidden=!sel;
+   if(sel && !tree.childElementCount) buildTree();
+   updateMeter();
+ });
+ document.getElementById('expGo').onclick=async()=>{
+   const idx=selIdx(); if(!idx.length){ alert('Nothing selected to export.'); return; }
+   const kml=buildKML(idx);
+   const fmt=(document.querySelector('input[name="expFmt"]:checked')||{}).value||'kml';
+   const base=(((document.getElementById('mapTitle')||{}).textContent||MAP_ID)
+     .replace(/[\\/:*?"<>|]+/g,'_').trim().slice(0,80))||'mymap';   // file name = map name
+   if(fmt==='kmz' && window.JSZip){
+     const z=new JSZip(); z.file('doc.kml',kml);
+     dl(base+'.kmz', await z.generateAsync({type:'blob'}), 'application/vnd.google-earth.kmz');
+   } else dl(base+'.kml', kml, 'application/vnd.google-earth.kml+xml');
+   modal.hidden=true;
+ };
 })();
 }  // end boot()
 </script></body></html>
