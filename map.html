@@ -1111,12 +1111,31 @@ window.dlRoute=dlRoute;
      +`<Style><LineStyle><color>${kmlColor(r.color)}</color><width>${r.weight||2}</width></LineStyle></Style>`
      +ed+geom+`</Placemark>`;
  }
- function buildKML(idx){
+ // saved-place pin -> KML Point Placemark, using the same Google teardrop icon
+ const PIN_LAYER='My places';
+ function pinKML(p){
+   const pl=p.place||{};
+   const bits=[];
+   if(pl.address) bits.push(esc(pl.address));
+   if(pl.rating)  bits.push('★ '+esc(pl.rating));
+   let dh=bits.join('<br/>');
+   if(pl.website) dh+=(dh?'<br/>':'')+`<a href="${esc(pl.website)}">Website</a>`;
+   if(pl.url)     dh+=(dh?'<br/>':'')+`<a href="${esc(pl.url)}">View in Google Maps &#8599;</a>`;
+   const ed=`<ExtendedData><Data name="category"><value>${cdata(PIN_LAYER)}</value></Data></ExtendedData>`;
+   return `<Placemark><name>${esc(p.name||'')}</name>`
+     +(dh?`<description>${cdata(dh)}</description>`:'')
+     +`<styleUrl>#pinStyle</styleUrl>${ed}`
+     +`<Point><coordinates>${p.coords[1]},${p.coords[0]},0</coordinates></Point></Placemark>`;
+ }
+ function buildKML(idx,pins){
    const byG={}; idx.forEach(i=>{const g=R[i].group||'Routes';(byG[g]=byG[g]||[]).push(i);});
    let body=''; Object.keys(byG).forEach(g=>{
      body+=`<Folder><name>${esc(g)}</name>`+byG[g].map(i=>routeKML(R[i])).join('')+`</Folder>`; });
+   if(pins&&pins.length)
+     body+=`<Folder><name>${esc(PIN_LAYER)}</name>`+pins.map(pinKML).join('')+`</Folder>`;
+   const pinStyle=`<Style id="pinStyle"><IconStyle><Icon><href>https://maps.google.com/mapfiles/ms/icons/blue-dot.png</href></Icon></IconStyle></Style>`;
    return `<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2">`
-     +`<Document><name>MyMap export</name>${body}</Document></kml>`;
+     +`<Document><name>MyMap export</name>${pinStyle}${body}</Document></kml>`;
  }
  function dl(name,content,type){const a=document.createElement('a');
    a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;
@@ -1124,12 +1143,17 @@ window.dlRoute=dlRoute;
  const scope=()=>(document.querySelector('input[name="expScope"]:checked')||{}).value||'all';
  const selIdx=()=> scope()==='all' ? R.map((_,i)=>i)
    : [...tree.querySelectorAll('input.exp-rt:checked')].map(c=>+c.dataset.i);
+ const selPins=()=> scope()==='all' ? PINS.slice()
+   : [...tree.querySelectorAll('input.exp-pin:checked')]
+       .map(c=>PINS.find(p=>p.id===+c.dataset.id)).filter(Boolean);
  function updateMeter(){
-   const idx=selIdx();
-   const layers=new Set(idx.map(i=>R[i].group)).size, feat=idx.length;
-   const pts=idx.reduce((s,i)=>s+ptsOf(R[i]),0);
+   const idx=selIdx(), pins=selPins();
+   // pins form one extra "My places" layer; each pin is 1 feature + 1 point
    const per={}; idx.forEach(i=>{const g=R[i].group;per[g]=(per[g]||0)+1;});
-   const maxPer=idx.length?Math.max(...Object.values(per)):0;
+   if(pins.length) per[PIN_LAYER]=pins.length;
+   const layers=Object.keys(per).length, feat=idx.length+pins.length;
+   const pts=idx.reduce((s,i)=>s+ptsOf(R[i]),0)+pins.length;
+   const maxPer=layers?Math.max(...Object.values(per)):0;
    const over=layers>L_LAYERS||pts>L_PTS||feat>L_FEAT||maxPer>L_PER;
    const g=(v,l)=>`<span class="${v>l?'over':''}">${fmtN(v)}/${fmtN(l)}</span>`;
    const ic=n=>`<span class="mi">${n}</span>`;
@@ -1138,6 +1162,22 @@ window.dlRoute=dlRoute;
  }
  function buildTree(){
    tree.innerHTML='';
+   if(PINS.length){
+     const wrap=document.createElement('div');wrap.className='exp-grp';
+     wrap.innerHTML=`<label><span class="tw">&#9654;</span><input type="checkbox" class="exp-pg"> ${esc(PIN_LAYER)}`
+       +`<span class="gcnt">${PINS.length} &#183; ${fmtN(PINS.length)} pts</span></label>`
+       +`<div class="exp-rts">`+PINS.map(p=>`<label><input type="checkbox" class="exp-pin" data-id="${p.id}"> ${esc(p.name)}`
+         +`<span class="gcnt">1</span></label>`).join('')+`</div>`;
+     const pg=wrap.querySelector('.exp-pg'),rts=wrap.querySelector('.exp-rts'),tw=wrap.querySelector('.tw');
+     tw.onclick=e=>{e.preventDefault();rts.classList.toggle('open');tw.innerHTML=rts.classList.contains('open')?'&#9660;':'&#9654;';};
+     pg.onchange=()=>{rts.querySelectorAll('.exp-pin').forEach(c=>c.checked=pg.checked);pg.indeterminate=false;updateMeter();};
+     rts.querySelectorAll('.exp-pin').forEach(c=>c.onchange=()=>{
+       const all=[...rts.querySelectorAll('.exp-pin')];
+       pg.checked=all.every(x=>x.checked); pg.indeterminate=!pg.checked&&all.some(x=>x.checked);
+       updateMeter();
+     });
+     tree.appendChild(wrap);
+   }
    Object.keys(groups).sort().forEach(gn=>{
      const idxs=groups[gn], pts=idxs.reduce((s,i)=>s+ptsOf(R[i]),0);
      const wrap=document.createElement('div');wrap.className='exp-grp';
@@ -1165,8 +1205,9 @@ window.dlRoute=dlRoute;
    updateMeter();
  });
  document.getElementById('expGo').onclick=async()=>{
-   const idx=selIdx(); if(!idx.length){ alert('Nothing selected to export.'); return; }
-   const kml=buildKML(idx);
+   const idx=selIdx(), pins=selPins();
+   if(!idx.length && !pins.length){ alert('Nothing selected to export.'); return; }
+   const kml=buildKML(idx,pins);
    const fmt=(document.querySelector('input[name="expFmt"]:checked')||{}).value||'kml';
    const base=(((document.getElementById('mapTitle')||{}).textContent||MAP_ID)
      .replace(/[\\/:*?"<>|]+/g,'_').trim().slice(0,80))||'mymap';   // file name = map name
