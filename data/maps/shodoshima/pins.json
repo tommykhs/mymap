@@ -123,10 +123,12 @@
       134.17208
     ],
     "place": {
-      "address": "3期キービジュアル。オリーブのモニュメント",
+      "address": "小豆島の玄関口（フェリー）。3期キービジュアル",
       "icon": "directions_boat",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E6%B8%AF%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E6%B8%AF%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "color": "#263238",
+      "ferry": "https://www.shodoshima-ferry.co.jp/timetable/"
     }
   },
   {
@@ -153,6 +155,76 @@
       "icon": "local_cafe",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E3%83%90%E3%82%B8%E3%83%AA%E3%82%B3%20%E5%9C%9F%E5%BA%84%E7%94%BA%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
+    }
+  },
+  {
+    "name": "宮浦港（Miyanoura Port・直島）",
+    "coords": [
+      34.45635,
+      133.97414
+    ],
+    "place": {
+      "address": "直島の玄関口（フェリー）。レンタサイクル拠点",
+      "icon": "directions_boat",
+      "color": "#263238",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%AE%E6%B5%A6%E6%B8%AF%20%E7%9B%B4%E5%B3%B6",
+      "ferry": "https://www.shikokukisen.com/instant/"
+    }
+  },
+  {
+    "name": "家浦港（Ieura Port・豊島）",
+    "coords": [
+      34.48945,
+      134.06119
+    ],
+    "place": {
+      "address": "豊島の玄関口（フェリー）。レンタサイクル拠点",
+      "icon": "directions_boat",
+      "color": "#263238",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%B6%E6%B5%A6%E6%B8%AF%20%E8%B1%8A%E5%B3%B6",
+      "ferry": "https://www.shodoshima-ferry.co.jp/timetable/"
+    }
+  },
+  {
+    "name": "宇野港（Uno Port・岡山 玉野市）",
+    "coords": [
+      34.4903,
+      133.9457
+    ],
+    "place": {
+      "address": "本州側の玄関口。直島・豊島・小豆島へのフェリー発着",
+      "icon": "directions_boat",
+      "color": "#263238",
+      "ferry": "https://www.shikokukisen.com/instant/",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%87%E9%87%8E%E6%B8%AF%20%E7%8E%89%E9%87%8E%E5%B8%82"
+    }
+  },
+  {
+    "name": "唐櫃港（Karato Port・豊島）",
+    "coords": [
+      34.4957,
+      134.0935
+    ],
+    "place": {
+      "address": "豊島のもう一つの港（豊島美術館側）。土庄行きフェリー発着",
+      "icon": "directions_boat",
+      "color": "#263238",
+      "ferry": "https://www.shodoshima-ferry.co.jp/timetable/",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%94%90%E6%AB%83%E6%B8%AF%20%E8%B1%8A%E5%B3%B6"
+    }
+  },
+  {
+    "name": "本村港（Honmura Port・直島）",
+    "coords": [
+      34.4612,
+      133.997
+    ],
+    "place": {
+      "address": "直島のもう一つの港（家プロジェクト側）。旅客船のみ＝車・自転車は不可",
+      "icon": "directions_boat",
+      "color": "#263238",
+      "ferry": "https://t-ferry.com/schedule/",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E6%9C%AC%E6%9D%91%E6%B8%AF%20%E7%9B%B4%E5%B3%B6"
     }
   }
 ]

@@ -247,11 +247,16 @@
  .ps-add:hover{filter:brightness(1.08)}
  /* saved-place pin: Google-Maps-style teardrop with a category glyph inside */
  .mm-pin{background:none;border:none}
- .mm-pin .pin-badge{width:28px;height:28px;border-radius:50% 50% 50% 0;
-   transform:rotate(-45deg);background:#2979ff;border:2px solid #fff;
-   box-shadow:0 1px 4px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
- .mm-pin .pin-badge .material-symbols-outlined{transform:rotate(45deg);font-size:16px;
-   color:#fff;line-height:1}
+ /* shared: thin border, tight padding (Google-My-Maps style) */
+ .mm-pin .pin-badge{background:#2979ff;border:1px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.45);
+   display:flex;align-items:center;justify-content:center}
+ .mm-pin .pin-badge .material-symbols-outlined{color:#fff;line-height:1}
+ /* category icons -> circle, larger glyph */
+ .mm-pin .pin-badge.circ{width:24px;height:24px;border-radius:50%}
+ .mm-pin .pin-badge.circ .material-symbols-outlined{font-size:18px}
+ /* default (no category) -> teardrop pin */
+ .mm-pin .pin-badge.drop{width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg)}
+ .mm-pin .pin-badge.drop .material-symbols-outlined{transform:rotate(45deg);font-size:13px}
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
@@ -689,6 +694,7 @@ function sourceLink(r){
  if(s==='南房総 cycle tourism') return '南房総';
  if(s==='にいがた観光ナビ') return 'にいがた観光ナビ';
  if(s==='touring-shimanami') return 'touring-shimanami';
+ if(s==='OpenStreetMap') return 'コース / Guide';
  return 'Details';
 }
 function statsLine(r){
@@ -970,28 +976,35 @@ function savePins(){ try{ localStorage.setItem(PIN_KEY,JSON.stringify(
 // Google-Maps-style teardrop carrying a category glyph (Material Symbols, already
 // loaded). The glyph comes from the pin's place.icon (default 'place').
 const PIN_GLYPH=p=>((p&&p.place&&p.place.icon)||'place');
-function pinIcon(glyph){
+const PIN_COLOR=p=>((p&&p.place&&p.place.color)||'#2979ff');
+function pinIcon(glyph,color){
+  glyph=glyph||'place'; color=color||'#2979ff';
+  const circ=(glyph!=='place');   // category icons are circles; the default pin is a teardrop
   return L.divIcon({className:'mm-pin',
-    html:'<div class="pin-badge"><span class="material-symbols-outlined">'+(glyph||'place')+'</span></div>',
-    iconSize:[28,28],iconAnchor:[14,27],popupAnchor:[0,-28]});
+    html:'<div class="pin-badge '+(circ?'circ':'drop')+'" style="background:'+color+'"><span class="material-symbols-outlined">'+glyph+'</span></div>',
+    iconSize:circ?[24,24]:[22,22],
+    iconAnchor:circ?[12,12]:[11,21],
+    popupAnchor:circ?[0,-14]:[0,-21]});
 }
+// Same structure as the route box: ⠿ drag grip + title, then a single link/action row.
 function pinPopupHTML(p){
- let h='<b>'+esc(p.name)+'</b>';
  const pl=p.place||{};
+ let h='<span class="rt-drag" title="Drag to move">⠿</span><b>'+esc(p.name)+'</b>';
  if(pl.address) h+='<div class="rt-desc">'+esc(pl.address)+'</div>';
  if(pl.rating)  h+='<div class="rt-stats">★ '+esc(pl.rating)+'</div>';
  const row=[];
+ if(pl.ferry)   row.push('<a href="'+esc(pl.ferry)+'" target="_blank"><span class="mi">directions_boat</span>Ferry timetable</a>');
  if(pl.guide)   row.push('<a href="'+esc(pl.guide)+'" target="_blank"><span class="mi">auto_stories</span>Pilgrimage guide</a>');
  if(pl.website) row.push('<a href="'+esc(pl.website)+'" target="_blank"><span class="mi">language</span>Website</a>');
  if(pl.url)     row.push('<a href="'+esc(pl.url)+'" target="_blank"><span class="mi">open_in_new</span>Google Maps</a>');
- if(row.length) h+='<div class="rt-dl">'+row.join('')+'</div>';
- h+='<div class="rt-dl"><a href="#" onclick="pinRename('+p.id+');return false"><span class="mi">edit</span>Rename</a>'
-   +'<a href="#" onclick="pinDelete('+p.id+');return false"><span class="mi">delete</span>Delete</a></div>';
+ row.push('<a href="#" onclick="pinRename('+p.id+');return false"><span class="mi">edit</span>Rename</a>');
+ row.push('<a href="#" onclick="pinDelete('+p.id+');return false"><span class="mi">delete</span>Delete</a>');
+ h+='<div class="rt-dl">'+row.join('')+'</div>';
  return h;
 }
 function addPin(o){
  const p={id:pinSeq++,name:o.name||'New place',coords:o.coords,place:o.place||null};
- const m=L.marker(p.coords,{icon:pinIcon(PIN_GLYPH(p)),draggable:true});
+ const m=L.marker(p.coords,{icon:pinIcon(PIN_GLYPH(p),PIN_COLOR(p)),draggable:true});
  m.bindPopup(pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
  m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
  m.addTo(pinLayer); p.marker=m; PINS.push(p);
@@ -1011,7 +1024,7 @@ function renderPinsList(){
    +'<span class="gcount">'+PINS.length+'</span>';
  const box=document.createElement('div');
  PINS.forEach(p=>{ const it=document.createElement('div'); it.className='it';
-   it.innerHTML='<span class="material-symbols-outlined" style="font-size:16px;width:18px;flex:0 0 auto;color:#2979ff">'+PIN_GLYPH(p)+'</span>'
+   it.innerHTML='<span class="material-symbols-outlined" style="font-size:16px;width:18px;flex:0 0 auto;color:'+PIN_COLOR(p)+'">'+PIN_GLYPH(p)+'</span>'
      +'<span class="nm">'+esc(p.name)+'</span>';
    it.onclick=()=>focusPin(p); box.appendChild(it); });
  const eye=h.querySelector('.gp-eye'), eyeIc=eye.querySelector('.material-symbols-outlined');
