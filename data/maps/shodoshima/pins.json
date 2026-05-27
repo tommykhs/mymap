@@ -7,6 +7,7 @@
     ],
     "place": {
       "address": "OP・作中に何度も登場する聖地",
+      "icon": "temple_buddhist",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E9%B9%BF%E5%B3%B6%E6%98%8E%E7%A5%9E%E7%A4%BE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -19,6 +20,7 @@
     ],
     "place": {
       "address": "OP（1期・3期）/劇場版キービジュアル。OPの猫「たえちゃん」",
+      "icon": "beach_access",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E3%82%A8%E3%83%B3%E3%82%B8%E3%82%A7%E3%83%AB%E3%83%AD%E3%83%BC%E3%83%89%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -31,6 +33,7 @@
     ],
     "place": {
       "address": "2期最終話 夏祭りのシーン。石段から瀬戸内海を一望",
+      "icon": "temple_buddhist",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E5%AF%8C%E4%B8%98%E5%85%AB%E5%B9%A1%E7%A5%9E%E7%A4%BE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -43,6 +46,7 @@
     ],
     "place": {
       "address": "通学シーン・OP。二人の出会いの場所",
+      "icon": "place",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E6%9F%B3%E9%9A%A7%E9%81%93%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -55,6 +59,7 @@
     ],
     "place": {
       "address": "OP・作中の橋のシーン",
+      "icon": "place",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E5%B9%A1%E6%A9%8B%20%E6%B7%B5%E5%B4%8E%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -67,6 +72,7 @@
     ],
     "place": {
       "address": "「桃見中学校」のモデル。原作者の母校",
+      "icon": "school",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E7%94%BA%E7%AB%8B%E5%9C%9F%E5%BA%84%E4%B8%AD%E5%AD%A6%E6%A0%A1%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -79,6 +85,7 @@
     ],
     "place": {
       "address": "5話 勉強回。館内が作中とほぼ一致",
+      "icon": "local_library",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E7%94%BA%E7%AB%8B%E4%B8%AD%E5%A4%AE%E5%9B%B3%E6%9B%B8%E9%A4%A8%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -91,6 +98,7 @@
     ],
     "place": {
       "address": "5話 西片が漫画を買う書店",
+      "icon": "menu_book",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E3%83%96%E3%83%83%E3%82%AF%E3%82%B9%E3%81%93%E3%81%A8%E3%81%B6%E3%81%8D%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -103,6 +111,7 @@
     ],
     "place": {
       "address": "OPに隣接の建物が登場",
+      "icon": "temple_buddhist",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E5%85%89%E5%AF%BA%20%E5%9C%9F%E5%BA%84%E7%94%BA%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -115,6 +124,7 @@
     ],
     "place": {
       "address": "3期キービジュアル。オリーブのモニュメント",
+      "icon": "directions_boat",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E6%B8%AF%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -127,6 +137,7 @@
     ],
     "place": {
       "address": "聖地巡礼の拠点（マップ・グッズ）。ターミナル2F",
+      "icon": "info",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E3%81%A8%E3%81%AE%E3%81%97%E3%82%87%E3%81%86BASE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }
@@ -139,6 +150,7 @@
     ],
     "place": {
       "address": "劇場版 ペットショップの舞台",
+      "icon": "local_cafe",
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
       "url": "https://www.google.com/maps/search/?api=1&query=%E3%83%90%E3%82%B8%E3%83%AA%E3%82%B3%20%E5%9C%9F%E5%BA%84%E7%94%BA%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA"
     }

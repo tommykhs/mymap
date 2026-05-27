@@ -245,6 +245,13 @@
  .ps-add{margin-top:8px;font:inherit;font-size:12px;color:#fff;background:var(--ac);
    border:none;border-radius:6px;padding:6px 12px;cursor:pointer}
  .ps-add:hover{filter:brightness(1.08)}
+ /* saved-place pin: Google-Maps-style teardrop with a category glyph inside */
+ .mm-pin{background:none;border:none}
+ .mm-pin .pin-badge{width:28px;height:28px;border-radius:50% 50% 50% 0;
+   transform:rotate(-45deg);background:#2979ff;border:2px solid #fff;
+   box-shadow:0 1px 4px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
+ .mm-pin .pin-badge .material-symbols-outlined{transform:rotate(45deg);font-size:16px;
+   color:#fff;line-height:1}
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
@@ -960,12 +967,14 @@ const pinLayer=L.layerGroup().addTo(map);
 function loadPins(){ try{ const v=localStorage.getItem(PIN_KEY); return v==null?null:(JSON.parse(v)||[]); }catch(e){ return null; } }
 function savePins(){ try{ localStorage.setItem(PIN_KEY,JSON.stringify(
   PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})))); }catch(e){} }
-// Google My Maps' built-in marker (classic mapfiles icon set) for visual parity
-const PIN_ICON_URL='https://maps.google.com/mapfiles/ms/icons/blue-dot.png';
-function pinIcon(){ return L.icon({
-  iconUrl:PIN_ICON_URL,iconSize:[32,32],iconAnchor:[16,32],popupAnchor:[0,-30],
-  shadowUrl:'https://maps.gstatic.com/mapfiles/ms2/micons/msmarker.shadow.png',
-  shadowSize:[59,32],shadowAnchor:[16,32]}); }
+// Google-Maps-style teardrop carrying a category glyph (Material Symbols, already
+// loaded). The glyph comes from the pin's place.icon (default 'place').
+const PIN_GLYPH=p=>((p&&p.place&&p.place.icon)||'place');
+function pinIcon(glyph){
+  return L.divIcon({className:'mm-pin',
+    html:'<div class="pin-badge"><span class="material-symbols-outlined">'+(glyph||'place')+'</span></div>',
+    iconSize:[28,28],iconAnchor:[14,27],popupAnchor:[0,-28]});
+}
 function pinPopupHTML(p){
  let h='<b>'+esc(p.name)+'</b>';
  const pl=p.place||{};
@@ -982,7 +991,7 @@ function pinPopupHTML(p){
 }
 function addPin(o){
  const p={id:pinSeq++,name:o.name||'New place',coords:o.coords,place:o.place||null};
- const m=L.marker(p.coords,{icon:pinIcon(),draggable:true});
+ const m=L.marker(p.coords,{icon:pinIcon(PIN_GLYPH(p)),draggable:true});
  m.bindPopup(pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
  m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
  m.addTo(pinLayer); p.marker=m; PINS.push(p);
@@ -1002,7 +1011,7 @@ function renderPinsList(){
    +'<span class="gcount">'+PINS.length+'</span>';
  const box=document.createElement('div');
  PINS.forEach(p=>{ const it=document.createElement('div'); it.className='it';
-   it.innerHTML='<img src="'+PIN_ICON_URL+'" style="width:14px;height:14px;flex:0 0 auto" alt="">'
+   it.innerHTML='<span class="material-symbols-outlined" style="font-size:16px;width:18px;flex:0 0 auto;color:#2979ff">'+PIN_GLYPH(p)+'</span>'
      +'<span class="nm">'+esc(p.name)+'</span>';
    it.onclick=()=>focusPin(p); box.appendChild(it); });
  const eye=h.querySelector('.gp-eye'), eyeIc=eye.querySelector('.material-symbols-outlined');
