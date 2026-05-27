@@ -972,6 +972,7 @@ function pinPopupHTML(p){
  if(pl.address) h+='<div class="rt-desc">'+esc(pl.address)+'</div>';
  if(pl.rating)  h+='<div class="rt-stats">★ '+esc(pl.rating)+'</div>';
  const row=[];
+ if(pl.guide)   row.push('<a href="'+esc(pl.guide)+'" target="_blank"><span class="mi">auto_stories</span>Pilgrimage guide</a>');
  if(pl.website) row.push('<a href="'+esc(pl.website)+'" target="_blank"><span class="mi">language</span>Website</a>');
  if(pl.url)     row.push('<a href="'+esc(pl.url)+'" target="_blank"><span class="mi">open_in_new</span>Google Maps</a>');
  if(row.length) h+='<div class="rt-dl">'+row.join('')+'</div>';
