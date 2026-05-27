@@ -129,6 +129,17 @@
  .leaflet-popup-content-wrapper.rt-dragging{opacity:.92}
  .rt-links{margin-top:4px;font-size:11px}
  .rt-desc{margin-top:6px;font-size:11px;color:#c9d0d8}
+ /* elevation profile + linked hover overlay (crosshair / dot / tip) */
+ .rt-prof{position:relative;margin-top:6px;height:44px;cursor:default;touch-action:none}
+ .rt-prof-cross{position:absolute;top:0;height:44px;width:1px;margin-left:-0.5px;
+   background:var(--mut);opacity:0;pointer-events:none}
+ .rt-prof-dot{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;
+   background:#2979ff;border:1.5px solid #fff;box-shadow:0 0 2px rgba(0,0,0,.6);
+   opacity:0;pointer-events:none}
+ .rt-prof-tip{position:absolute;transform:translateX(-50%);background:var(--bg2);color:var(--fg);
+   border:1px solid var(--bd);border-radius:4px;font-size:10px;line-height:1.3;padding:1px 5px;
+   white-space:nowrap;opacity:0;pointer-events:none}
+ .rt-prof.active .rt-prof-cross,.rt-prof.active .rt-prof-dot,.rt-prof.active .rt-prof-tip{opacity:1}
  .rt-stats{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#9aa4b0;
    align-items:center}
  .rt-stats .mi{font-family:'Material Symbols Outlined';font-weight:normal;font-size:14px;
@@ -281,13 +292,10 @@
   <button id="adminBtn" title="Save pins to repo (admin)" style="display:none"><span class="material-symbols-outlined">cloud_upload</span></button>
  </div>
  <div id="adminBox" class="searchbox" hidden>
-  <p class="sub" style="margin:0 0 6px">Admin · commit <b>My places</b> to <span id="adminRepo">the repo</span></p>
   <div class="srow">
-   <input type="password" id="ghToken" placeholder="GitHub fine-grained token (Contents: RW)" autocomplete="off">
-  </div>
-  <div class="srow" style="margin-top:6px">
-   <button id="ghSave" class="ps-add" style="margin:0;flex:1">Save pins to repo</button>
-   <button id="ghForget" title="Forget token" style="font:inherit;font-size:12px;color:var(--fg);background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:0 9px;cursor:pointer">Forget</button>
+   <input type="password" id="ghToken" placeholder="GitHub token (Contents: RW)" autocomplete="off">
+   <button id="ghSave" title="Save My places to the repo"><span class="material-symbols-outlined">cloud_upload</span></button>
+   <button id="ghForget" title="Forget token"><span class="material-symbols-outlined">logout</span></button>
   </div>
   <p class="sub" id="ghMsg" style="margin:6px 0 0"></p>
  </div>
@@ -570,6 +578,61 @@ map.on('popupopen', (e) => {
  handle.addEventListener('mousedown', onDown);
  handle.addEventListener('touchstart', onDown, {passive:false});
 });
+// ---- linked route<->elevation hover ---------------------------------------
+// When a route box opens and the route has a real profile, scrubbing the SVG
+// profile (mouse or finger) runs a dot along the route + shows km/altitude, and
+// hovering the route line (desktop) moves the dot on the profile. Vanilla, no
+// library; wired only for the open route, torn down on close — zero load cost.
+let profCleanup=null;
+map.on('popupopen', e=>{ if(profCleanup){ profCleanup(); profCleanup=null; } profCleanup=setupProfileLink(e.popup); });
+map.on('popupclose', ()=>{ if(profCleanup){ profCleanup(); profCleanup=null; } });
+function setupProfileLink(popup){
+ const idx = popup && popup._source && popup._source._routeIdx;
+ if(idx==null) return null;
+ const r=R[idx], prof=r&&r.profile;
+ if(!prof||prof.length<2) return null;
+ const pk=prof.map(x=>x[0]), pa=prof.map(x=>x[1]);
+ const yMin=Math.min.apply(null,pa), yMax=Math.max.apply(null,pa);
+ if(yMax-yMin<=1) return null;                 // flat profile -> nothing to link
+ const cont=popup._container && popup._container.querySelector('.rt-prof');
+ if(!cont) return null;
+ const cross=cont.querySelector('.rt-prof-cross'), dotEl=cont.querySelector('.rt-prof-dot'),
+       tip=cont.querySelector('.rt-prof-tip');
+ const xMax=pk[pk.length-1]||1, ny=Math.max(yMax-yMin,1), VH=44;
+ // flatten the DISPLAYED geometry + cumulative distance (m) — drives both views
+ const ll=[]; (r.polys||[]).forEach(poly=>poly.forEach(pt=>ll.push(L.latLng(pt))));
+ if(ll.length<2) return null;
+ const cum=[0]; for(let i=1;i<ll.length;i++) cum[i]=cum[i-1]+ll[i-1].distanceTo(ll[i]);
+ const totalM=cum[cum.length-1]||1;
+ let dot=null;
+ function altAtKm(ck){ let j=1; while(j<pk.length&&pk[j]<ck) j++;
+   const a=pk[j-1],b=(pk[j]!=null?pk[j]:a),t=(b-a)?(ck-a)/(b-a):0,va=pa[j-1],vb=(pa[j]!=null?pa[j]:va);
+   return va+(vb-va)*t; }
+ function show(f){
+   f=Math.max(0,Math.min(1,f));
+   const dm=f*totalM; let k=1; while(k<cum.length&&cum[k]<dm) k++;
+   const A=ll[k-1],B=ll[k]||A,seg=(cum[k]-cum[k-1])||1,t=(dm-cum[k-1])/seg;
+   const pos=[A.lat+(B.lat-A.lat)*t, A.lng+(B.lng-A.lng)*t];
+   if(!dot){ dot=L.circleMarker(pos,{radius:6,color:'#fff',weight:2,fillColor:'#2979ff',fillOpacity:1,interactive:false}); }
+   else dot.setLatLng(pos);
+   if(!map.hasLayer(dot)) dot.addTo(map);
+   const alt=Math.round(altAtKm(f*xMax)), sy=VH-((alt-yMin)/ny)*(VH-6)-3, lp=(f*100).toFixed(2)+'%';
+   cross.style.left=lp; dotEl.style.left=lp; dotEl.style.top=sy.toFixed(1)+'px';
+   tip.style.left=lp; tip.style.top=Math.max(sy-15,-2).toFixed(1)+'px';
+   tip.textContent=(dm/1000).toFixed(1)+' km · '+alt+' m';
+   cont.classList.add('active');
+ }
+ function hide(){ cont.classList.remove('active'); if(dot&&map.hasLayer(dot)) map.removeLayer(dot); }
+ const onMove=ev=>{ const rc=cont.getBoundingClientRect(); show((ev.clientX-rc.left)/rc.width); if(ev.stopPropagation) ev.stopPropagation(); };
+ cont.addEventListener('pointermove',onMove);
+ cont.addEventListener('pointerleave',hide);
+ cont.addEventListener('pointercancel',hide);
+ const pls=polysByIdx[idx]||[];
+ const onRoute=ev=>{ let best=Infinity,bi=0; for(let i=0;i<ll.length;i++){ const d=ev.latlng.distanceTo(ll[i]); if(d<best){best=d;bi=i;} } show(cum[bi]/totalM); };
+ const onOut=()=>hide();
+ pls.forEach(pl=>{ pl.on('mousemove',onRoute); pl.on('mouseout',onOut); });
+ return function(){ pls.forEach(pl=>{ pl.off('mousemove',onRoute); pl.off('mouseout',onOut); }); if(dot&&map.hasLayer(dot)) map.removeLayer(dot); dot=null; };
+}
 baseCtlEl.appendChild(baseBtn); baseCtlEl.appendChild(themeBtn); baseCtlEl.appendChild(recenterBtn); baseCtlEl.appendChild(menu);
 // initial base (restored from localStorage if present)
 let startBase=ST.base||'osm';
@@ -590,10 +653,15 @@ function sparkline(p){
    const sy=VH-((y-yMin)/ny)*(VH-6)-3;
    return sx.toFixed(1)+','+sy.toFixed(1);
  }).join(' ');
- return '<svg viewBox="0 0 '+VW+' '+VH+'" preserveAspectRatio="none" '
-   +'style="width:100%;height:44px;display:block;margin-top:6px">'
+ // wrapped in .rt-prof so the hover overlay (crosshair / dot / tip) can sit on
+ // top; setupProfileLink() drives those from the open route's geometry.
+ return '<div class="rt-prof">'
+   +'<svg viewBox="0 0 '+VW+' '+VH+'" preserveAspectRatio="none" '
+   +'style="width:100%;height:44px;display:block">'
    +'<polyline points="'+pts+'" fill="none" stroke="#9aa4b0" stroke-width="1.4" vector-effect="non-scaling-stroke"/>'
-   +'</svg>';
+   +'</svg>'
+   +'<div class="rt-prof-cross"></div><div class="rt-prof-dot"></div><div class="rt-prof-tip"></div>'
+   +'</div>';
 }
 function sourceLink(r){
  const s=(r.source||'');
@@ -699,9 +767,21 @@ const lg={},polysByIdx={},itemByIdx={},boxByIdx={},headerByIdx={};
 let selectedIdx=null;
 // safe HTML escape for tooltips
 const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-// per-route line weight (constant px, Google-My-Maps style); default 2, override
-// per route via its `weight` property (ready for per-route widths later).
+// per-route base line weight (Google-My-Maps style); default 2, override per
+// route via its `weight` property (ready for per-route widths later).
 const baseWeight=r=>(r.weight||2);
+// zoom-adaptive thickness: MULTIPLY each route's own base weight by a zoom
+// factor, so per-route widths are respected but lines thin out when zoomed out
+// (region/island view) and sharpen up close. Re-applied on every zoomend.
+function zoomScale(){
+ const z=map.getZoom();
+ if(z<=8)  return 0.5;   // region view -> ~1px on a default route
+ if(z<=10) return 0.7;
+ if(z<=12) return 1.0;   // ~2px
+ if(z<=14) return 1.3;
+ return 1.55;            // street level -> ~3px
+}
+const effWeight=r=>Math.max(1, +(baseWeight(r)*zoomScale()).toFixed(2));
 // Build routes in small batches (via requestAnimationFrame) so the page stays
 // responsive, the loading progress updates, and routes appear progressively.
 await new Promise(resolve=>{
@@ -711,7 +791,7 @@ await new Promise(resolve=>{
    for(;i<end;i++){
      const idx=i, r=R[idx];
      const g=L.layerGroup();
-     const opt={color:(r.color||accent()),weight:baseWeight(r),opacity:r.opacity};
+     const opt={color:(r.color||accent()),weight:effWeight(r),opacity:r.opacity};
      if(r.style!=='solid'||r.dash[0])opt.dashArray=(r.dash[0]||8)+','+(r.dash[1]||6);
      const plList=[]; const tip=esc(r.name);
      r.polys.forEach(p=>{
@@ -719,6 +799,7 @@ await new Promise(resolve=>{
        pl.bindPopup(popupHTML(r,idx),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
        pl.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
        pl.on('click',()=>selectRoute(idx,{fromMap:true}));
+       pl._routeIdx=idx;   // lets popupopen find the route for the profile-hover link
        pl.addTo(g); bounds.extend(pl.getBounds());
        plList.push(pl);
      });
@@ -732,10 +813,18 @@ await new Promise(resolve=>{
 function styleRoute(i,sel){
  const base=R[i].color||accent();
  (polysByIdx[i]||[]).forEach(pl=>{
-   if(sel){ pl.setStyle({color:'#2979ff',weight:baseWeight(R[i])+1,opacity:1}); pl.bringToFront(); }
-   else  { pl.setStyle({color:base,weight:baseWeight(R[i]),opacity:R[i].opacity}); }
+   if(sel){ pl.setStyle({color:'#2979ff',weight:effWeight(R[i])+1,opacity:1}); pl.bringToFront(); }
+   else  { pl.setStyle({color:base,weight:effWeight(R[i]),opacity:R[i].opacity}); }
  });
 }
+// re-apply zoom-adaptive weights to all routes (selected route keeps its +1)
+function applyWeights(){
+ Object.keys(polysByIdx).forEach(k=>{
+   const i=+k, w=effWeight(R[i])+(i===selectedIdx?1:0);
+   polysByIdx[i].forEach(pl=>pl.setStyle({weight:w}));
+ });
+}
+map.on('zoomend', applyWeights);
 function selectRoute(i,opts){
  opts=opts||{};
  if(selectedIdx===i){ // toggle off on second map-click of the same route
@@ -833,6 +922,7 @@ function fitAll(){
  catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
 }
 fitAll();
+applyWeights();  // set zoom-adaptive thickness for the initial zoom
 hideLoading();   // routes drawn + map fitted — reveal the map
 window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
 // ---- locate me (GPS), Google-Maps style: blue dot + accuracy ring, pan to it ----
@@ -999,11 +1089,8 @@ document.getElementById('psq').addEventListener('keydown',e=>{ if(e.key==='Enter
        tIn=document.getElementById('ghToken'), msgEl=document.getElementById('ghMsg');
  const repo=CFG.repo||{owner:'tommykhs',name:'mymap',branch:'master'};
  const path='data/maps/'+MAP_ID+'/pins.json';
- const isAdmin=new URLSearchParams(location.search).has('admin')||!!localStorage.getItem(TKEY);
  if(!btn) return;
- if(!isAdmin) return;                       // visitor: leave the button hidden
- btn.style.display='';
- document.getElementById('adminRepo').textContent=repo.owner+'/'+repo.name+'/'+path;
+ btn.style.display='';                       // always visible; saving still requires a valid token
  const setMsg=(m,err)=>{ msgEl.textContent=m; msgEl.style.color=err?'#e0564f':'#4ade80';
    msgEl.style.fontWeight='600'; window.__mmlog('admin: '+m, !!err); };
  btn.onclick=()=>{ box.hidden=!box.hidden; if(!box.hidden){ tIn.value=localStorage.getItem(TKEY)||''; tIn.focus(); setMsg(''); } };
