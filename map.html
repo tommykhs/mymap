@@ -1308,6 +1308,11 @@ window.dlRoute=dlRoute;
  }
  // saved-place pin -> KML Point Placemark, using the same Google teardrop icon
  const PIN_LAYER='My places';
+ // Map each pin's Material glyph to a Google "kml/shapes" icon that Google My Maps
+ // recognises and tints by the IconStyle <color>, so color AND icon round-trip on import.
+ const PIN_KML_ICON={directions_boat:'ferry',local_cafe:'coffee',local_library:'library_maps',
+   menu_book:'library_maps',info:'info-i',beach_access:'swimming',school:'schools_maps',
+   temple_buddhist:'placemark_circle',place:'placemark_circle'};
  function pinKML(p){
    const pl=p.place||{};
    const bits=[];
@@ -1317,9 +1322,12 @@ window.dlRoute=dlRoute;
    if(pl.website) dh+=(dh?'<br/>':'')+`<a href="${esc(pl.website)}">Website</a>`;
    if(pl.url)     dh+=(dh?'<br/>':'')+`<a href="${esc(pl.url)}">View in Google Maps &#8599;</a>`;
    const ed=`<ExtendedData><Data name="category"><value>${cdata(PIN_LAYER)}</value></Data></ExtendedData>`;
+   const ic=PIN_KML_ICON[pl.icon]||'placemark_circle';
+   const style=`<Style><IconStyle><color>${kmlColor(pl.color||'#2979ff')}</color><scale>1.1</scale>`
+     +`<Icon><href>https://maps.google.com/mapfiles/kml/shapes/${ic}.png</href></Icon></IconStyle></Style>`;
    return `<Placemark><name>${esc(p.name||'')}</name>`
      +(dh?`<description>${cdata(dh)}</description>`:'')
-     +`<styleUrl>#pinStyle</styleUrl>${ed}`
+     +style+ed
      +`<Point><coordinates>${p.coords[1]},${p.coords[0]},0</coordinates></Point></Placemark>`;
  }
  function buildKML(idx,pins){
@@ -1328,9 +1336,8 @@ window.dlRoute=dlRoute;
      body+=`<Folder><name>${esc(g)}</name>`+byG[g].map(i=>routeKML(R[i])).join('')+`</Folder>`; });
    if(pins&&pins.length)
      body+=`<Folder><name>${esc(PIN_LAYER)}</name>`+pins.map(pinKML).join('')+`</Folder>`;
-   const pinStyle=`<Style id="pinStyle"><IconStyle><Icon><href>https://maps.google.com/mapfiles/ms/icons/blue-dot.png</href></Icon></IconStyle></Style>`;
    return `<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2">`
-     +`<Document><name>MyMap export</name>${pinStyle}${body}</Document></kml>`;
+     +`<Document><name>MyMap export</name>${body}</Document></kml>`;
  }
  function dl(name,content,type){const a=document.createElement('a');
    a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;
