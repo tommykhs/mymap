@@ -1015,7 +1015,8 @@ function mmIconUrl(id,color,withPin){
  return 'https://mt.googleapis.com/vt/icon/name='+layers+'&highlight='+(withPin?'ff000000,'+col:col)+'&scale=2.0';
 }
 function pinIcon(id,color){
- return L.icon({iconUrl:mmIconUrl(id,color,true),iconSize:[27,43],iconAnchor:[13,42],popupAnchor:[0,-40]});
+ // the composited My Maps icon image is square (28x28 @1x) — keep it square or it distorts
+ return L.icon({iconUrl:mmIconUrl(id,color,true),iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-16]});
 }
 // Same structure as the route box: ⠿ drag grip + title, then a single link/action row.
 function pinPopupHTML(p){
