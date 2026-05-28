@@ -245,18 +245,27 @@
  .ps-add{margin-top:8px;font:inherit;font-size:12px;color:#fff;background:var(--ac);
    border:none;border-radius:6px;padding:6px 12px;cursor:pointer}
  .ps-add:hover{filter:brightness(1.08)}
- /* saved-place pin: Google-Maps-style teardrop with a category glyph inside */
- .mm-pin{background:none;border:none}
- /* shared: thin border, tight padding (Google-My-Maps style) */
- .mm-pin .pin-badge{background:#2979ff;border:1px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.45);
+ /* pin icon + color picker (Google My Maps "Newer" library) */
+ .pe-modal{position:fixed;inset:0;z-index:1700;display:flex;align-items:center;justify-content:center;
+   background:rgba(0,0,0,.45);padding:16px}
+ .pe-modal[hidden]{display:none}
+ .pe-dialog{width:344px;max-width:100%;max-height:82vh;display:flex;flex-direction:column;
+   background:var(--bg2);color:var(--fg);border:1px solid var(--bd);border-radius:12px;
+   box-shadow:0 10px 40px rgba(0,0,0,.5);font-size:13px;overflow:hidden}
+ .pe-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;
+   border-bottom:1px solid var(--bd);font-weight:600}
+ .pe-x{background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;line-height:1}
+ .pe-x:hover{color:var(--fg)}
+ .pe-body{padding:10px 14px;overflow-y:auto}
+ .pe-colors{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+ .pe-col{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+ .pe-col.on{border-color:var(--fg)}
+ .pe-icons{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+ .pe-ic{background:none;border:1px solid transparent;border-radius:6px;padding:3px;cursor:pointer;
    display:flex;align-items:center;justify-content:center}
- .mm-pin .pin-badge .material-symbols-outlined{color:#fff;line-height:1}
- /* category icons -> circle, larger glyph */
- .mm-pin .pin-badge.circ{width:24px;height:24px;border-radius:50%}
- .mm-pin .pin-badge.circ .material-symbols-outlined{font-size:18px}
- /* default (no category) -> teardrop pin */
- .mm-pin .pin-badge.drop{width:22px;height:22px;border-radius:50% 50% 50% 0;transform:rotate(-45deg)}
- .mm-pin .pin-badge.drop .material-symbols-outlined{transform:rotate(45deg);font-size:13px}
+ .pe-ic:hover{background:var(--hv)}
+ .pe-ic.on{border-color:var(--ac);background:var(--hv)}
+ .pe-ic img{width:22px;height:22px;display:block}
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
@@ -285,6 +294,13 @@
       <label><input type="radio" name="expFmt" value="kml" checked> KML</label>
       <label><input type="radio" name="expFmt" value="kmz"> KMZ</label></span>
     <button id="expGo" class="exp-go">Export</button>
+  </div>
+</div></div>
+<div id="pinEditModal" class="pe-modal" hidden><div class="pe-dialog">
+  <div class="pe-head"><span>Icon &amp; color · <span id="pinEditName"></span></span><button id="pinEditClose" class="pe-x">&times;</button></div>
+  <div class="pe-body">
+    <div id="pinEditColors" class="pe-colors"></div>
+    <div id="pinEditIcons" class="pe-icons"></div>
   </div>
 </div></div>
 <button id="panelReopen" class="panel-reopen" title="Open list"><span class="material-symbols-outlined">menu</span></button>
@@ -973,18 +989,33 @@ const pinLayer=L.layerGroup().addTo(map);
 function loadPins(){ try{ const v=localStorage.getItem(PIN_KEY); return v==null?null:(JSON.parse(v)||[]); }catch(e){ return null; } }
 function savePins(){ try{ localStorage.setItem(PIN_KEY,JSON.stringify(
   PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})))); }catch(e){} }
-// Google-Maps-style teardrop carrying a category glyph (Material Symbols, already
-// loaded). The glyph comes from the pin's place.icon (default 'place').
-const PIN_GLYPH=p=>((p&&p.place&&p.place.icon)||'place');
+// Pins use Google My Maps "Newer" icons. place.icon = a My Maps icon ID; we render
+// the REAL My Maps pin image (container + icon + color) so it's WYSIWYG with export.
+// ICON_LIB = [id, sprite-name, label] in picker order; ICON_NAME = id -> sprite name.
+const ICON_LIB=[
+ [1899,'blank-shape_pin_4x','Pin'],[1574,'flag_4x','Flag'],[1592,'heart_4x','Heart'],[1535,'camera-photo_4x','Photo'],[1523,'binoculars_4x','Viewpoint'],[1599,'historic-monument_4x','Monument'],[1636,'museum_4x','Museum'],
+ [1677,'religious-shinto_4x','Shrine'],[1706,'temple_4x','Temple'],[1669,'religious-buddhist-zen_4x','Zen'],[1671,'religious-generic_4x','Worship'],[1509,'art-palette_4x','Art'],[1582,'garden-flower_4x','Garden'],
+ [1569,'ferry_4x','Ferry'],[1537,'car-ferry_4x','Car ferry'],[1681,'sailing-boat_4x','Sailing'],[1716,'train_4x','Train'],[1532,'bus_4x','Bus'],[1504,'airport-plane_4x','Airport'],[1538,'car_4x','Car'],[1704,'taxi_4x','Taxi'],[1522,'bicycle_4x','Bike'],[1644,'parking_4x','Parking'],[1596,'hiking-solo_4x','Hiking'],[1731,'walking-pedestrian_4x','Walk'],
+ [1534,'cafe-cup_4x','Cafe'],[1577,'food-fork-knife_4x','Food'],[1567,'fast-food_4x','Fast food'],[1517,'bar-cocktail_4x','Bar'],[1685,'shopping-cart_4x','Market'],[1684,'shopping-bag_4x','Shopping'],
+ [1602,'hotel-bed_4x','Hotel'],[1608,'info_4x','Info'],[1807,'hospital-h_4x','Hospital'],[1646,'pharmacy_4x','Pharmacy'],[1510,'atm_4x','ATM'],[1581,'fuel-gasoline_4x','Fuel'],[1733,'wc-unisex_4x','Toilet'],[1664,'reading-library_4x','Library'],[1526,'book_4x','Book'],[1682,'school-crossing_4x','School'],
+ [1521,'beach_4x','Beach'],[1701,'swimming_4x','Swim'],[1634,'mountain_4x','Mountain'],[1730,'volcano_4x','Volcano'],[1892,'waterfall_4x','Waterfall'],[1720,'tree_4x','Tree'],[1765,'camping-tent_4x','Camping'],
+];
+const ICON_NAME={}; ICON_LIB.forEach(x=>ICON_NAME[x[0]]=x[1]);
+// legacy: pins saved before this stored a Material glyph name -> map to a My Maps id
+const LEGACY_ICON={directions_boat:1569,local_cafe:1534,local_library:1664,menu_book:1526,info:1608,beach_access:1521,school:1682,temple_buddhist:1677,place:1899};
+const PIN_PALETTE=['#DB4437','#E8710A','#F4B400','#0F9D58','#1B9E77','#00ACC1','#2979FF','#3F51B5','#9C27B0','#E91E63','#795548','#607D8B','#757575','#263238'];
+const PIN_ICON_ID=p=>{const i=p&&p.place&&p.place.icon; if(typeof i==='number')return i; return LEGACY_ICON[i]||1899;};
 const PIN_COLOR=p=>((p&&p.place&&p.place.color)||'#2979ff');
-function pinIcon(glyph,color){
-  glyph=glyph||'place'; color=color||'#2979ff';
-  const circ=(glyph!=='place');   // category icons are circles; the default pin is a teardrop
-  return L.divIcon({className:'mm-pin',
-    html:'<div class="pin-badge '+(circ?'circ':'drop')+'" style="background:'+color+'"><span class="material-symbols-outlined">'+glyph+'</span></div>',
-    iconSize:circ?[24,24]:[22,22],
-    iconAnchor:circ?[12,12]:[11,21],
-    popupAnchor:circ?[0,-14]:[0,-21]});
+// composited My Maps icon image URL (withPin=true → full teardrop; false → glyph only)
+function mmIconUrl(id,color,withPin){
+ const n=ICON_NAME[id]||'blank-shape_pin_4x', col=(color||'#2979ff').replace('#','').toUpperCase();
+ const layers=withPin
+   ? 'icons/onion/SHARED-mymaps-container-bg_4x.png,icons/onion/SHARED-mymaps-container_4x.png,icons/onion/'+id+'-'+n+'.png'
+   : 'icons/onion/'+id+'-'+n+'.png';
+ return 'https://mt.googleapis.com/vt/icon/name='+layers+'&highlight='+(withPin?'ff000000,'+col:col)+'&scale=2.0';
+}
+function pinIcon(id,color){
+ return L.icon({iconUrl:mmIconUrl(id,color,true),iconSize:[27,43],iconAnchor:[13,42],popupAnchor:[0,-40]});
 }
 // Same structure as the route box: ⠿ drag grip + title, then a single link/action row.
 function pinPopupHTML(p){
@@ -997,6 +1028,7 @@ function pinPopupHTML(p){
  if(pl.guide)   row.push('<a href="'+esc(pl.guide)+'" target="_blank"><span class="mi">auto_stories</span>Pilgrimage guide</a>');
  if(pl.website) row.push('<a href="'+esc(pl.website)+'" target="_blank"><span class="mi">language</span>Website</a>');
  if(pl.url)     row.push('<a href="'+esc(pl.url)+'" target="_blank"><span class="mi">open_in_new</span>Google Maps</a>');
+ row.push('<a href="#" onclick="pinEdit('+p.id+');return false"><span class="mi">palette</span>Icon/Color</a>');
  row.push('<a href="#" onclick="pinRename('+p.id+');return false"><span class="mi">edit</span>Rename</a>');
  row.push('<a href="#" onclick="pinDelete('+p.id+');return false"><span class="mi">delete</span>Delete</a>');
  h+='<div class="rt-dl">'+row.join('')+'</div>';
@@ -1004,7 +1036,7 @@ function pinPopupHTML(p){
 }
 function addPin(o){
  const p={id:pinSeq++,name:o.name||'New place',coords:o.coords,place:o.place||null};
- const m=L.marker(p.coords,{icon:pinIcon(PIN_GLYPH(p),PIN_COLOR(p)),draggable:true});
+ const m=L.marker(p.coords,{icon:pinIcon(PIN_ICON_ID(p),PIN_COLOR(p)),draggable:true});
  m.bindPopup(pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
  m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
  m.addTo(pinLayer); p.marker=m; PINS.push(p);
@@ -1024,7 +1056,7 @@ function renderPinsList(){
    +'<span class="gcount">'+PINS.length+'</span>';
  const box=document.createElement('div');
  PINS.forEach(p=>{ const it=document.createElement('div'); it.className='it';
-   it.innerHTML='<span class="material-symbols-outlined" style="font-size:16px;width:18px;flex:0 0 auto;color:'+PIN_COLOR(p)+'">'+PIN_GLYPH(p)+'</span>'
+   it.innerHTML='<img src="'+mmIconUrl(PIN_ICON_ID(p),PIN_COLOR(p),false)+'" style="width:16px;height:16px;flex:0 0 auto" alt="">'
      +'<span class="nm">'+esc(p.name)+'</span>';
    it.onclick=()=>focusPin(p); box.appendChild(it); });
  const eye=h.querySelector('.gp-eye'), eyeIc=eye.querySelector('.material-symbols-outlined');
@@ -1042,6 +1074,25 @@ window.pinRename=function(id){ const p=PINS.find(x=>x.id===id); if(!p) return;
  p.name=v.trim()||p.name; p.marker.setPopupContent(pinPopupHTML(p)); savePins(); renderPinsList(); };
 window.pinDelete=function(id){ const i=PINS.findIndex(x=>x.id===id); if(i<0) return;
  pinLayer.removeLayer(PINS[i].marker); PINS.splice(i,1); map.closePopup(); savePins(); renderPinsList(); };
+// ---- icon + color picker (Google My Maps "Newer" library) ----
+function applyPinStyle(p){ p.marker.setIcon(pinIcon(PIN_ICON_ID(p),PIN_COLOR(p)));
+ p.marker.setPopupContent(pinPopupHTML(p)); savePins(); renderPinsList(); }
+function openPinEditor(id){
+ const p=PINS.find(x=>x.id===id); if(!p) return;
+ const modal=document.getElementById('pinEditModal');
+ const cw=document.getElementById('pinEditColors'), iw=document.getElementById('pinEditIcons');
+ const curId=PIN_ICON_ID(p), curCol=PIN_COLOR(p);
+ document.getElementById('pinEditName').textContent=p.name;
+ cw.innerHTML=PIN_PALETTE.map(c=>'<button class="pe-col'+(c.toLowerCase()===curCol.toLowerCase()?' on':'')+'" style="background:'+c+'" data-c="'+c+'" title="'+c+'"></button>').join('');
+ iw.innerHTML=ICON_LIB.map(x=>'<button class="pe-ic'+(x[0]===curId?' on':'')+'" data-id="'+x[0]+'" title="'+x[2]+'"><img src="'+mmIconUrl(x[0],curCol,false)+'" alt="'+x[2]+'"></button>').join('');
+ cw.querySelectorAll('.pe-col').forEach(b=>b.onclick=()=>{ p.place=p.place||{}; p.place.color=b.dataset.c; applyPinStyle(p); openPinEditor(id); });
+ iw.querySelectorAll('.pe-ic').forEach(b=>b.onclick=()=>{ p.place=p.place||{}; p.place.icon=+b.dataset.id; applyPinStyle(p); openPinEditor(id); });
+ modal.hidden=false;
+}
+window.pinEdit=function(id){ openPinEditor(id); };
+(function(){ const m=document.getElementById('pinEditModal'); if(!m) return;
+ document.getElementById('pinEditClose').onclick=()=>{ m.hidden=true; };
+ m.onclick=e=>{ if(e.target===m) m.hidden=true; }; })();
 
 // ---- place search (Google Places via the Maps JS SDK; referrer-restricted) --
 let previewMarker=null;
@@ -1310,15 +1361,9 @@ window.dlRoute=dlRoute;
  const PIN_LAYER='My places';
  // Google My Maps renders pins from a "#icon-<ID>-<COLOR>" styleUrl (its "Newer"
  // icon set), tinting by color and IGNORING the <Icon><href> (which we set to its
- // blank-pin fallback for other apps). Map each Material glyph -> a My Maps icon ID.
- // IDs from My Maps "Newer" (_4x) set — only these render colored on import.
- const PIN_KML_ICON={directions_boat:1569/*ferry*/,local_cafe:1534/*cafe-cup*/,
-   local_library:1664/*reading-library*/,menu_book:1526/*book*/,info:1608/*info*/,
-   beach_access:1521/*beach*/,school:1682/*school-crossing*/,
-   temple_buddhist:1677/*religious-shinto*/,place:1899/*default pin*/};
+ // blank-pin fallback for other apps). PIN_ICON_ID resolves the pin's My Maps id.
  const PIN_KML_BLANK='https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png';
- const pinStyleId=p=>{const pl=p.place||{};
-   return 'icon-'+(PIN_KML_ICON[pl.icon]||1899)+'-'+((pl.color||'#2979ff').replace('#','').toUpperCase());};
+ const pinStyleId=p=>'icon-'+PIN_ICON_ID(p)+'-'+PIN_COLOR(p).replace('#','').toUpperCase();
  function pinKML(p){
    const pl=p.place||{};
    const bits=[];
