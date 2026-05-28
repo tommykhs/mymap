@@ -1308,11 +1308,16 @@ window.dlRoute=dlRoute;
  }
  // saved-place pin -> KML Point Placemark, using the same Google teardrop icon
  const PIN_LAYER='My places';
- // Map each pin's Material glyph to a Google "kml/shapes" icon that Google My Maps
- // recognises and tints by the IconStyle <color>, so color AND icon round-trip on import.
- const PIN_KML_ICON={directions_boat:'ferry',local_cafe:'coffee',local_library:'library_maps',
-   menu_book:'library_maps',info:'info-i',beach_access:'swimming',school:'schools_maps',
-   temple_buddhist:'placemark_circle',place:'placemark_circle'};
+ // Google My Maps renders pins from a "#icon-<ID>-<COLOR>" styleUrl (its "Newer"
+ // icon set), tinting by color and IGNORING the <Icon><href> (which we set to its
+ // blank-pin fallback for other apps). Map each Material glyph -> a My Maps icon ID.
+ const PIN_KML_ICON={directions_boat:231/*car_ferry*/,local_cafe:239/*coffee*/,
+   local_library:281/*library*/,menu_book:281/*library*/,info:181/*info_circle*/,
+   beach_access:139/*swimming*/,school:355/*schools*/,temple_buddhist:361/*shrine_jp*/,
+   place:1899/*default pin*/};
+ const PIN_KML_BLANK='https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png';
+ const pinStyleId=p=>{const pl=p.place||{};
+   return 'icon-'+(PIN_KML_ICON[pl.icon]||1899)+'-'+((pl.color||'#2979ff').replace('#','').toUpperCase());};
  function pinKML(p){
    const pl=p.place||{};
    const bits=[];
@@ -1322,22 +1327,30 @@ window.dlRoute=dlRoute;
    if(pl.website) dh+=(dh?'<br/>':'')+`<a href="${esc(pl.website)}">Website</a>`;
    if(pl.url)     dh+=(dh?'<br/>':'')+`<a href="${esc(pl.url)}">View in Google Maps &#8599;</a>`;
    const ed=`<ExtendedData><Data name="category"><value>${cdata(PIN_LAYER)}</value></Data></ExtendedData>`;
-   const ic=PIN_KML_ICON[pl.icon]||'placemark_circle';
-   const style=`<Style><IconStyle><color>${kmlColor(pl.color||'#2979ff')}</color><scale>1.1</scale>`
-     +`<Icon><href>https://maps.google.com/mapfiles/kml/shapes/${ic}.png</href></Icon></IconStyle></Style>`;
    return `<Placemark><name>${esc(p.name||'')}</name>`
      +(dh?`<description>${cdata(dh)}</description>`:'')
-     +style+ed
+     +`<styleUrl>#${pinStyleId(p)}</styleUrl>${ed}`
      +`<Point><coordinates>${p.coords[1]},${p.coords[0]},0</coordinates></Point></Placemark>`;
+ }
+ // shared <Style> blocks for the pins' My-Maps icon/color combos (one per combo)
+ function pinStyleDefs(pins){
+   const seen={}; let out='';
+   (pins||[]).forEach(p=>{const id=pinStyleId(p); if(seen[id])return; seen[id]=1;
+     out+=`<Style id="${id}"><IconStyle><color>${kmlColor((p.place||{}).color||'#2979ff')}</color>`
+       +`<Icon><href>${PIN_KML_BLANK}</href></Icon></IconStyle></Style>`;});
+   return out;
  }
  function buildKML(idx,pins){
    const byG={}; idx.forEach(i=>{const g=R[i].group||'Routes';(byG[g]=byG[g]||[]).push(i);});
    let body=''; Object.keys(byG).forEach(g=>{
      body+=`<Folder><name>${esc(g)}</name>`+byG[g].map(i=>routeKML(R[i])).join('')+`</Folder>`; });
-   if(pins&&pins.length)
+   let styleDefs='';
+   if(pins&&pins.length){
+     styleDefs=pinStyleDefs(pins);
      body+=`<Folder><name>${esc(PIN_LAYER)}</name>`+pins.map(pinKML).join('')+`</Folder>`;
+   }
    return `<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2">`
-     +`<Document><name>MyMap export</name>${body}</Document></kml>`;
+     +`<Document><name>MyMap export</name>${styleDefs}${body}</Document></kml>`;
  }
  function dl(name,content,type){const a=document.createElement('a');
    a.href=URL.createObjectURL(new Blob([content],{type}));a.download=name;
