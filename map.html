@@ -1311,10 +1311,11 @@ window.dlRoute=dlRoute;
  // Google My Maps renders pins from a "#icon-<ID>-<COLOR>" styleUrl (its "Newer"
  // icon set), tinting by color and IGNORING the <Icon><href> (which we set to its
  // blank-pin fallback for other apps). Map each Material glyph -> a My Maps icon ID.
- const PIN_KML_ICON={directions_boat:231/*car_ferry*/,local_cafe:239/*coffee*/,
-   local_library:281/*library*/,menu_book:281/*library*/,info:181/*info_circle*/,
-   beach_access:139/*swimming*/,school:355/*schools*/,temple_buddhist:361/*shrine_jp*/,
-   place:1899/*default pin*/};
+ // IDs from My Maps "Newer" (_4x) set — only these render colored on import.
+ const PIN_KML_ICON={directions_boat:1569/*ferry*/,local_cafe:1534/*cafe-cup*/,
+   local_library:1664/*reading-library*/,menu_book:1526/*book*/,info:1608/*info*/,
+   beach_access:1521/*beach*/,school:1682/*school-crossing*/,
+   temple_buddhist:1677/*religious-shinto*/,place:1899/*default pin*/};
  const PIN_KML_BLANK='https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png';
  const pinStyleId=p=>{const pl=p.place||{};
    return 'icon-'+(PIN_KML_ICON[pl.icon]||1899)+'-'+((pl.color||'#2979ff').replace('#','').toUpperCase());};
