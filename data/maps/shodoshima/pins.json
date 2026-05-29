@@ -237,7 +237,9 @@
       "address": "〒761-4101 香川県小豆郡土庄町甲１５９９",
       "rating": 4.5,
       "website": "https://island-landm1.com/",
-      "url": "https://maps.google.com/?cid=14409127307663658521&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3"
+      "url": "https://maps.google.com/?cid=14409127307663658521&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "color": "#F4B400",
+      "icon": 1636
     }
   }
 ]
