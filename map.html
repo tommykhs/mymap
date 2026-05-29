@@ -236,12 +236,32 @@
    border-radius:6px;padding:0 9px;cursor:pointer;display:flex;align-items:center}
  .searchbox button:hover{background:var(--hv)}
  .searchbox button .material-symbols-outlined{font-size:18px}
- #psresults{margin-top:6px;max-height:200px;overflow:auto}
- #psresults .pr{padding:5px 7px;border-radius:6px;cursor:pointer;font-size:12px}
+ /* ---- floating place-search (Google My Maps style) ---- */
+ .placesearch{position:absolute;top:54px;left:350px;z-index:1100;width:300px}
+ body.fs .placesearch{top:10px}
+ .placesearch .ps-bar{display:flex;align-items:center;gap:2px;background:var(--surface);
+   border:1px solid var(--bd);border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.55);padding:3px 5px}
+ .placesearch .ps-bar input{flex:1;min-width:0;font:inherit;font-size:13px;color:var(--fg);
+   background:none;border:none;outline:none;padding:6px 2px}
+ .placesearch .ps-bar input::placeholder{color:var(--mut)}
+ .ps-go,.ps-clear{background:none;border:none;color:var(--mut);cursor:pointer;flex:0 0 auto;
+   display:flex;align-items:center;padding:3px;border-radius:6px}
+ .ps-go:hover,.ps-clear:hover{color:var(--fg);background:var(--hv)}
+ .ps-go .material-symbols-outlined,.ps-clear .material-symbols-outlined{font-size:19px}
+ .ps-clear[hidden]{display:none}          /* hide when empty (desktop); shown on mobile as close */
+ .ps-toggle{display:none}                 /* desktop: the bar is always visible */
+ #psresults{margin-top:6px;max-height:260px;overflow:auto;background:var(--surface);
+   border:1px solid var(--bd);border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.55);padding:4px}
+ #psresults:empty{display:none}
+ #psresults .pr{padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12px}
  #psresults .pr:hover{background:var(--hv)}
  #psresults .pr b{color:var(--fg)}
  #psresults .pr .a{color:var(--mut);font-size:11px;display:block;
    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #psmsg{margin:6px 0 0}
+ #psmsg:empty{display:none}
+ #psmsg:not(:empty){background:var(--surface);border:1px solid var(--bd);border-radius:8px;
+   padding:5px 8px;box-shadow:0 2px 10px rgba(0,0,0,.4)}
  .ps-add{margin-top:8px;font:inherit;font-size:12px;color:#fff;background:var(--ac);
    border:none;border-radius:6px;padding:6px 12px;cursor:pointer}
  .ps-add:hover{filter:brightness(1.08)}
@@ -269,6 +289,20 @@
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
+   /* mobile: collapse the search to a top-right icon; it takes the top slot of
+      the right column and pushes the zoom/basemap stack down. Tapping expands a
+      full-width bar that overlays the top (higher z-index than the panel). */
+   .placesearch{top:54px;right:10px;left:auto;width:auto}
+   .placesearch:not(.open) .ps-bar,
+   .placesearch:not(.open) #psresults,
+   .placesearch:not(.open) #psmsg{display:none}
+   .ps-toggle{display:flex;width:38px;height:38px;border-radius:8px;background:var(--surface);
+     border:1px solid var(--bd);color:var(--fg);cursor:pointer;align-items:center;
+     justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.5);padding:0}
+   .ps-toggle .material-symbols-outlined{font-size:20px}
+   .placesearch.open{left:10px;right:10px;width:auto}
+   .placesearch.open .ps-toggle{display:none}
+   .leaflet-top.leaflet-right{margin-top:46px}
  }
 </style></head><body>
 <div id="app-header"></div>
@@ -315,7 +349,6 @@
   <button id="aon"    title="Show all"><span class="material-symbols-outlined">visibility</span></button>
   <button id="aoff"   title="Hide all"><span class="material-symbols-outlined">visibility_off</span></button>
   <button id="grpToggle" title="Expand / collapse all"><span class="material-symbols-outlined">unfold_less</span></button>
-  <button id="addPlaceBtn" title="Search a place &amp; add a pin"><span class="material-symbols-outlined">add_location_alt</span></button>
   <button id="exportBtn" title="Export (KML / KMZ)"><span class="material-symbols-outlined">ios_share</span></button>
   <button id="adminBtn" title="Save pins to repo (admin)" style="display:none"><span class="material-symbols-outlined">cloud_upload</span></button>
  </div>
@@ -327,15 +360,18 @@
   </div>
   <p class="sub" id="ghMsg" style="margin:6px 0 0"></p>
  </div>
- <div id="searchBox" class="searchbox" hidden>
-  <div class="srow">
-   <input type="text" id="psq" placeholder="Search a place…">
-   <button id="psgo" title="Search"><span class="material-symbols-outlined">search</span></button>
-  </div>
-  <div id="psresults"></div>
-  <p class="sub" id="psmsg"></p>
- </div>
 </div><div id="list"></div>
+</div>
+<!-- floating place-search (Google My Maps style): lives outside the panel -->
+<div class="placesearch" id="searchBox">
+ <button id="psToggle" class="ps-toggle" title="Search a place to add a pin"><span class="material-symbols-outlined">search</span></button>
+ <div class="ps-bar">
+  <button id="psgo" class="ps-go" title="Search"><span class="material-symbols-outlined">search</span></button>
+  <input type="text" id="psq" placeholder="Search a place to add a pin…" autocomplete="off">
+  <button id="psClear" class="ps-clear" title="Clear" hidden><span class="material-symbols-outlined">close</span></button>
+ </div>
+ <div id="psresults"></div>
+ <p class="sub" id="psmsg"></p>
 </div>
 <script>
 // Route data is loaded at runtime from data/routes_base.geojson (keeps this
@@ -1128,9 +1164,9 @@ async function placeSearch(q){
 function previewPlace(pl,nm){
  clearPreview();
  const loc=pl.location, ll=[loc.lat(),loc.lng()];
- previewMarker=L.circleMarker(ll,{radius:9,color:'#fff',weight:2,dashArray:'3',
-   fillColor:'#2979ff',fillOpacity:.55}).addTo(map);
+ previewMarker=L.marker(ll,{icon:pinIcon(1899,'#2979ff'),interactive:false,keyboard:false,zIndexOffset:600}).addTo(map);
  map.flyTo(ll,Math.max(map.getZoom(),15),{duration:.5});
+ if(window.__psCollapse) window.__psCollapse();   // collapse the mobile search bar to reveal the popup
  const box=document.createElement('div');
  box.innerHTML='<b>'+esc(nm)+'</b>'+(pl.rating?' ★'+pl.rating:'')
    +(pl.formattedAddress?'<div class="rt-desc">'+esc(pl.formattedAddress)+'</div>':'')
@@ -1146,13 +1182,24 @@ function previewPlace(pl,nm){
  box.appendChild(btn);
  L.popup({offset:[0,-10]}).setLatLng(ll).setContent(box).openOn(map);
 }
-// search box toggle + triggers
-document.getElementById('addPlaceBtn').onclick=()=>{
- const sb=document.getElementById('searchBox'); sb.hidden=!sb.hidden;
- if(!sb.hidden) document.getElementById('psq').focus();
-};
-document.getElementById('psgo').onclick=()=>placeSearch(document.getElementById('psq').value);
-document.getElementById('psq').addEventListener('keydown',e=>{ if(e.key==='Enter') placeSearch(e.target.value); });
+// floating place-search box: search, clear, and (mobile) expand/collapse
+(function(){
+ const box=document.getElementById('searchBox'), q=document.getElementById('psq'),
+       clr=document.getElementById('psClear'), tog=document.getElementById('psToggle');
+ const isMobile=()=>window.matchMedia('(max-width:600px)').matches;
+ // ✕ hides when empty on desktop; stays visible on mobile to double as a close button
+ const updateClr=()=>{ clr.hidden = isMobile() ? false : !q.value; };
+ document.getElementById('psgo').onclick=()=>placeSearch(q.value);
+ q.addEventListener('keydown',e=>{ if(e.key==='Enter') placeSearch(e.target.value); });
+ q.addEventListener('input',updateClr);
+ clr.onclick=()=>{
+   if(q.value){ q.value=''; placeSearch(''); q.focus(); updateClr(); }   // clear text
+   else if(isMobile()){ box.classList.remove('open'); }                  // empty + mobile -> collapse
+ };
+ tog.onclick=()=>{ box.classList.add('open'); updateClr(); q.focus(); };
+ updateClr();
+ window.__psCollapse=()=>{ if(isMobile()) box.classList.remove('open'); };  // free the map after a pick
+})();
 
 // ---- admin: commit My-places pins straight to the repo via the GitHub API ----
 // The token is pasted at runtime and kept ONLY in this browser's localStorage
