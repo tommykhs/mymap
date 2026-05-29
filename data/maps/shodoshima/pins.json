@@ -226,5 +226,18 @@
       "ferry": "https://t-ferry.com/schedule/",
       "url": "https://www.google.com/maps/search/?api=1&query=%E6%9C%AC%E6%9D%91%E6%B8%AF%20%E7%9B%B4%E5%B3%B6"
     }
+  },
+  {
+    "name": "ペンションL&M",
+    "coords": [
+      34.476706,
+      134.1735282
+    ],
+    "place": {
+      "address": "〒761-4101 香川県小豆郡土庄町甲１５９９",
+      "rating": 4.5,
+      "website": "https://island-landm1.com/",
+      "url": "https://maps.google.com/?cid=14409127307663658521&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3"
+    }
   }
 ]
