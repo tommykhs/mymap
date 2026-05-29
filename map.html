@@ -285,7 +285,7 @@
    display:flex;align-items:center;justify-content:center}
  .pe-ic:hover{background:var(--hv)}
  .pe-ic.on{border-color:var(--ac);background:var(--hv)}
- .pe-ic img{width:22px;height:22px;display:block}
+ .pe-ic img{width:22px;height:24px;display:block;object-fit:contain}
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
@@ -1042,8 +1042,18 @@ const LEGACY_ICON={directions_boat:1569,local_cafe:1534,local_library:1664,menu_
 const PIN_PALETTE=['#DB4437','#E8710A','#F4B400','#0F9D58','#1B9E77','#00ACC1','#2979FF','#3F51B5','#9C27B0','#E91E63','#795548','#607D8B','#757575','#263238'];
 const PIN_ICON_ID=p=>{const i=p&&p.place&&p.place.icon; if(typeof i==='number')return i; return LEGACY_ICON[i]||1899;};
 const PIN_COLOR=p=>((p&&p.place&&p.place.color)||'#2979ff');
-// composited My Maps icon image URL (withPin=true → full teardrop; false → glyph only)
+// The "Pin" (id 1899) glyph in the Newer library is blank, so Google's composite
+// renders it as just the circular container — not a recognisable map pin. Draw a
+// classic teardrop SVG for that case; the rest of the catalog stays composite.
+function pinSvg(color){
+ const svg="<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 36'>"
+   +"<path d='M12 1c5.5 0 10 4.3 10 9.7 0 6-4.6 11.7-9.4 19.6a.7.7 0 0 1-1.2 0C6.6 22.4 2 16.7 2 10.7 2 5.3 6.5 1 12 1z' fill='"+color+"' stroke='white' stroke-width='1.2'/>"
+   +"<circle cx='12' cy='11' r='4' fill='white'/></svg>";
+ return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+// composited My Maps icon image URL (withPin=true → container + glyph; false → glyph only)
 function mmIconUrl(id,color,withPin){
+ if(id===1899 && withPin) return pinSvg(color||'#2979ff');     // default "Pin" → teardrop SVG
  const n=ICON_NAME[id]||'blank-shape_pin_4x', col=(color||'#2979ff').replace('#','').toUpperCase();
  const layers=withPin
    ? 'icons/onion/SHARED-mymaps-container-bg_4x.png,icons/onion/SHARED-mymaps-container_4x.png,icons/onion/'+id+'-'+n+'.png'
@@ -1051,7 +1061,8 @@ function mmIconUrl(id,color,withPin){
  return 'https://mt.googleapis.com/vt/icon/name='+layers+'&highlight='+(withPin?'ff000000,'+col:col)+'&scale=2.0';
 }
 function pinIcon(id,color){
- // the composited My Maps icon image is square (28x28 @1x) — keep it square or it distorts
+ if(id===1899) return L.icon({iconUrl:pinSvg(color||'#2979ff'),iconSize:[24,36],iconAnchor:[12,36],popupAnchor:[0,-34]});
+ // composited My Maps image is square (28x28 @1x); keep it square or it distorts
  return L.icon({iconUrl:mmIconUrl(id,color,true),iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-16]});
 }
 // Same structure as the route box: ⠿ drag grip + title, then a single link/action row.
@@ -1093,7 +1104,7 @@ function renderPinsList(){
    +'<span class="gcount">'+PINS.length+'</span>';
  const box=document.createElement('div');
  PINS.forEach(p=>{ const it=document.createElement('div'); it.className='it';
-   it.innerHTML='<img src="'+mmIconUrl(PIN_ICON_ID(p),PIN_COLOR(p),false)+'" style="width:16px;height:16px;flex:0 0 auto" alt="">'
+   it.innerHTML='<img src="'+mmIconUrl(PIN_ICON_ID(p),PIN_COLOR(p),true)+'" style="width:18px;height:20px;object-fit:contain;flex:0 0 auto" alt="">'
      +'<span class="nm">'+esc(p.name)+'</span>';
    it.onclick=()=>focusPin(p); box.appendChild(it); });
  const eye=h.querySelector('.gp-eye'), eyeIc=eye.querySelector('.material-symbols-outlined');
@@ -1121,7 +1132,7 @@ function openPinEditor(id){
  const curId=PIN_ICON_ID(p), curCol=PIN_COLOR(p);
  document.getElementById('pinEditName').textContent=p.name;
  cw.innerHTML=PIN_PALETTE.map(c=>'<button class="pe-col'+(c.toLowerCase()===curCol.toLowerCase()?' on':'')+'" style="background:'+c+'" data-c="'+c+'" title="'+c+'"></button>').join('');
- iw.innerHTML=ICON_LIB.map(x=>'<button class="pe-ic'+(x[0]===curId?' on':'')+'" data-id="'+x[0]+'" title="'+x[2]+'"><img src="'+mmIconUrl(x[0],curCol,false)+'" alt="'+x[2]+'"></button>').join('');
+ iw.innerHTML=ICON_LIB.map(x=>'<button class="pe-ic'+(x[0]===curId?' on':'')+'" data-id="'+x[0]+'" title="'+x[2]+'"><img src="'+mmIconUrl(x[0],curCol,true)+'" alt="'+x[2]+'"></button>').join('');
  cw.querySelectorAll('.pe-col').forEach(b=>b.onclick=()=>{ p.place=p.place||{}; p.place.color=b.dataset.c; applyPinStyle(p); openPinEditor(id); });
  iw.querySelectorAll('.pe-ic').forEach(b=>b.onclick=()=>{ p.place=p.place||{}; p.place.icon=+b.dataset.id; applyPinStyle(p); openPinEditor(id); });
  modal.hidden=false;
