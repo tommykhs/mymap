@@ -9,7 +9,7 @@
 <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.14.0/dist/Leaflet.GoogleMutant.js"></script>
 <link rel="stylesheet" href="header.css"/>
 <style>
- :root{--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d;
+ :root{color-scheme:dark;--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d;
    --surface:rgba(27,31,36,.95);--surface2:rgba(27,31,36,.96);--mapbg:#0e1116;--overlay:rgba(14,17,22,.85)}
  html.light{--bg:#eef1f5;--bg2:#ffffff;--fg:#1b2430;--mut:#5b6675;--bd:#d3d8e0;--ac:#1d4ed8;--hv:#e8ecf2;
    --surface:rgba(255,255,255,.96);--surface2:rgba(255,255,255,.97);--mapbg:#e8eaed;--overlay:rgba(245,247,250,.92)}
@@ -129,6 +129,28 @@
  .leaflet-popup-content-wrapper.rt-dragging{opacity:.92}
  .rt-links{margin-top:4px;font-size:11px}
  .rt-desc{margin-top:6px;font-size:11px;color:#c9d0d8}
+ /* pin popup: compact header + editable description, icon-only action buttons */
+ .pin-head{display:flex;align-items:center;gap:2px}
+ .pin-head .rt-drag{flex:0 0 auto;cursor:move;color:var(--mut);user-select:none}
+ .pin-name{flex:1;color:var(--fg);font-weight:600;overflow:hidden;
+   text-overflow:ellipsis;white-space:nowrap;min-width:0}
+ .pin-act{flex:0 0 auto;background:none;border:none;color:var(--mut);
+   cursor:pointer;padding:3px;border-radius:6px;display:flex;align-items:center;line-height:1}
+ .pin-act:hover{color:var(--fg);background:var(--hv)}
+ .pin-act .mi{font-family:'Material Symbols Outlined';font-weight:normal;font-size:17px;
+   -webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+ .pin-desc{margin-top:4px;font-size:11px;color:#c9d0d8;cursor:text;outline:none;
+   padding:3px 4px;border-radius:4px;line-height:1.35;white-space:pre-wrap;word-break:break-word;min-height:1.2em}
+ .pin-desc:hover{background:var(--hv)}
+ .pin-desc:focus{background:var(--bg);outline:1px solid var(--ac)}
+ .pin-desc:empty::before{content:"+ add description";color:var(--mut);font-style:italic}
+ .pin-desc:focus:empty::before{content:""}
+ .pin-name{outline:none;cursor:text}
+ .pin-name:hover{background:var(--hv);border-radius:4px}
+ .pin-name:focus{background:var(--bg);outline:1px solid var(--ac);border-radius:4px;
+   white-space:normal;text-overflow:clip;overflow:visible}
+ .rt-gm .mi{color:#EA4335;font-size:18px;line-height:1}
+ .rt-actions{margin-left:auto;display:flex;gap:2px;align-items:center}
  /* elevation profile + linked hover overlay (crosshair / dot / tip) */
  .rt-prof{position:relative;margin-top:6px;height:44px;cursor:default;touch-action:none}
  .rt-prof-cross{position:absolute;top:0;height:44px;width:1px;margin-left:-0.5px;
@@ -280,12 +302,37 @@
  .pe-colors{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
  .pe-col{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
  .pe-col.on{border-color:var(--fg)}
- .pe-icons{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+ .pe-icons{display:block}
+ .pe-search{width:100%;font:inherit;font-size:13px;color:var(--fg);background:var(--bg2);
+   border:1px solid var(--bd);border-radius:6px;padding:6px 8px;box-sizing:border-box;
+   margin-bottom:8px;outline:none}
+ .pe-search:focus{border-color:var(--ac)}
+ .pe-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+ .pe-recent{margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--bd)}
+ .pe-recent[hidden]{display:none}
+ .pe-empty{padding:18px 8px;color:var(--mut);text-align:center;font-size:12px}
  .pe-ic{background:none;border:1px solid transparent;border-radius:6px;padding:3px;cursor:pointer;
    display:flex;align-items:center;justify-content:center}
  .pe-ic:hover{background:var(--hv)}
  .pe-ic.on{border-color:var(--ac);background:var(--hv)}
  .pe-ic img{width:22px;height:24px;display:block;object-fit:contain}
+ /* keep the pin/icon images at their true colors against any browser forced-dark / high-contrast scheme */
+ img.leaflet-marker-icon, .pe-ic img, #pinsSection .it img, .placesearch img{forced-color-adjust:none}
+ /* admin button "unsaved changes" badge */
+ #adminBtn{position:relative}
+ /* admin: inline X inside the token input, shown only when a token is stored */
+ .tk-wrap{flex:1;position:relative;display:flex;min-width:0}
+ .tk-wrap input{flex:1;padding-right:26px;min-width:0}
+ .tk-clear{position:absolute;right:4px;top:50%;transform:translateY(-50%);
+   background:none;border:none;color:var(--mut);cursor:pointer;padding:2px;
+   border-radius:4px;display:flex;align-items:center}
+ .tk-clear:hover{color:var(--fg);background:var(--hv)}
+ .tk-clear .material-symbols-outlined{font-size:16px}
+ .tk-clear[hidden]{display:none}
+ .dirty-badge{position:absolute;top:-3px;right:-3px;background:#e0564f;color:#fff;
+   border-radius:9px;min-width:14px;height:14px;padding:0 3px;font-size:9px;
+   font-weight:700;line-height:14px;text-align:center;box-shadow:0 0 0 1px var(--surface);
+   pointer-events:none;box-sizing:border-box}
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
@@ -331,7 +378,7 @@
   </div>
 </div></div>
 <div id="pinEditModal" class="pe-modal" hidden><div class="pe-dialog">
-  <div class="pe-head"><span>Icon &amp; color · <span id="pinEditName"></span></span><button id="pinEditClose" class="pe-x">&times;</button></div>
+  <div class="pe-head"><span id="pinEditName"></span><button id="pinEditClose" class="pe-x">&times;</button></div>
   <div class="pe-body">
     <div id="pinEditColors" class="pe-colors"></div>
     <div id="pinEditIcons" class="pe-icons"></div>
@@ -354,9 +401,12 @@
  </div>
  <div id="adminBox" class="searchbox" hidden>
   <div class="srow">
-   <input type="password" id="ghToken" placeholder="GitHub token (Contents: RW)" autocomplete="off">
-   <button id="ghSave" title="Save My places to the repo"><span class="material-symbols-outlined">cloud_upload</span></button>
-   <button id="ghForget" title="Forget token"><span class="material-symbols-outlined">logout</span></button>
+   <div class="tk-wrap">
+    <input type="password" id="ghToken" placeholder="GitHub token (Contents: RW)" autocomplete="off">
+    <button id="ghForget" class="tk-clear" title="Forget saved token" hidden><span class="material-symbols-outlined">close</span></button>
+   </div>
+   <button id="ghSave" title="Save My places to the repo"><span class="material-symbols-outlined">save</span></button>
+   <button id="ghDiscard" title="Discard local changes (restore the repo's pins)"><span class="material-symbols-outlined">delete</span></button>
   </div>
   <p class="sub" id="ghMsg" style="margin:6px 0 0"></p>
  </div>
@@ -1018,13 +1068,42 @@ window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
 // data is read-only for visitors, so added places can't be written back to a
 // file without a token. (Export currently covers routes only — pins are local.)
 const PIN_KEY='mymap.pins.'+MAP_ID;
-let PINS=[], pinSeq=1;
+let PINS=[], pinSeq=1, SEED_PINS=null;   // SEED_PINS = repo's pins.json (loaded async, used to compute the "unsaved" diff)
 const pinLayer=L.layerGroup().addTo(map);
 // null = never saved on this browser (-> show the shipped sample pins);
 // [] = the user cleared them (respect that, don't re-seed).
 function loadPins(){ try{ const v=localStorage.getItem(PIN_KEY); return v==null?null:(JSON.parse(v)||[]); }catch(e){ return null; } }
 function savePins(){ try{ localStorage.setItem(PIN_KEY,JSON.stringify(
-  PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})))); }catch(e){} }
+  PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})))); }catch(e){}
+ updateDirtyBadge();
+}
+// Count of pin changes vs the shipped seed (data/maps/<id>/pins.json). Added,
+// removed, and edited (name/coords/place) each count as one. Drives the badge
+// on the admin button so you know there's something to save / can be discarded.
+function diffCount(){
+ if(SEED_PINS==null) return 0;
+ const k=p=>(p.name||'')+'@'+p.coords[0].toFixed(4)+','+p.coords[1].toFixed(4);
+ const norm=p=>JSON.stringify(p.place||null);
+ const sm=new Map(); SEED_PINS.forEach(p=>sm.set(k(p),norm(p)));
+ const pm=new Map(); PINS.forEach(p=>pm.set(k(p),norm(p)));
+ let n=0;
+ pm.forEach((v,key)=>{ if(!sm.has(key)) n++; else if(sm.get(key)!==v) n++; });
+ sm.forEach((_,key)=>{ if(!pm.has(key)) n++; });
+ return n;
+}
+function updateDirtyBadge(){
+ const btn=document.getElementById('adminBtn'); if(!btn) return;
+ const n=diffCount();
+ let b=btn.querySelector('.dirty-badge');
+ if(n>0){
+   if(!b){ b=document.createElement('span'); b.className='dirty-badge'; btn.appendChild(b); }
+   b.textContent=n>99?'99+':n;
+   btn.title='Save pins to repo (admin) — '+n+' unsaved change'+(n>1?'s':'');
+ } else {
+   if(b) b.remove();
+   btn.title='Save pins to repo (admin)';
+ }
+}
 // Pins use Google My Maps "Newer" icons. place.icon = a My Maps icon ID; we render
 // the REAL My Maps pin image (container + icon + color) so it's WYSIWYG with export.
 // ICON_LIB = [id, sprite-name, label] in picker order; ICON_NAME = id -> sprite name.
@@ -1065,25 +1144,42 @@ function pinIcon(id,color){
  // composited My Maps image is square (28x28 @1x); keep it square or it distorts
  return L.icon({iconUrl:mmIconUrl(id,color,true),iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-16]});
 }
-// Same structure as the route box: ⠿ drag grip + title, then a single link/action row.
+// Header: drag + inline-editable name. Description below (inline-editable too).
+// External links row at the bottom, with the Icon/Color + Delete actions pushed
+// to the right side. Google-Maps link is icon-only (red Maps pin).
 function pinPopupHTML(p){
  const pl=p.place||{};
- let h='<span class="rt-drag" title="Drag to move">⠿</span><b>'+esc(p.name)+'</b>';
- if(pl.address) h+='<div class="rt-desc">'+esc(pl.address)+'</div>';
- if(pl.rating)  h+='<div class="rt-stats">★ '+esc(pl.rating)+'</div>';
+ const desc=(pl.address||pl.desc||'');
+ let h='<div class="pin-head">'
+   +'<span class="rt-drag" title="Drag to move">⠿</span>'
+   +'<b class="pin-name" contenteditable="true" spellcheck="false" title="Click to rename"'
+   +' onblur="pinNameSave('+p.id+',this.innerText)"'
+   +' onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur();}">'+esc(p.name)+'</b>'
+   +'</div>'
+   +'<div class="pin-desc" contenteditable="true" spellcheck="false" title="Click to edit description"'
+   +' onblur="pinDescSave('+p.id+',this.innerText)">'+esc(desc)+'</div>';
+ if(pl.rating) h+='<div class="rt-stats">★ '+esc(pl.rating)+'</div>';
  const row=[];
  if(pl.ferry)   row.push('<a href="'+esc(pl.ferry)+'" target="_blank"><span class="mi">directions_boat</span>Ferry timetable</a>');
  if(pl.guide)   row.push('<a href="'+esc(pl.guide)+'" target="_blank"><span class="mi">auto_stories</span>Pilgrimage guide</a>');
  if(pl.website) row.push('<a href="'+esc(pl.website)+'" target="_blank"><span class="mi">language</span>Website</a>');
- if(pl.url)     row.push('<a href="'+esc(pl.url)+'" target="_blank"><span class="mi">open_in_new</span>Google Maps</a>');
- row.push('<a href="#" onclick="pinEdit('+p.id+');return false"><span class="mi">palette</span>Icon/Color</a>');
- row.push('<a href="#" onclick="pinRename('+p.id+');return false"><span class="mi">edit</span>Rename</a>');
- row.push('<a href="#" onclick="pinDelete('+p.id+');return false"><span class="mi">delete</span>Delete</a>');
- h+='<div class="rt-dl">'+row.join('')+'</div>';
+ const gmHtml = pl.url ? '<a href="'+esc(pl.url)+'" target="_blank" title="Open in Google Maps" class="rt-gm"><span class="mi">place</span></a>' : '';
+ const actions='<span class="rt-actions">'
+   +gmHtml
+   +'<button class="pin-act" title="Icon / Color" onclick="pinEdit('+p.id+');return false"><span class="mi">palette</span></button>'
+   +'<button class="pin-act" title="Delete" onclick="pinDelete('+p.id+');return false"><span class="mi">delete</span></button>'
+   +'</span>';
+ h+='<div class="rt-dl">'+row.join('')+actions+'</div>';
  return h;
 }
 function addPin(o){
- const p={id:pinSeq++,name:o.name||'New place',coords:o.coords,place:o.place||null};
+ // Deep-clone coords + place so editing a pin can't mutate the SEED via shared
+ // references. (Subtle bug: color/icon live inside `place`, so a shallow copy
+ // meant edits silently rewrote the seed, leaving the diff = 0.)
+ const p={id:pinSeq++,name:o.name||'New place',
+   coords:o.coords.slice(),
+   place:o.place?JSON.parse(JSON.stringify(o.place)):null,
+   seed_id:(o.seed_id==null?null:o.seed_id)};
  const m=L.marker(p.coords,{icon:pinIcon(PIN_ICON_ID(p),PIN_COLOR(p)),draggable:true});
  m.bindPopup(pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
  m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
@@ -1120,22 +1216,99 @@ function renderPinsList(){
 window.pinRename=function(id){ const p=PINS.find(x=>x.id===id); if(!p) return;
  const v=prompt('Rename place:',p.name); if(v==null) return;
  p.name=v.trim()||p.name; p.marker.setPopupContent(pinPopupHTML(p)); savePins(); renderPinsList(); };
+window.pinEditDesc=function(id){ const p=PINS.find(x=>x.id===id); if(!p) return;
+ const cur=(p.place&&(p.place.address||p.place.desc))||'';
+ const v=prompt('Description:',cur); if(v==null) return;
+ p.place=p.place||{}; p.place.address=v.trim();
+ p.marker.setPopupContent(pinPopupHTML(p)); savePins(); };
+// inline contenteditable saves (Google My Maps-style: click, type, blur to save)
+window.pinNameSave=function(id, text){
+ const p=PINS.find(x=>x.id===id); if(!p) return;
+ const v=(text||'').replace(/\s+/g,' ').trim();
+ if(!v || v===p.name) return;
+ p.name=v; savePins(); renderPinsList();
+};
+window.pinDescSave=function(id, text){
+ const p=PINS.find(x=>x.id===id); if(!p) return;
+ const v=(text||'').trim();
+ const cur=(p.place&&(p.place.address||p.place.desc))||'';
+ if(v===cur) return;
+ p.place=p.place||{}; p.place.address=v; savePins();
+};
 window.pinDelete=function(id){ const i=PINS.findIndex(x=>x.id===id); if(i<0) return;
  pinLayer.removeLayer(PINS[i].marker); PINS.splice(i,1); map.closePopup(); savePins(); renderPinsList(); };
 // ---- icon + color picker (Google My Maps "Newer" library) ----
 function applyPinStyle(p){ p.marker.setIcon(pinIcon(PIN_ICON_ID(p),PIN_COLOR(p)));
  p.marker.setPopupContent(pinPopupHTML(p)); savePins(); renderPinsList(); }
-function openPinEditor(id){
+// Full 398-icon catalog lives in data/icons.json — load on first picker open so
+// map.html stays lean. Falls back to the inline ICON_LIB if the fetch fails.
+let ICON_LIB_FULL=null;
+async function ensureIconLib(){
+ if(ICON_LIB_FULL) return ICON_LIB_FULL;
+ try{
+   const r=await fetch('data/icons.json'); if(r.ok){
+     const arr=await r.json();
+     ICON_LIB_FULL=arr.map(o=>[o.id,o.name,o.label]);
+     ICON_LIB_FULL.forEach(x=>ICON_NAME[x[0]]=x[1]);
+   }
+ }catch(e){}
+ return ICON_LIB_FULL=ICON_LIB_FULL||ICON_LIB.slice();
+}
+const ICON_RECENT_KEY='mymap.icons.recent';
+function getRecentIcons(){ try{ return JSON.parse(localStorage.getItem(ICON_RECENT_KEY)||'[]'); }catch(e){ return []; } }
+function pushRecentIcon(id){
+ const r=getRecentIcons().filter(x=>x!==id); r.unshift(id); if(r.length>14) r.length=14;
+ try{ localStorage.setItem(ICON_RECENT_KEY,JSON.stringify(r)); }catch(e){}
+}
+async function openPinEditor(id){
  const p=PINS.find(x=>x.id===id); if(!p) return;
  const modal=document.getElementById('pinEditModal');
  const cw=document.getElementById('pinEditColors'), iw=document.getElementById('pinEditIcons');
- const curId=PIN_ICON_ID(p), curCol=PIN_COLOR(p);
  document.getElementById('pinEditName').textContent=p.name;
- cw.innerHTML=PIN_PALETTE.map(c=>'<button class="pe-col'+(c.toLowerCase()===curCol.toLowerCase()?' on':'')+'" style="background:'+c+'" data-c="'+c+'" title="'+c+'"></button>').join('');
- iw.innerHTML=ICON_LIB.map(x=>'<button class="pe-ic'+(x[0]===curId?' on':'')+'" data-id="'+x[0]+'" title="'+x[2]+'"><img src="'+mmIconUrl(x[0],curCol,true)+'" alt="'+x[2]+'"></button>').join('');
- cw.querySelectorAll('.pe-col').forEach(b=>b.onclick=()=>{ p.place=p.place||{}; p.place.color=b.dataset.c; applyPinStyle(p); openPinEditor(id); });
- iw.querySelectorAll('.pe-ic').forEach(b=>b.onclick=()=>{ p.place=p.place||{}; p.place.icon=+b.dataset.id; applyPinStyle(p); openPinEditor(id); });
+ // colors
+ const renderColors=()=>{ const curCol=PIN_COLOR(p);
+   cw.innerHTML=PIN_PALETTE.map(c=>'<button class="pe-col'+(c.toLowerCase()===curCol.toLowerCase()?' on':'')+'" style="background:'+c+'" data-c="'+c+'" title="'+c+'"></button>').join('');
+ };
+ renderColors();
+ // icons: search + recent + all (lazy-loaded)
+ iw.innerHTML='<input class="pe-search" id="pinEditSearch" type="text" placeholder="Search icons (bus, ferry, shrine…)" autocomplete="off" spellcheck="false">'
+   +'<div class="pe-grid pe-recent" hidden></div>'
+   +'<div class="pe-grid pe-all"></div>';
+ const recentDiv=iw.querySelector('.pe-recent'), allDiv=iw.querySelector('.pe-all');
+ const lib=await ensureIconLib();
+ const iconBtn=x=>{ const curId=PIN_ICON_ID(p), curCol=PIN_COLOR(p);
+   return '<button class="pe-ic'+(x[0]===curId?' on':'')+'" data-id="'+x[0]+'" title="'+x[2]+'"><img loading="lazy" src="'+mmIconUrl(x[0],curCol,true)+'" alt=""></button>'; };
+ function renderGrid(q){
+   q=(q||'').toLowerCase().trim();
+   if(q){
+     recentDiv.hidden=true;
+     const filtered=lib.filter(x=>(x[1]+' '+x[2]).toLowerCase().includes(q));
+     allDiv.innerHTML=filtered.length?filtered.map(iconBtn).join('')
+       :'<div class="pe-empty">No icons match "'+q+'"</div>';
+   } else {
+     const recents=getRecentIcons().map(rid=>lib.find(x=>x[0]===rid)).filter(Boolean);
+     if(recents.length){ recentDiv.hidden=false; recentDiv.innerHTML=recents.map(iconBtn).join(''); }
+     else { recentDiv.hidden=true; recentDiv.innerHTML=''; }
+     allDiv.innerHTML=lib.map(iconBtn).join('');
+   }
+ }
+ renderGrid('');
+ const searchInput=document.getElementById('pinEditSearch');
+ searchInput.addEventListener('input',e=>renderGrid(e.target.value));
+ // delegated handlers — survive grid re-renders
+ cw.onclick=ev=>{ const b=ev.target.closest('.pe-col'); if(!b) return;
+   p.place=p.place||{}; p.place.color=b.dataset.c;
+   applyPinStyle(p);
+   cw.querySelectorAll('.pe-col.on').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+   renderGrid(searchInput.value);   // re-tint all icon previews with the new color
+ };
+ iw.onclick=ev=>{ const b=ev.target.closest('.pe-ic'); if(!b) return;
+   const iconId=+b.dataset.id; p.place=p.place||{}; p.place.icon=iconId;
+   pushRecentIcon(iconId); applyPinStyle(p);
+   iw.querySelectorAll('.pe-ic.on').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+ };
  modal.hidden=false;
+ searchInput.focus();
 }
 window.pinEdit=function(id){ openPinEditor(id); };
 (function(){ const m=document.getElementById('pinEditModal'); if(!m) return;
@@ -1226,8 +1399,25 @@ function previewPlace(pl,nm){
  btn.style.display='';                       // always visible; saving still requires a valid token
  const setMsg=(m,err)=>{ msgEl.textContent=m; msgEl.style.color=err?'#e0564f':'#4ade80';
    msgEl.style.fontWeight='600'; window.__mmlog('admin: '+m, !!err); };
- btn.onclick=()=>{ box.hidden=!box.hidden; if(!box.hidden){ tIn.value=localStorage.getItem(TKEY)||''; tIn.focus(); setMsg(''); } };
- document.getElementById('ghForget').onclick=()=>{ localStorage.removeItem(TKEY); tIn.value=''; setMsg('Token forgotten.'); };
+ // inline X (ghForget) lives inside the token input; only visible when a token is stored
+ const refreshTkClr=()=>{ document.getElementById('ghForget').hidden = !localStorage.getItem(TKEY); };
+ refreshTkClr();
+ btn.onclick=()=>{ box.hidden=!box.hidden; if(!box.hidden){ tIn.value=localStorage.getItem(TKEY)||''; tIn.focus(); setMsg(''); refreshTkClr(); } };
+ document.getElementById('ghForget').onclick=()=>{ localStorage.removeItem(TKEY); tIn.value=''; setMsg('Token forgotten.'); refreshTkClr(); };
+ // Discard: wipe local pins for this map and re-seed from the repo's pins.json.
+ // Works without a token — purely local. Refuses if the seed hasn't arrived yet.
+ document.getElementById('ghDiscard').onclick=()=>{
+   const n=diffCount();
+   if(n===0){ setMsg('No local changes to discard.'); return; }
+   if(SEED_PINS==null){ setMsg('Seed pins not loaded yet — try again in a moment.',true); return; }
+   if(!confirm('Discard '+n+' local change'+(n>1?'s':'')+' and restore the repo\'s pins?')) return;
+   localStorage.removeItem(PIN_KEY);
+   PINS.slice().forEach(p=>pinLayer.removeLayer(p.marker));
+   PINS.length=0; pinSeq=1; map.closePopup();
+   SEED_PINS.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));
+   renderPinsList(); updateCounts(); updateDirtyBadge();
+   setMsg('Restored '+SEED_PINS.length+' pin(s) from the repo.');
+ };
  const saveBtn=document.getElementById('ghSave');
  // After committing, watch the DEPLOYED file until it matches what we pushed,
  // so the UI can say "live" rather than guessing a delay. Only meaningful on the
@@ -1254,7 +1444,7 @@ function previewPlace(pl,nm){
    window.__mmlog('admin: Save clicked');
    const token=(tIn.value||'').trim();
    if(!token){ setMsg('Paste a token first.',true); return; }
-   localStorage.setItem(TKEY,token);        // remember for next time
+   localStorage.setItem(TKEY,token); refreshTkClr();   // remember for next time + reveal the inline X
    const api='https://api.github.com/repos/'+repo.owner+'/'+repo.name+'/contents/'+path;
    const hdr={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
    const json=JSON.stringify(PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})),null,2)+'\n';
@@ -1275,6 +1465,7 @@ function previewPlace(pl,nm){
      window.__mmlog('admin: committed '+cs.slice(0,7));
      setMsg('✓ Committed'+(cs?' ('+cs.slice(0,7)+')':'')+' — checking deploy…');
      pollDeploy(json);
+     SEED_PINS=JSON.parse(json); updateDirtyBadge();   // just-committed state is the new seed -> badge clears
    }catch(e){ setMsg('Save failed: '+(e.message||e),true); }
    finally{ saveBtn.disabled=false; }
  }
@@ -1293,17 +1484,24 @@ function updateCounts(){
 // shipped beside the map data (data/maps/<id>/pins.json). Seeded pins are NOT
 // written to localStorage until the user edits, so they keep tracking the file.
 (function(){
+ // Always fetch the shipped seed (the repo's pins.json) so we can compute the
+ // "unsaved local changes" diff and offer Discard. Runs in parallel with the
+ // local restore so it doesn't delay first paint.
+ const seedP=fetch('data/maps/'+MAP_ID+'/pins.json').then(r=>r.ok?r.json():[]).catch(()=>[]);
  const saved=loadPins();
  if(saved && saved.length){
    saved.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));
    renderPinsList(); updateCounts();
+   seedP.then(seed=>{ SEED_PINS=Array.isArray(seed)?seed:[]; updateDirtyBadge(); });
  } else if(saved===null){
-   fetch('data/maps/'+MAP_ID+'/pins.json').then(r=>r.ok?r.json():[]).then(seed=>{
-     if(Array.isArray(seed)) seed.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));
-     renderPinsList(); updateCounts();
-   }).catch(()=>{ renderPinsList(); updateCounts(); });
+   seedP.then(seed=>{
+     SEED_PINS=Array.isArray(seed)?seed:[];
+     SEED_PINS.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));
+     renderPinsList(); updateCounts(); updateDirtyBadge();
+   });
  } else {
    renderPinsList(); updateCounts();   // saved===[] : user cleared, respect it
+   seedP.then(seed=>{ SEED_PINS=Array.isArray(seed)?seed:[]; updateDirtyBadge(); });
  }
 })();
 // ---- panel collapse / expand ----
