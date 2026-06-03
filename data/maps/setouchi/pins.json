@@ -1,0 +1,848 @@
+[
+  {
+    "name": "鹿島明神社（Kashima Myōjin Shrine）",
+    "coords": [
+      34.4748,
+      134.17153
+    ],
+    "place": {
+      "address": "OP・作中に何度も登場する聖地",
+      "icon": 1677,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E9%B9%BF%E5%B3%B6%E6%98%8E%E7%A5%9E%E7%A4%BE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "エンジェルロード（Angel Road）",
+    "coords": [
+      34.4856,
+      134.1789
+    ],
+    "place": {
+      "address": "OP（1期・3期）/劇場版キービジュアル。OPの猫「たえちゃん」",
+      "icon": 1521,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E3%82%A8%E3%83%B3%E3%82%B8%E3%82%A7%E3%83%AB%E3%83%AD%E3%83%BC%E3%83%89%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "NaturalScenery",
+      "color": "#0F9D58"
+    }
+  },
+  {
+    "name": "富丘八幡神社（Tomioka Hachiman Shrine）",
+    "coords": [
+      34.4843,
+      134.1834
+    ],
+    "place": {
+      "address": "2期最終話 夏祭りのシーン。石段から瀬戸内海を一望",
+      "icon": 1677,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AF%8C%E4%B8%98%E5%85%AB%E5%B9%A1%E7%A5%9E%E7%A4%BE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "柳隧道（Yanagi Tunnel）",
+    "coords": [
+      34.4885,
+      134.1895
+    ],
+    "place": {
+      "address": "通学シーン・OP。二人の出会いの場所",
+      "icon": 1899,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E6%9F%B3%E9%9A%A7%E9%81%93%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "八幡橋（Hachiman Bridge）",
+    "coords": [
+      34.48786,
+      134.19224
+    ],
+    "place": {
+      "address": "OP・作中の橋のシーン",
+      "icon": 1899,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E5%B9%A1%E6%A9%8B%20%E6%B7%B5%E5%B4%8E%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "土庄中学校（Tonoshō Junior High (桃見中)）",
+    "coords": [
+      34.48627,
+      134.19238
+    ],
+    "place": {
+      "address": "「桃見中学校」のモデル。原作者の母校",
+      "icon": 1682,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E7%94%BA%E7%AB%8B%E5%9C%9F%E5%BA%84%E4%B8%AD%E5%AD%A6%E6%A0%A1%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "土庄町立中央図書館（Tonoshō Central Library）",
+    "coords": [
+      34.48612,
+      134.18945
+    ],
+    "place": {
+      "address": "5話 勉強回。館内が作中とほぼ一致",
+      "icon": 1664,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E7%94%BA%E7%AB%8B%E4%B8%AD%E5%A4%AE%E5%9B%B3%E6%9B%B8%E9%A4%A8%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "BOOKSことぶき（Books Kotobuki）",
+    "coords": [
+      34.48214,
+      134.18865
+    ],
+    "place": {
+      "address": "5話 西片が漫画を買う書店",
+      "icon": 1526,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E3%83%96%E3%83%83%E3%82%AF%E3%82%B9%E3%81%93%E3%81%A8%E3%81%B6%E3%81%8D%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437"
+    }
+  },
+  {
+    "name": "西光寺（Saikōji Temple）",
+    "coords": [
+      34.48307,
+      134.18727
+    ],
+    "place": {
+      "address": "OPに隣接の建物が登場",
+      "icon": 1677,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E5%85%89%E5%AF%BA%20%E5%9C%9F%E5%BA%84%E7%94%BA%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "土庄港（Tonoshō Port）",
+    "coords": [
+      34.48901,
+      134.17208
+    ],
+    "place": {
+      "address": "小豆島の玄関口（フェリー）。3期キービジュアル",
+      "icon": 1569,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E6%B8%AF%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "color": "#263238",
+      "ferry": "https://www.shodoshima-ferry.co.jp/timetable/",
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "とのしょうBASE（Tonosho BASE）",
+    "coords": [
+      34.48925,
+      134.17179
+    ],
+    "place": {
+      "address": "聖地巡礼の拠点（マップ・グッズ）。ターミナル2F",
+      "icon": 1608,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E3%81%A8%E3%81%AE%E3%81%97%E3%82%87%E3%81%86BASE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "バジリコカフェ（Basilico Cafe）",
+    "coords": [
+      34.4845,
+      134.185
+    ],
+    "place": {
+      "address": "劇場版 ペットショップの舞台",
+      "icon": 1534,
+      "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E3%83%90%E3%82%B8%E3%83%AA%E3%82%B3%20%E5%9C%9F%E5%BA%84%E7%94%BA%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "category": "FoodBeverage",
+      "color": "#F4B400"
+    }
+  },
+  {
+    "name": "宮浦港（Miyanoura Port・直島）",
+    "coords": [
+      34.45635,
+      133.97414
+    ],
+    "place": {
+      "address": "直島の玄関口（フェリー）。レンタサイクル拠点",
+      "icon": 1569,
+      "color": "#263238",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%AE%E6%B5%A6%E6%B8%AF%20%E7%9B%B4%E5%B3%B6",
+      "ferry": "https://www.shikokukisen.com/instant/",
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "家浦港（Ieura Port・豊島）",
+    "coords": [
+      34.48945,
+      134.06119
+    ],
+    "place": {
+      "address": "豊島の玄関口（フェリー）。レンタサイクル拠点",
+      "icon": 1569,
+      "color": "#263238",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%B6%E6%B5%A6%E6%B8%AF%20%E8%B1%8A%E5%B3%B6",
+      "ferry": "https://www.shodoshima-ferry.co.jp/timetable/",
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "宇野港（Uno Port・岡山 玉野市）",
+    "coords": [
+      34.4903,
+      133.9457
+    ],
+    "place": {
+      "address": "本州側の玄関口。直島・豊島・小豆島へのフェリー発着",
+      "icon": 1569,
+      "color": "#263238",
+      "ferry": "https://www.shikokukisen.com/instant/",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%87%E9%87%8E%E6%B8%AF%20%E7%8E%89%E9%87%8E%E5%B8%82",
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "唐櫃港（Karato Port・豊島）",
+    "coords": [
+      34.4957,
+      134.0935
+    ],
+    "place": {
+      "address": "豊島のもう一つの港（豊島美術館側）。土庄行きフェリー発着",
+      "icon": 1569,
+      "color": "#263238",
+      "ferry": "https://www.shodoshima-ferry.co.jp/timetable/",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E5%94%90%E6%AB%83%E6%B8%AF%20%E8%B1%8A%E5%B3%B6",
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "本村港（Honmura Port・直島）",
+    "coords": [
+      34.4612,
+      133.997
+    ],
+    "place": {
+      "address": "直島のもう一つの港（家プロジェクト側）。旅客船のみ＝車・自転車は不可",
+      "icon": 1569,
+      "color": "#263238",
+      "ferry": "https://t-ferry.com/schedule/",
+      "url": "https://www.google.com/maps/search/?api=1&query=%E6%9C%AC%E6%9D%91%E6%B8%AF%20%E7%9B%B4%E5%B3%B6",
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "ペンションL&M",
+    "coords": [
+      34.476706,
+      134.1735282
+    ],
+    "place": {
+      "address": "〒761-4101 香川県小豆郡土庄町甲１５９９",
+      "rating": 4.5,
+      "website": "https://island-landm1.com/",
+      "url": "https://maps.google.com/?cid=14409127307663658521&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "color": "#757575",
+      "icon": 1602,
+      "category": "Accommodation"
+    }
+  },
+  {
+    "name": "「赤かぼちゃ」草間彌生",
+    "coords": [
+      34.4559716,
+      133.97380529999998
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町宮浦２２４９−４９",
+      "url": "https://maps.google.com/?cid=12880043085184778&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "南瓜",
+    "coords": [
+      34.446366499999996,
+      133.9956455
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町",
+      "url": "https://maps.google.com/?cid=12791632529335604922&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "地中美術館",
+    "coords": [
+      34.447747899999996,
+      133.9847175
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町３４４９−１",
+      "url": "https://maps.google.com/?cid=4369426658944645129&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "李禹煥美術館",
+    "coords": [
+      34.4485238,
+      133.98911769999998
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町 字倉浦１３９０",
+      "url": "https://maps.google.com/?cid=12067138938025957754&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "ベネッセハウス ミュージアム",
+    "coords": [
+      34.4452233,
+      133.990853
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町琴弾地",
+      "url": "https://maps.google.com/?cid=17315221182392289669&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "杉本博司ギャラリー 時の回廊〔予約制〕",
+    "coords": [
+      34.44842,
+      133.9939272
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町積浦３４１８",
+      "url": "https://maps.google.com/?cid=8299760106436633914&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "ヴァレーギャラリー",
+    "coords": [
+      34.4476569,
+      133.9903441
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町琴弾地",
+      "url": "https://maps.google.com/?cid=11926606770857545644&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "ANDO MUSEUM",
+    "coords": [
+      34.4593678,
+      133.9969485
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町本村７３６−２",
+      "url": "https://maps.google.com/?cid=703016005101687277&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1599,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "直島銭湯「I♥︎湯」",
+    "coords": [
+      34.4580532,
+      133.9751695
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町２２５２−２",
+      "url": "https://maps.google.com/?cid=6420406967383278656&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "家プロジェクト｢護王神社｣",
+    "coords": [
+      34.4597775,
+      133.9984809
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町宮ノ浦８２０",
+      "url": "https://maps.google.com/?cid=5877727779468026389&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1677,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "家プロジェクト「南寺」",
+    "coords": [
+      34.4588568,
+      133.996982
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町本村７３３",
+      "url": "https://maps.google.com/?cid=9063446566152337960&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "家プロジェクト「角屋」",
+    "coords": [
+      34.4602046,
+      133.9975159
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町８０３−１",
+      "url": "https://maps.google.com/?cid=4813816560338289931&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "家プロジェクトきんざ〔予約制〕",
+    "coords": [
+      34.4604718,
+      133.9966244
+    ],
+    "place": {
+      "address": "766, 直島町 香川郡 香川県 761-3110",
+      "url": "https://maps.google.com/?cid=5210408701152080902&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "家プロジェクト「石橋」",
+    "coords": [
+      34.4621114,
+      133.9950423
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町本村８８５",
+      "url": "https://maps.google.com/?cid=3028025372040520909&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "家プロジェクト「碁会所」",
+    "coords": [
+      34.4605326,
+      133.99677409999998
+    ],
+    "place": {
+      "address": "香川郡 直島町 767, 771 本村 直島町 香川郡 香川県 761-3110",
+      "url": "https://maps.google.com/?cid=10189158441510801370&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "家プロジェクト「はいしゃ」",
+    "coords": [
+      34.4598765,
+      133.9944882
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町９８５−２",
+      "url": "https://maps.google.com/?cid=1078874127390148695&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "豊島美術館",
+    "coords": [
+      34.489703299999995,
+      134.0903344
+    ],
+    "place": {
+      "address": "〒761-4662 香川県小豆郡土庄町豊島唐櫃６０７",
+      "url": "https://maps.google.com/?cid=17591016499235052628&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "心臓音のアーカイブ",
+    "coords": [
+      34.487875,
+      134.1031122
+    ],
+    "place": {
+      "address": "〒761-4662 香川県小豆郡土庄町豊島唐櫃２８０１−１",
+      "url": "https://maps.google.com/?cid=5717942467418165340&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "豊島横尾館",
+    "coords": [
+      34.4868634,
+      134.0596034
+    ],
+    "place": {
+      "address": "〒761-4661 香川県小豆郡土庄町豊島家浦２３５９",
+      "url": "https://maps.google.com/?cid=1592992939922167149&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1509,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "唐櫃の清水",
+    "coords": [
+      34.4856951,
+      134.0854474
+    ],
+    "place": {
+      "address": "〒761-4662 香川県小豆郡土庄町豊島唐櫃",
+      "url": "https://maps.google.com/?cid=8282790603539306748&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1892,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "唐櫃・豊島の棚田",
+    "coords": [
+      34.4886222,
+      134.08977009999998
+    ],
+    "place": {
+      "address": "〒761-4662 香川県小豆郡土庄町豊島唐櫃６０７ 美術館 前",
+      "url": "https://maps.google.com/?cid=269405543768980625&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1720,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "檀山岡崎公園展望台",
+    "coords": [
+      34.475129599999995,
+      134.0803201
+    ],
+    "place": {
+      "address": "〒761-4662 香川県小豆郡土庄町豊島唐櫃",
+      "url": "https://maps.google.com/?cid=11484637329507758224&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1634,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "島キッチン",
+    "coords": [
+      34.48479520000001,
+      134.0868031
+    ],
+    "place": {
+      "address": "〒761-4662 香川県小豆郡土庄町豊島唐櫃１０６１",
+      "url": "https://maps.google.com/?cid=8313459242481578317&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#F4B400",
+      "icon": 1577,
+      "category": "FoodBeverage"
+    }
+  },
+  {
+    "name": "寒霞渓ロープウェイ",
+    "coords": [
+      34.5120622,
+      134.2985794
+    ],
+    "place": {
+      "address": "〒761-4433 香川県小豆郡小豆島町神懸通 寒霞渓ロープウェイ",
+      "url": "https://maps.google.com/?cid=3003169873843306889&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1634,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "山頂駅",
+    "coords": [
+      34.515626,
+      134.3008376
+    ],
+    "place": {
+      "address": "日本、〒761-4433 香川県小豆郡小豆島町神懸通",
+      "url": "https://maps.google.com/?cid=15659364567811136475&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1634,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "寒霞渓ロープウェイ紅雲亭駅",
+    "coords": [
+      34.508565499999996,
+      134.2963899
+    ],
+    "place": {
+      "address": "〒761-4433 香川県小豆郡小豆島町神懸通乙３２７−１",
+      "url": "https://maps.google.com/?cid=2873618705592762546&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1634,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "重岩",
+    "coords": [
+      34.4793978,
+      134.149235
+    ],
+    "place": {
+      "address": "〒761-4100 香川県小豆郡土庄町甲",
+      "url": "https://maps.google.com/?cid=9328292097266226800&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1634,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "中山千枚田",
+    "coords": [
+      34.5040632,
+      134.2394838
+    ],
+    "place": {
+      "address": "〒761-4303 香川県小豆郡小豆島町中山１４８７",
+      "url": "https://maps.google.com/?cid=5741246681107602281&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1720,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "土渕海峡",
+    "coords": [
+      34.4864321,
+      134.18625939999998
+    ],
+    "place": {
+      "address": "〒761-4101 香川県小豆郡土庄町淵崎甲５５９−２",
+      "url": "https://maps.google.com/?cid=13510437707837413862&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#0F9D58",
+      "icon": 1681,
+      "category": "NaturalScenery"
+    }
+  },
+  {
+    "name": "二十四の瞳映画村",
+    "coords": [
+      34.4458412,
+      134.28543299999998
+    ],
+    "place": {
+      "address": "〒761-4424 香川県小豆郡小豆島町田浦甲９３１",
+      "url": "https://maps.google.com/?cid=551388743149538394&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1599,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "道の駅小豆島オリーブ公園",
+    "coords": [
+      34.4728411,
+      134.2736368
+    ],
+    "place": {
+      "address": "〒761-4434 香川県小豆郡小豆島町西村甲１９４１−１",
+      "url": "https://maps.google.com/?cid=11807075643993476202&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1582,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "マルキン醤油記念館",
+    "coords": [
+      34.466940699999995,
+      134.3193248
+    ],
+    "place": {
+      "address": "〒761-4421 香川県小豆郡小豆島町苗羽甲1850 番地",
+      "url": "https://maps.google.com/?cid=10264893426656503739&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1599,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "ヤマロク醤油",
+    "coords": [
+      34.486252799999995,
+      134.3207175
+    ],
+    "place": {
+      "address": "〒761-4411 香川県小豆郡小豆島町安田甲１６０７",
+      "url": "https://maps.google.com/?cid=10487638372033295607&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1599,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "小豆島大観音",
+    "coords": [
+      34.511905999999996,
+      134.213145
+    ],
+    "place": {
+      "address": "〒761-4153 香川県小豆郡土庄町小馬越乙１",
+      "url": "https://maps.google.com/?cid=13514060033367895748&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1671,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "岬の分教場·二十四の瞳館",
+    "coords": [
+      34.4522149,
+      134.2860972
+    ],
+    "place": {
+      "address": "〒761-4424 香川県小豆郡小豆島町田浦甲９７７−１",
+      "url": "https://maps.google.com/?cid=17765726291830036639&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#2979FF",
+      "icon": 1682,
+      "category": "BuildingCulture"
+    }
+  },
+  {
+    "name": "池田港",
+    "coords": [
+      34.479569999999995,
+      134.22572639999999
+    ],
+    "place": {
+      "address": "日本、〒761-4301 香川県小豆郡小豆島町池田",
+      "url": "https://maps.google.com/?cid=17192259832653396143&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "草壁港",
+    "coords": [
+      34.479163799999995,
+      134.2989786
+    ],
+    "place": {
+      "address": "日本、〒761-4432 香川県小豆郡小豆島町草壁本町",
+      "url": "https://maps.google.com/?cid=16925565944239174426&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "福田港",
+    "coords": [
+      34.542829,
+      134.3442379
+    ],
+    "place": {
+      "address": "日本、〒761-4402 香川県小豆郡小豆島町福田",
+      "url": "https://maps.google.com/?cid=497558221850026996&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "小豆島・坂手港",
+    "coords": [
+      34.4563604,
+      134.3208055
+    ],
+    "place": {
+      "address": "日本、〒761-4425 香川県小豆郡小豆島町坂手",
+      "url": "https://maps.google.com/?cid=2027824989742289243&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "なかぶ庵",
+    "coords": [
+      34.4827173,
+      134.3225545
+    ],
+    "place": {
+      "address": "〒761-4411 香川県小豆郡小豆島町安田甲１３８５",
+      "url": "https://maps.google.com/?cid=13526683533864512779&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#F4B400",
+      "icon": 1577,
+      "category": "FoodBeverage"
+    }
+  },
+  {
+    "name": "鬼ノ城跡",
+    "coords": [
+      34.72656,
+      133.76381
+    ],
+    "place": {
+      "address": "〒719-1101 岡山県総社市黒尾",
+      "url": "https://www.google.com/maps/search/?api=1&query=34.72656%2C133.76381",
+      "color": "#2979FF",
+      "icon": 1599,
+      "category": "BuildingCulture"
+    }
+  }
+]

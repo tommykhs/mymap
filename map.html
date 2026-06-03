@@ -1182,40 +1182,70 @@ function addPin(o){
    seed_id:(o.seed_id==null?null:o.seed_id)};
  const m=L.marker(p.coords,{icon:pinIcon(PIN_ICON_ID(p),PIN_COLOR(p)),draggable:true});
  m.bindPopup(pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
+ m.bindTooltip(esc(p.name),{sticky:true,direction:'top',offset:[0,-12],className:'rt-tip'});
  m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
  m.addTo(pinLayer); p.marker=m; PINS.push(p);
  return p;
 }
 function focusPin(p){ map.flyTo(p.coords,Math.max(map.getZoom(),15),{duration:.5}); p.marker.openPopup(); }
+// Pin categories: each pin's place.category drops it into one of these layers;
+// pins without a category fall into "Other". Each layer is a collapsible section
+// in the panel with its own eye toggle (hides only that category on the map).
+const PIN_CATS=[
+ {k:'Transport',           label:'Transport',              color:'#263238'},
+ {k:'Accommodation',       label:'Accommodation',          color:'#757575'},
+ {k:'NaturalScenery',      label:'Natural Scenery',        color:'#0F9D58'},
+ {k:'BuildingCulture',     label:'Building & Culture',     color:'#2979FF'},
+ {k:'ShoppingEntertainment',label:'Shopping & Entertainment',color:'#DB4437'},
+ {k:'FoodBeverage',        label:'Food & Beverage',        color:'#F4B400'},
+ {k:'Other',               label:'My places',              color:'#9aa4b0'},
+];
 function renderPinsList(){
  let sec=document.getElementById('pinsSection');
  if(!PINS.length){ if(sec) sec.remove(); updateCounts(); return; }
  if(!sec){ sec=document.createElement('div'); sec.className='grp'; sec.id='pinsSection';
    list.insertBefore(sec,list.firstChild); }
  sec.innerHTML='';
- const h=document.createElement('div'); h.className='gh';
- h.innerHTML='<span class="tw">▼</span><span class="gn">'
-   +'<span class="material-symbols-outlined" style="font-size:15px;vertical-align:-3px;color:#2979ff">push_pin</span> My places</span>'
-   +'<span class="gp-eye" title="Show / hide"><span class="material-symbols-outlined">visibility</span></span>'
-   +'<span class="gcount">'+PINS.length+'</span>';
- const box=document.createElement('div');
- PINS.forEach(p=>{ const it=document.createElement('div'); it.className='it';
-   it.innerHTML='<img src="'+mmIconUrl(PIN_ICON_ID(p),PIN_COLOR(p),true)+'" style="width:18px;height:20px;object-fit:contain;flex:0 0 auto" alt="">'
-     +'<span class="nm">'+esc(p.name)+'</span>';
-   it.onclick=()=>focusPin(p); box.appendChild(it); });
- const eye=h.querySelector('.gp-eye'), eyeIc=eye.querySelector('.material-symbols-outlined');
- eye.onclick=ev=>{ ev.stopPropagation();
-   const on=map.hasLayer(pinLayer);
-   if(on) map.removeLayer(pinLayer); else map.addLayer(pinLayer);
-   eyeIc.textContent=on?'visibility_off':'visibility'; box.style.opacity=on?.4:1; };
- h.onclick=()=>{ const v=box.style.display==='none'; box.style.display=v?'':'none';
-   h.querySelector('.tw').textContent=v?'▼':'▶'; };
- sec.appendChild(h); sec.appendChild(box);
+ const groups={};
+ PIN_CATS.forEach(c=>groups[c.k]=[]);
+ PINS.forEach(p=>{
+   const cat=(p.place&&p.place.category)||'Other';
+   (groups[cat]||groups.Other).push(p);
+ });
+ PIN_CATS.forEach(c=>{
+   const arr=groups[c.k]; if(!arr.length) return;
+   const h=document.createElement('div'); h.className='gh';
+   h.innerHTML='<span class="tw">▼</span><span class="gn">'
+     +'<span class="material-symbols-outlined" style="font-size:15px;vertical-align:-3px;color:'+c.color+'">push_pin</span> '+esc(c.label)+'</span>'
+     +'<span class="gp-eye" title="Show / hide"><span class="material-symbols-outlined">visibility</span></span>'
+     +'<span class="gcount">'+arr.length+'</span>';
+   const box=document.createElement('div');
+   arr.forEach(p=>{ const it=document.createElement('div'); it.className='it';
+     it.innerHTML='<img src="'+mmIconUrl(PIN_ICON_ID(p),PIN_COLOR(p),true)+'" style="width:18px;height:20px;object-fit:contain;flex:0 0 auto" alt="">'
+       +'<span class="nm">'+esc(p.name)+'</span>';
+     it.onclick=()=>focusPin(p); box.appendChild(it); });
+   const eye=h.querySelector('.gp-eye'), eyeIc=eye.querySelector('.material-symbols-outlined');
+   eye.onclick=ev=>{ ev.stopPropagation();
+     const hide=!(arr[0].marker._hidden);
+     arr.forEach(p=>{
+       if(hide) pinLayer.removeLayer(p.marker); else pinLayer.addLayer(p.marker);
+       p.marker._hidden=hide;
+     });
+     eyeIc.textContent=hide?'visibility_off':'visibility';
+     box.style.opacity=hide?.4:1;
+   };
+   h.onclick=ev=>{ if(eye.contains(ev.target)) return;
+     const v=box.style.display==='none'; box.style.display=v?'':'none';
+     h.querySelector('.tw').textContent=v?'▼':'▶'; };
+   sec.appendChild(h); sec.appendChild(box);
+ });
  updateCounts();
 }
 window.pinRename=function(id){ const p=PINS.find(x=>x.id===id); if(!p) return;
  const v=prompt('Rename place:',p.name); if(v==null) return;
- p.name=v.trim()||p.name; p.marker.setPopupContent(pinPopupHTML(p)); savePins(); renderPinsList(); };
+ p.name=v.trim()||p.name;
+ p.marker.setPopupContent(pinPopupHTML(p)); p.marker.setTooltipContent(esc(p.name));
+ savePins(); renderPinsList(); };
 window.pinEditDesc=function(id){ const p=PINS.find(x=>x.id===id); if(!p) return;
  const cur=(p.place&&(p.place.address||p.place.desc))||'';
  const v=prompt('Description:',cur); if(v==null) return;
@@ -1226,7 +1256,8 @@ window.pinNameSave=function(id, text){
  const p=PINS.find(x=>x.id===id); if(!p) return;
  const v=(text||'').replace(/\s+/g,' ').trim();
  if(!v || v===p.name) return;
- p.name=v; savePins(); renderPinsList();
+ p.name=v; p.marker.setTooltipContent(esc(p.name));
+ savePins(); renderPinsList();
 };
 window.pinDescSave=function(id, text){
  const p=PINS.find(x=>x.id===id); if(!p) return;
