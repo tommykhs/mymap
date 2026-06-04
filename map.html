@@ -1675,9 +1675,11 @@ window._routeColorApply=function(idx, hex){
  const it=itemByIdx[idx]; if(it){ const sw=it.querySelector('.sw'); if(sw) sw.style.background=hex; }
  saveLocalRouteState();
 };
-// --- elevation recompute (OpenTopoData SRTM30m) ---------------------------
-// Free public API; rate-limit 1 req/sec, 100 locations/req, 100 reqs/day.
-// For a 500-vertex route: 5 batches ≈ 6s. Fail gracefully on rate-limit.
+// --- elevation recompute (Open-Elevation SRTM30m) -------------------------
+// Free public API at api.open-elevation.com. Same SRTM30m data as OpenTopoData,
+// but proper CORS headers (OpenTopoData blocks browser-origin fetches).
+// POST batches of 100 locations, ~1 req/sec to stay polite. Service is
+// community-hosted and occasionally down — error surfaces in the banner.
 function _elevBanner(text, isErr){
  let b=document.getElementById('elevBanner');
  if(!b){ b=document.createElement('div'); b.id='elevBanner'; document.body.appendChild(b); }
@@ -1700,18 +1702,21 @@ async function routeRecomputeElevation(idx){
  try{
    for(let bi=0; bi<total; bi++){
      const slice=locs.slice(bi*BATCH, (bi+1)*BATCH);
-     const url='https://api.opentopodata.org/v1/srtm30m?locations='
-       + slice.map(([la,ln])=>la.toFixed(6)+','+ln.toFixed(6)).join('|');
-     const res=await fetch(url);
-     if(!res.ok) throw new Error('SRTM HTTP '+res.status);
+     const body={ locations: slice.map(([la,ln])=>({latitude:+la.toFixed(6), longitude:+ln.toFixed(6)})) };
+     const res=await fetch('https://api.open-elevation.com/api/v1/lookup',{
+       method:'POST',
+       headers:{'Content-Type':'application/json','Accept':'application/json'},
+       body:JSON.stringify(body)
+     });
+     if(!res.ok) throw new Error('Elevation HTTP '+res.status);
      const j=await res.json();
-     if(j.status!=='OK') throw new Error('SRTM '+j.status);
+     if(!j||!Array.isArray(j.results)) throw new Error('Elevation response invalid');
      j.results.forEach((row,i)=>{ if(row && row.elevation!=null) alts[bi*BATCH+i]=row.elevation; });
      _elevBanner('Recomputing elevation: '+(bi+1)+'/'+total+' batches…');
-     if(bi+1<total) await new Promise(rs=>setTimeout(rs, 1100));   // 1 req/sec
+     if(bi+1<total) await new Promise(rs=>setTimeout(rs, 1100));   // ~1 req/sec
    }
  }catch(e){
-   _elevBanner('Elevation fetch failed: '+(e.message||e), true);
+   _elevBanner('Elevation fetch failed: '+(e.message||e)+' (Open-Elevation may be down — try again later)', true);
    return;
  }
  refs.forEach((ref,i)=>{
