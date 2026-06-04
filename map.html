@@ -349,10 +349,14 @@
  #splitBanner button:hover, #vertBanner button:hover{background:var(--hv)}
  #splitBanner button.ok, #vertBanner button.ok{background:#2979ff;color:#fff;border-color:#2979ff}
  #splitBanner button.ok:hover, #vertBanner button.ok:hover{background:#1565d8}
- .rt-scissors{font-size:20px;line-height:28px;text-align:center;width:28px;height:28px;
-   background:#fff;border:2px solid #2979ff;border-radius:50%;
-   box-shadow:0 2px 6px rgba(0,0,0,.4);color:#2979ff;cursor:grab;user-select:none}
- .rt-scissors:active{cursor:grabbing}
+ /* Split cut-point marker: same shape as a vertex dot but red, so it pins
+    the exact split location without covering a chunk of the route line.
+    The host gives a generous touch target for mobile. */
+ .rt-scissors-host{display:flex;align-items:center;justify-content:center;cursor:grab}
+ .rt-scissors-host:active{cursor:grabbing}
+ .rt-scissors{width:14px;height:14px;background:#e0564f;border:2px solid #fff;
+   border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.6);box-sizing:border-box;
+   pointer-events:none}
  /* Vertex-drag editor: small visible dot inside a larger transparent touch
     target. The host div is sized by the divIcon (22x22) so finger taps land
     reliably; the visible dot stays 10x10 to keep the route readable. */
@@ -1434,7 +1438,7 @@ window.routeSplitStart=function(idx){
  // center, so the user always sees it in their viewport instead of having to
  // hunt down the route midpoint (which can be way off-screen on long routes).
  const initSnap=_splitSnap(map.getCenter(), poly);
- const scissorsIcon=L.divIcon({html:'<div class="rt-scissors">✂</div>', className:'', iconSize:[28,28], iconAnchor:[14,14]});
+ const scissorsIcon=L.divIcon({html:'<div class="rt-scissors"></div>', className:'rt-scissors-host', iconSize:[24,24], iconAnchor:[12,12]});
  const marker=L.marker(initSnap.latlng,{icon:scissorsIcon, draggable:true, zIndexOffset:1000, autoPan:true}).addTo(map);
  _splitState={routeIdx:idx, polyIdx, marker, snap:initSnap, escHandler:null};
  marker.on('drag', ()=>{
@@ -1464,7 +1468,7 @@ window.routeSplitStart=function(idx){
  document.addEventListener('keydown', _splitState.escHandler);
 };
 window._splitCancelBtn=()=>_splitCleanup(true);
-window._splitConfirm=function(){
+window._splitConfirm=async function(){
  if(!_splitState || !_splitState.snap){ _splitCleanup(); return; }
  const {routeIdx:idx, polyIdx, snap}=_splitState;
  const r=R[idx]; if(!r){ _splitCleanup(); return; }
@@ -1477,10 +1481,12 @@ window._splitConfirm=function(){
  }
  const polysA=r.polys.slice(0,polyIdx).concat([polyA]);
  const polysB=[polyB].concat(r.polys.slice(polyIdx+1));
- const baseName=(r.name||'route').replace(/\s*[\(（](前半|後半)[\)）]\s*$/u,'').trim();
+ // Simple (1)/(2) suffix — no stripping, so re-splits stay unique
+ // ("Foo (1) (1)" + "Foo (1) (2)"). Rename inline if it gets noisy.
+ const baseName=(r.name||'route');
  const nowIso=(new Date()).toISOString();
  const newA=JSON.parse(JSON.stringify(r));
- newA.polys=polysA; newA.name=baseName+' (前半)';
+ newA.polys=polysA; newA.name=baseName+' (1)';
  newA.id=(r.id||'route')+'-a'; newA.seed_id=r.seed_id;
  if(newA.original_distance_km==null && r.distance_km!=null) newA.original_distance_km=r.distance_km;
  if(newA.original_elev_up_m==null && r.elev_up_m!=null) newA.original_elev_up_m=r.elev_up_m;
@@ -1488,7 +1494,7 @@ window._splitConfirm=function(){
  newA.edited_at=nowIso; newA.edit_ops=(r.edit_ops||[]).slice(); newA.edit_ops.push({op:'split-a', at:nowIso});
  _routeRecomputeDistance(newA);
  const newB=JSON.parse(JSON.stringify(r));
- newB.polys=polysB; newB.name=baseName+' (後半)';
+ newB.polys=polysB; newB.name=baseName+' (2)';
  newB.id=(r.id||'route')+'-b'; newB.seed_id=null;   // brand-new entity
  if(r.distance_km!=null) newB.original_distance_km=r.distance_km;
  if(r.elev_up_m!=null) newB.original_elev_up_m=r.elev_up_m;
@@ -1498,6 +1504,12 @@ window._splitConfirm=function(){
  R.splice(idx, 1, newA, newB);
  _splitCleanup(false);
  wipeAndRebuildRoutes();
+ saveLocalRouteState();
+ // Only the inserted split vertex is missing altitude — a single SRTM lookup
+ // per half restores climb + profile without waiting on a full re-fetch.
+ await _fillMissingAltitudes(idx);
+ await _fillMissingAltitudes(idx+1);
+ buildRouteLayer(idx); buildRouteLayer(idx+1);
  saveLocalRouteState();
 };
 // --- vertex-drag editor ---------------------------------------------------
@@ -1626,7 +1638,7 @@ window.routeEditVerticesStart=function(idx){
  _vertState.escHandler=(ev)=>{ if(ev.key==='Escape') window._vertCancel(); };
  document.addEventListener('keydown', _vertState.escHandler);
 };
-window._vertDone=function(){
+window._vertDone=async function(){
  if(!_vertState) return;
  const idx=_vertState.routeIdx;
  const r=R[idx];
@@ -1637,6 +1649,10 @@ window._vertDone=function(){
  _routeRecomputeDistance(r);
  buildRouteLayer(idx);   // refresh popup HTML + tooltip
  _vertCleanup();
+ saveLocalRouteState();
+ // Inserted vertices land without altitude; fill them so climb/profile catch up.
+ await _fillMissingAltitudes(idx);
+ buildRouteLayer(idx);
  saveLocalRouteState();
 };
 window._vertCancel=function(){
@@ -1848,6 +1864,75 @@ async function routeRecomputeElevation(idx){
  saveLocalRouteState();
 }
 window.routeRecomputeElevation=routeRecomputeElevation;
+// Auto-fill ONLY the vertices that have no altitude (e.g., the split point
+// just inserted, or new ORS-extended points). Skips routes where no vertex
+// has altitude at all — those need an explicit ⛰ recompute since the cost
+// equals a full-route fetch. Returns true if anything was changed.
+async function _fillMissingAltitudes(idx){
+ const r=R[idx]; if(!r||!r.polys||!r.polys.length) return false;
+ const refs=[], locs=[];
+ let hasAltAlready=false;
+ r.polys.forEach((poly,pi)=>{
+   poly.forEach((pt,vi)=>{
+     if(pt.length<3) { refs.push({pi,vi}); locs.push([pt[0],pt[1]]); }
+     else hasAltAlready=true;
+   });
+ });
+ if(!refs.length) return false;     // nothing missing
+ if(!hasAltAlready) return false;   // whole route is altitude-less; leave to manual ⛰
+ _elevBanner('Filling altitudes for '+refs.length+' new vertex'+(refs.length>1?'es':'')+'…');
+ const BATCH=100, total=Math.ceil(locs.length/BATCH);
+ const alts=new Array(locs.length).fill(null);
+ try{
+   for(let bi=0; bi<total; bi++){
+     const slice=locs.slice(bi*BATCH, (bi+1)*BATCH);
+     const body={ locations: slice.map(([la,ln])=>({latitude:+la.toFixed(6), longitude:+ln.toFixed(6)})) };
+     const res=await fetch('https://api.open-elevation.com/api/v1/lookup',{
+       method:'POST',
+       headers:{'Content-Type':'application/json','Accept':'application/json'},
+       body:JSON.stringify(body)
+     });
+     if(!res.ok) throw new Error('Elevation HTTP '+res.status);
+     const j=await res.json();
+     if(!j||!Array.isArray(j.results)) throw new Error('Elevation response invalid');
+     j.results.forEach((row,i)=>{ if(row && row.elevation!=null) alts[bi*BATCH+i]=row.elevation; });
+     if(bi+1<total) await new Promise(rs=>setTimeout(rs, 1100));
+   }
+ }catch(e){
+   _elevBanner('Altitude fill failed: '+(e.message||e)+' (climb stays stale; try ⛰ later)', true);
+   return false;
+ }
+ refs.forEach((ref,i)=>{
+   const alt=alts[i]; if(alt==null) return;
+   const cur=r.polys[ref.pi][ref.vi];
+   r.polys[ref.pi][ref.vi]=[cur[0], cur[1], alt];
+ });
+ let climb=0;
+ r.polys.forEach(poly=>{
+   for(let i=1;i<poly.length;i++){
+     if(poly[i].length>2 && poly[i-1].length>2){
+       const d=poly[i][2]-poly[i-1][2]; if(d>0) climb+=d;
+     }
+   }
+ });
+ r.elev_up_m=Math.round(climb);
+ if(window.turf){
+   r.profile=[];
+   let cumKm=0;
+   r.polys.forEach(poly=>{
+     for(let i=0;i<poly.length;i++){
+       if(i>0){
+         const a=poly[i-1], b=poly[i];
+         try{ cumKm += turf.distance([a[1],a[0]],[b[1],b[0]],{units:'kilometers'}); }catch(e){}
+       }
+       if(poly[i].length>2) r.profile.push([+(cumKm.toFixed(4)), +poly[i][2]]);
+     }
+   });
+ }
+ _elevBanner('✓ Altitudes filled · ↑'+r.elev_up_m+' m');
+ setTimeout(_elevBannerHide, 2500);
+ return true;
+}
 // --- extend along basemap (OpenRouteService) ------------------------------
 // UX: click ⤴ → click on the map to extend; ORS routes from the route's
 // current end to the clicked point along cyclable streets. Multiple clicks
@@ -1930,7 +2015,7 @@ window._extendCancel=function(){
    if(!useful){ R.splice(idx,1); wipeAndRebuildRoutes(); saveLocalRouteState(); }
  }
 };
-window._extendDone=function(){
+window._extendDone=async function(){
  if(!_extendState) return;
  const idx=_extendState.routeIdx;
  const orig=_extendState.orig;
@@ -1952,6 +2037,11 @@ window._extendDone=function(){
  (r.edit_ops=r.edit_ops||[]).push({op:'extend', at:r.edited_at});
  _routeRecomputeDistance(r);
  _extendCleanup(false);
+ saveLocalRouteState();
+ // ORS-extended (or straight-line) segments come with no altitude — fill them
+ // unless the whole route was alt-less to begin with (then leave to manual ⛰).
+ await _fillMissingAltitudes(idx);
+ buildRouteLayer(idx);
  saveLocalRouteState();
 };
 async function _extendAppend(idx, clickLL){
