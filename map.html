@@ -1390,15 +1390,20 @@ window.routeDelete=function(idx){
  saveLocalRouteState();
 };
 // --- split ----------------------------------------------------------------
-// UX: click ✂ -> scissors marker appears at the route midpoint, draggable;
-// banner with Confirm/Cancel. Snaps to nearest point on line via turf.
+// UX: click ✂ -> scissors drops near the user's current view (snapped to the
+// route). Click anywhere on the route to move the ✂ there, or drag it.
+// Banner with Confirm/Cancel. Route stays blue-selected during the whole flow.
 let _splitState=null;
-function _splitCleanup(){
+function _splitCleanup(restore){
  if(!_splitState) return;
+ const idx=_splitState.routeIdx;
  try{ map.removeLayer(_splitState.marker); }catch(e){}
  const b=document.getElementById('splitBanner'); if(b) b.remove();
  document.removeEventListener('keydown', _splitState.escHandler);
  _splitState=null;
+ // Restore the route's normal popup + click handler (we overrode them during
+ // split mode so clicks on the line repositioned the ✂).
+ if(restore && idx!=null) buildRouteLayer(idx);
 }
 function _splitSnap(latlng, polyCoords){
  const line=turf.lineString(polyCoords.map(c=>[c[1],c[0]]));
@@ -1407,36 +1412,58 @@ function _splitSnap(latlng, polyCoords){
  const [lon,lat]=snap.geometry.coordinates;
  return {latlng:L.latLng(lat,lon), segIdx:snap.properties.index, distKm:snap.properties.location};
 }
+// Re-apply the blue-selected style (popupclose tries to clear it; we put it
+ // back so the user can still see which route they're editing).
+function _keepRouteSelected(idx){
+ selectedIdx=idx;
+ try{ if(typeof styleRoute==='function') styleRoute(idx, true); }catch(e){}
+ const it = (typeof itemByIdx!=='undefined') ? itemByIdx[idx] : null;
+ if(it) it.classList.add('active');
+}
 window.routeSplitStart=function(idx){
- if(_splitState){ _splitCleanup(); }
+ if(_splitState){ _splitCleanup(true); }
  if(!window.turf){ alert('Turf.js failed to load — cannot split. Check your network.'); return; }
  const r=R[idx]; if(!r || !r.polys || !r.polys.length) return;
  // pick the longest poly (most routes are single-poly anyway)
  let polyIdx=0, longestLen=0;
  r.polys.forEach((p,i)=>{ if(p.length>longestLen){ longestLen=p.length; polyIdx=i; } });
  const poly=r.polys[polyIdx];
- const startV=poly[Math.floor(poly.length/2)];
  try{ map.closePopup(); }catch(e){}
+ _keepRouteSelected(idx);   // keep the blue highlight on the route being split
+ // Snap initial ✂ to the closest point on the route from the current map
+ // center, so the user always sees it in their viewport instead of having to
+ // hunt down the route midpoint (which can be way off-screen on long routes).
+ const initSnap=_splitSnap(map.getCenter(), poly);
  const scissorsIcon=L.divIcon({html:'<div class="rt-scissors">✂</div>', className:'', iconSize:[28,28], iconAnchor:[14,14]});
- const marker=L.marker([startV[0],startV[1]],{icon:scissorsIcon, draggable:true, zIndexOffset:1000, autoPan:true}).addTo(map);
- _splitState={routeIdx:idx, polyIdx, marker, snap:null, escHandler:null};
- // initial snap
- _splitState.snap=_splitSnap(marker.getLatLng(), poly);
- marker.setLatLng(_splitState.snap.latlng);
+ const marker=L.marker(initSnap.latlng,{icon:scissorsIcon, draggable:true, zIndexOffset:1000, autoPan:true}).addTo(map);
+ _splitState={routeIdx:idx, polyIdx, marker, snap:initSnap, escHandler:null};
  marker.on('drag', ()=>{
    const sn=_splitSnap(marker.getLatLng(), poly);
    _splitState.snap=sn; marker.setLatLng(sn.latlng);
  });
+ // Override polyline click so tapping anywhere on the route jumps ✂ there
+ // (with snap). Unbind the popup so it doesn't reopen mid-edit. Restored on
+ // _splitCleanup(true) and on _splitConfirm via wipeAndRebuildRoutes().
+ (polysByIdx[idx]||[]).forEach(pl=>{
+   pl.off('click');
+   pl.unbindPopup();
+   pl.on('click', (ev)=>{
+     L.DomEvent.stopPropagation(ev);
+     const sn=_splitSnap(ev.latlng, poly);
+     _splitState.snap=sn;
+     marker.setLatLng(sn.latlng);
+   });
+ });
  // banner
  const banner=document.createElement('div'); banner.id='splitBanner';
- banner.innerHTML='<span>✂ Drag to the split point, then <b>Confirm</b>. ESC to cancel.</span>'
+ banner.innerHTML='<span>✂ <b>Click on the route</b> where you want to split (or drag the ✂). Then <b>Confirm</b>. ESC cancels.</span>'
    +'<button class="ok" onclick="window._splitConfirm();return false">Confirm</button>'
    +'<button onclick="window._splitCancelBtn();return false">Cancel</button>';
  document.body.appendChild(banner);
- _splitState.escHandler=(ev)=>{ if(ev.key==='Escape') _splitCleanup(); };
+ _splitState.escHandler=(ev)=>{ if(ev.key==='Escape') _splitCleanup(true); };
  document.addEventListener('keydown', _splitState.escHandler);
 };
-window._splitCancelBtn=_splitCleanup;
+window._splitCancelBtn=()=>_splitCleanup(true);
 window._splitConfirm=function(){
  if(!_splitState || !_splitState.snap){ _splitCleanup(); return; }
  const {routeIdx:idx, polyIdx, snap}=_splitState;
@@ -1469,7 +1496,7 @@ window._splitConfirm=function(){
  newB.edited_at=nowIso; newB.edit_ops=[{op:'split-b', at:nowIso, from_seed:r.seed_id}];
  _routeRecomputeDistance(newB);
  R.splice(idx, 1, newA, newB);
- _splitCleanup();
+ _splitCleanup(false);
  wipeAndRebuildRoutes();
  saveLocalRouteState();
 };
@@ -1569,6 +1596,7 @@ window.routeEditVerticesStart=function(idx){
  if(_vertState) _vertCleanup();
  const r=R[idx]; if(!r) return;
  try{ map.closePopup(); }catch(e){}
+ _keepRouteSelected(idx);
  const orig=JSON.parse(JSON.stringify(r.polys));
  const markers=[];
  let totalVerts=0;
@@ -1638,6 +1666,7 @@ window.routeMergeStart=function(idx){
  if(_vertState||_splitState||_mergeState) return;
  const r=R[idx]; if(!r || R.length<2) return;
  try{ map.closePopup(); }catch(e){}
+ _keepRouteSelected(idx);
  _mergeState={routeIdxA:idx, escHandler:null};
  // Override every OTHER route's click to mean "pick me to merge".
  R.forEach((rB,i)=>{
@@ -1868,6 +1897,7 @@ window.routeExtendStart=function(idx, opts){
  if(_vertState||_splitState||_mergeState||_extendState) return;
  const r=R[idx]; if(!r||!r.polys) return;
  try{ map.closePopup(); }catch(e){}
+ _keepRouteSelected(idx);
  _extendState={routeIdx:idx, orig:null, busy:false, endpointMarker:null, escHandler:null, mapClickHandler:null, allowStraight, wasNew: !!(opts && opts.wasNew)};
  _extendRefreshEndpointMarker(idx);
  const banner=document.createElement('div'); banner.id='vertBanner';
