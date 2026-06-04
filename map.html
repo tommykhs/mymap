@@ -362,6 +362,11 @@
    border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.5);box-sizing:border-box;
    pointer-events:none}   /* dot is decorative; click/drag is handled by .rt-vert-host */
  .rt-vert.endpoint{background:#f4b400}   /* first / last vertex stand out */
+ /* Direction chevrons — only rendered while a route's popup is open. SVG-based
+    (not the ▶ emoji) so they look the same on every OS: white stroke with a
+    dark outline halo, sized to read on top of the highlighted route line. */
+ .rt-chev{pointer-events:none;display:block}
+ .rt-chev svg{display:block;overflow:visible}
  /* Search / "+ new route" row + per-item dirty dot */
  #routeSearch{margin:8px 0 4px;display:flex;gap:6px;align-items:center}
  #routeSearch input{flex:1;background:var(--bg);border:1px solid var(--bd);color:var(--fg);
@@ -854,6 +859,63 @@ map.on('popupopen', (e) => {
 let profCleanup=null;
 map.on('popupopen', e=>{ if(profCleanup){ profCleanup(); profCleanup=null; } profCleanup=setupProfileLink(e.popup); });
 map.on('popupclose', ()=>{ if(profCleanup){ profCleanup(); profCleanup=null; } });
+// --- direction chevrons (only while a route's popup is open) -------------
+// Spawns ~20 small ▶ markers along the selected route's line, each rotated
+// to face the local travel direction. Cleared on popupclose so they never
+// clutter the map otherwise.
+const _dirChevrons=[];
+function _clearDirChevrons(){
+ _dirChevrons.forEach(m=>{ try{ map.removeLayer(m); }catch(e){} });
+ _dirChevrons.length=0;
+}
+function _showDirChevrons(idx){
+ _clearDirChevrons();
+ const r=R[idx]; if(!r||!r.polys||!r.polys.length) return;
+ // Planar approx is fine for chevron placement at Japan latitudes.
+ const segs=[]; let total=0;
+ r.polys.forEach(poly=>{
+   for(let i=0;i<poly.length-1;i++){
+     const a=poly[i], b=poly[i+1];
+     const dLat=(b[0]-a[0])*111, dLng=(b[1]-a[1])*111*Math.cos((a[0]*Math.PI)/180);
+     const len=Math.hypot(dLat,dLng);
+     if(len<1e-9) continue;
+     segs.push({a,b,len,cumStart:total});
+     total+=len;
+   }
+ });
+ if(total<=0) return;
+ // Aim for ~1 chev per 1 km, clamped to [4, 30] so very short and very long
+ // routes both stay readable.
+ const N=Math.max(4, Math.min(30, Math.round(total/1.0)));
+ const spacing=total/(N+1);
+ for(let k=1;k<=N;k++){
+   const target=k*spacing;
+   const seg=segs.find(s=>target>=s.cumStart && target<s.cumStart+s.len);
+   if(!seg) continue;
+   const t=(target-seg.cumStart)/seg.len;
+   const lat=seg.a[0]+t*(seg.b[0]-seg.a[0]);
+   const lng=seg.a[1]+t*(seg.b[1]-seg.a[1]);
+   // Screen-space rotation: positive = clockwise from east. Screen y is down,
+   // so negate the latitude delta.
+   const dx=seg.b[1]-seg.a[1];
+   const dy=-(seg.b[0]-seg.a[0]);
+   const ang=(Math.atan2(dy,dx)*180/Math.PI).toFixed(1);
+   // Two-stroke chevron: dark halo behind a white core so it pops on the blue
+   // selected route at any zoom. Rotated around the SVG centre (7,7).
+   const svg='<div class="rt-chev"><svg width="14" height="14" viewBox="0 0 14 14">'
+     +'<g transform="rotate('+ang+' 7 7)">'
+     +'<path d="M4 3 L10 7 L4 11" fill="none" stroke="#0d2960" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>'
+     +'<path d="M4 3 L10 7 L4 11" fill="none" stroke="#fff"    stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>'
+     +'</g></svg></div>';
+   const ico=L.divIcon({html:svg, className:'', iconSize:[14,14], iconAnchor:[7,7]});
+   _dirChevrons.push(L.marker([lat,lng],{icon:ico, interactive:false, zIndexOffset:550, keyboard:false}).addTo(map));
+ }
+}
+map.on('popupopen', e=>{
+ const src = e.popup && e.popup._source;
+ if(src && src._routeIdx!=null) _showDirChevrons(src._routeIdx);
+});
+map.on('popupclose', _clearDirChevrons);
 function setupProfileLink(popup){
  const idx = popup && popup._source && popup._source._routeIdx;
  if(idx==null) return null;
@@ -1085,7 +1147,7 @@ await new Promise(resolve=>{
      const plList=[]; const tip=esc(r.name);
      r.polys.forEach(p=>{
        const pl=L.polyline(p,opt);
-       pl.bindPopup(popupHTML(r,idx),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
+       pl.bindPopup(popupHTML(r,idx),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:false,offset:[0,-12]});
        pl.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
        pl.on('click',()=>selectRoute(idx,{fromMap:true}));
        pl._routeIdx=idx;   // lets popupopen find the route for the profile-hover link
@@ -1205,7 +1267,7 @@ function buildRouteLayer(idx){
  const plList=[]; const tip=esc(r.name);
  (r.polys||[]).forEach(p=>{
    const pl=L.polyline(p,opt);
-   pl.bindPopup(popupHTML(r,idx),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
+   pl.bindPopup(popupHTML(r,idx),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:false,offset:[0,-12]});
    pl.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
    pl.on('click',()=>selectRoute(idx,{fromMap:true}));
    pl._routeIdx=idx;
