@@ -7,6 +7,8 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.14.0/dist/Leaflet.GoogleMutant.js"></script>
+<!-- Turf.js (geospatial ops for route editing: nearest-point, line-split, length). -->
+<script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
 <link rel="stylesheet" href="header.css"/>
 <style>
  :root{color-scheme:dark;--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d;
@@ -149,6 +151,9 @@
  .pin-name:hover{background:var(--hv);border-radius:4px}
  .pin-name:focus{background:var(--bg);outline:1px solid var(--ac);border-radius:4px;
    white-space:normal;text-overflow:clip;overflow:visible}
+ .rt-name{outline:none;cursor:text}
+ .rt-name:hover{background:var(--hv);border-radius:4px}
+ .rt-name:focus{background:var(--bg);outline:1px solid var(--ac);border-radius:4px}
  .rt-gm .mi{color:#EA4335;font-size:18px;line-height:1}
  .rt-actions{margin-left:auto;display:flex;gap:2px;align-items:center}
  /* elevation profile + linked hover overlay (crosshair / dot / tip) */
@@ -333,6 +338,53 @@
    border-radius:9px;min-width:14px;height:14px;padding:0 3px;font-size:9px;
    font-weight:700;line-height:14px;text-align:center;box-shadow:0 0 0 1px var(--surface);
    pointer-events:none;box-sizing:border-box}
+ /* Route-edit modal banner (split / vertex-drag) — top-center, floating */
+ #splitBanner, #vertBanner{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:1500;
+   background:var(--surface);border:1px solid var(--bd);border-radius:8px;
+   padding:8px 12px;color:var(--fg);font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.4);
+   display:flex;align-items:center;gap:10px;max-width:calc(100vw - 28px)}
+ #splitBanner b, #vertBanner b{color:var(--fg)}
+ #splitBanner button, #vertBanner button{font:inherit;font-size:12px;border-radius:6px;
+   border:1px solid var(--bd);padding:4px 10px;cursor:pointer;color:var(--fg);background:var(--bg2)}
+ #splitBanner button:hover, #vertBanner button:hover{background:var(--hv)}
+ #splitBanner button.ok, #vertBanner button.ok{background:#2979ff;color:#fff;border-color:#2979ff}
+ #splitBanner button.ok:hover, #vertBanner button.ok:hover{background:#1565d8}
+ .rt-scissors{font-size:20px;line-height:28px;text-align:center;width:28px;height:28px;
+   background:#fff;border:2px solid #2979ff;border-radius:50%;
+   box-shadow:0 2px 6px rgba(0,0,0,.4);color:#2979ff;cursor:grab;user-select:none}
+ .rt-scissors:active{cursor:grabbing}
+ /* Vertex-drag editor: draggable dot at each route vertex */
+ .rt-vert{width:10px;height:10px;background:#2979ff;border:2px solid #fff;
+   border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.5);cursor:grab;
+   box-sizing:border-box}
+ .rt-vert:active{cursor:grabbing}
+ .rt-vert.endpoint{background:#f4b400}   /* first / last vertex stand out */
+ /* Search / "+ new route" row + per-item dirty dot */
+ #routeSearch{margin:8px 0 4px;display:flex;gap:6px;align-items:center}
+ #routeSearch input{flex:1;background:var(--bg);border:1px solid var(--bd);color:var(--fg);
+   border-radius:6px;padding:5px 8px;font:inherit;font-size:12px;outline:none}
+ #routeSearch input:focus{border-color:var(--ac)}
+ #routeNewBtn{background:var(--bg2);border:1px solid var(--bd);color:var(--fg);
+   border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:18px;line-height:1;
+   padding:0;display:flex;align-items:center;justify-content:center}
+ #routeNewBtn:hover{background:var(--hv);color:var(--ac)}
+ .it .it-dot{flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:#e0564f;
+   margin-left:2px;display:none}
+ .it.dirty .it-dot{display:block}
+ /* Elevation-recompute status banner (auto-creates while a fetch is running) */
+ #elevBanner{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:1500;
+   background:var(--surface);border:1px solid var(--bd);border-radius:8px;
+   padding:8px 14px;color:var(--fg);font-size:12px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+ #elevBanner.err{border-color:#e0564f;color:#e0564f}
+ /* Route color picker (opens in a Leaflet popup at the route center) */
+ .rt-pal{display:flex;flex-direction:column;gap:8px}
+ .rt-pal-grid{display:grid;grid-template-columns:repeat(5,26px);gap:6px}
+ .rt-pal .swc{width:26px;height:26px;border:1px solid var(--bd);border-radius:6px;
+   cursor:pointer;padding:0;outline:0}
+ .rt-pal .swc:hover{outline:2px solid var(--ac)}
+ .rt-pal-custom{font-size:11px;color:var(--mut);display:flex;align-items:center;gap:8px}
+ .rt-pal-custom input[type=color]{width:28px;height:28px;border:1px solid var(--bd);
+   padding:0;background:transparent;cursor:pointer}
  @media (max-width:600px){
    /* leave room on the right for the zoom / basemap / recenter controls */
    .panel{width:calc(100vw - 64px);max-width:330px;max-height:40vh}
@@ -435,9 +487,76 @@ function featureToRoute(f){
    elev_up_m:p.elev_up_m,intro_url:p.intro_url,difficulty:p.difficulty,profile:p.profile,
    rwgps_url:p.rwgps_url,strava_url:p.strava_url,desc:p.desc,
    weight:p.weight||2,color:p.color,opacity:(p.opacity!=null?p.opacity:0.9),
-   dash:p.dash||[0,0],style:p.style||'solid',polys:polys};
+   dash:p.dash||[0,0],style:p.style||'solid',polys:polys,
+   // edit metadata — survives across split/rename/etc. so the dirty diff matches
+   // routes back to their original seed entry. Absent on shipped seed → defaulted
+   // to id at seed-capture time below.
+   seed_id:p.seed_id, edited_at:p.edited_at, edit_ops:p.edit_ops||[],
+   original_distance_km:p.original_distance_km, original_elev_up_m:p.original_elev_up_m,
+   elev_src:p.elev_src};
+}
+function routeToFeature(r){
+ const coords=(r.polys||[]).map(poly=>poly.map(pt=>pt.length>2?[pt[1],pt[0],pt[2]]:[pt[1],pt[0]]));
+ const props={};
+ ['id','name','group','source','distance_km','elev_up_m','intro_url','difficulty','profile',
+  'rwgps_url','strava_url','desc','elev_src',
+  'seed_id','edited_at','edit_ops','original_distance_km','original_elev_up_m']
+   .forEach(k=>{ if(r[k]!=null && !(Array.isArray(r[k])&&!r[k].length)) props[k]=r[k]; });
+ if((r.weight||2)!==2) props.weight=r.weight;
+ if(r.opacity!=null && r.opacity!==0.9) props.opacity=r.opacity;
+ if((r.style||'solid')!=='solid') props.style=r.style;
+ if(r.dash && (r.dash[0]||r.dash[1])) props.dash=r.dash;
+ if(r.color) props.color=r.color;
+ return {type:'Feature', geometry:{type:'MultiLineString', coordinates:coords}, properties:props};
 }
 const MAP_ID=(new URLSearchParams(location.search).get('id'))||'japan-cycling';
+// ---- route editing: localStorage layer + seed snapshot (parallel to pin model) ----
+// Editing is opt-in (Phase 1 ships the UI); this plumbing exists from Phase 0 so
+// dirty/save/discard all "just work" once split/reverse/etc. land.
+const RKEY='mymap.routes.'+MAP_ID;
+const RDEL_KEY='mymap.routes.'+MAP_ID+'.del';
+let SEED_ROUTES=null;   // snapshot of routes as served from the repo; used for diffing
+function loadLocalRoutes(){ try{ return JSON.parse(localStorage.getItem(RKEY)||'[]'); }catch(e){ return []; } }
+function loadDeletedSeeds(){ try{ return new Set(JSON.parse(localStorage.getItem(RDEL_KEY)||'[]')); }catch(e){ return new Set(); } }
+function normRoute(r){
+ // strip auto-derived fields so they don't cause false dirties after recomputation
+ const c={...r}; delete c.distance_km; delete c.elev_up_m; delete c.profile; delete c.edited_at;
+ return JSON.stringify(c);
+}
+function saveLocalRouteState(){
+ if(!SEED_ROUTES) return;
+ const seedById=new Map(SEED_ROUTES.map(s=>[s.seed_id,s]));
+ const seenSeeds=new Set();
+ const modified=[];
+ R.forEach(r=>{
+   if(r.seed_id==null){ modified.push(JSON.parse(JSON.stringify(r))); return; }
+   seenSeeds.add(r.seed_id);
+   const s=seedById.get(r.seed_id);
+   if(!s){ modified.push(JSON.parse(JSON.stringify(r))); return; }
+   if(normRoute(r)!==normRoute(s)) modified.push(JSON.parse(JSON.stringify(r)));
+ });
+ const deleted=[];
+ SEED_ROUTES.forEach(s=>{ if(!seenSeeds.has(s.seed_id)) deleted.push(s.seed_id); });
+ try{ localStorage.setItem(RKEY,JSON.stringify(modified)); }catch(e){}
+ try{ localStorage.setItem(RDEL_KEY,JSON.stringify(deleted)); }catch(e){}
+ if(typeof updateDirtyBadge==='function') updateDirtyBadge();
+ if(typeof refreshRouteDirtyDots==='function') refreshRouteDirtyDots();
+}
+function routeDiffCount(){
+ if(SEED_ROUTES==null) return 0;
+ const seedById=new Map(SEED_ROUTES.map(s=>[s.seed_id,s]));
+ const seenSeeds=new Set();
+ let n=0;
+ R.forEach(r=>{
+   if(r.seed_id==null){ n++; return; }
+   seenSeeds.add(r.seed_id);
+   const s=seedById.get(r.seed_id);
+   if(!s){ n++; return; }
+   if(normRoute(r)!==normRoute(s)) n++;
+ });
+ SEED_ROUTES.forEach(s=>{ if(!seenSeeds.has(s.seed_id)) n++; });
+ return n;
+}
 // ---- Google integration (basemap + place search) ----
 // config.js sets window.MYMAP_CONFIG.googleMapsApiKey. It's a CLIENT key for a
 // public static site (visible by design); it is safe only because it's locked
@@ -518,6 +637,23 @@ MyMapData.loadLibrary()
  }).then(fc=>{
  setLoading('Preparing routes…');
  R=(fc.features||[]).map(featureToRoute).filter(r=>r.polys&&r.polys.length);
+ // Phase 0: ensure every route has a seed_id (default = id), snapshot as SEED_ROUTES,
+ // then apply any local-edit overrides from localStorage on top.
+ R.forEach(r=>{ if(r.seed_id==null) r.seed_id=r.id; });
+ SEED_ROUTES=R.map(r=>JSON.parse(JSON.stringify(r)));
+ const modList=loadLocalRoutes(), delSet=loadDeletedSeeds();
+ if(modList.length||delSet.size){
+   const fresh=[];
+   SEED_ROUTES.forEach(s=>{
+     if(delSet.has(s.seed_id)) return;
+     const mods=modList.filter(m=>m.seed_id===s.seed_id);
+     if(mods.length) mods.forEach(m=>fresh.push(JSON.parse(JSON.stringify(m))));
+     else fresh.push(JSON.parse(JSON.stringify(s)));
+   });
+   modList.forEach(m=>{ if(m.seed_id==null) fresh.push(JSON.parse(JSON.stringify(m))); });
+   R.length=0; R.push(...fresh);
+   window.__mmlog('routes: '+modList.length+' overrides + '+delSet.size+' deletes applied from localStorage');
+ }
  boot();
 }).catch(e=>{
  errorLoading('Load failed: '+((e&&e.message)||e));
@@ -815,7 +951,12 @@ function statsLine(r){
  return '<div class="rt-stats">'+parts.join('<span style="opacity:.5">·</span>')+'</div>';
 }
 function popupHTML(r,idx){
- let h='<span class="rt-drag" title="Drag to move">⠿</span><b>'+r.name+'</b>';
+ // Editable name (contenteditable b) + drag handle. Saves on blur / Enter.
+ let h='<span class="rt-drag" title="Drag to move">⠿</span>'
+   +'<b class="rt-name" contenteditable="true" spellcheck="false" title="Click to rename"'
+   +(idx!=null?' onblur="routeNameSave('+idx+',this.innerText)" '
+     +'onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur();}"':'')
+   +'>'+esc(r.name)+'</b>';
  if(r.desc){
    const d=r.desc.replace(/&/g,'&amp;').replace(/</g,'&lt;')
      .replace(/(https?:\/\/[^\s]+)/g,'<a href="$1" target="_blank">$1</a>')
@@ -837,7 +978,22 @@ function popupHTML(r,idx){
  if(r.intro_url)  row.push('<a href="'+r.intro_url+'" target="_blank"><span class="mi">open_in_new</span>'+sourceLink(r)+'</a>');
  if(r.rwgps_url)  row.push('<a href="'+r.rwgps_url+'" target="_blank"><span class="mi">open_in_new</span>RWGPS</a>');
  if(r.strava_url) row.push('<a href="'+r.strava_url+'" target="_blank"><span class="mi">open_in_new</span>Strava</a>');
- if(row.length) h+='<div class="rt-dl">'+row.join('')+'</div>';
+ // Edit actions (only when we have an index — i.e. an existing route, not the
+ // pin-coords preview popup). Mirrors the pin popup's .rt-actions row.
+ let actions='';
+ if(idx!=null){
+   actions='<span class="rt-actions">'
+     +'<button class="pin-act" title="Edit vertices (drag to reshape)" onclick="routeEditVerticesStart('+idx+');return false"><span class="mi">edit</span></button>'
+     +'<button class="pin-act" title="Split route at a point" onclick="routeSplitStart('+idx+');return false"><span class="mi">content_cut</span></button>'
+     +'<button class="pin-act" title="Merge with another route" onclick="routeMergeStart('+idx+');return false"><span class="mi">call_merge</span></button>'
+     +'<button class="pin-act" title="Extend along basemap (click map to add)" onclick="routeExtendStart('+idx+');return false"><span class="mi">north_east</span></button>'
+     +'<button class="pin-act" title="Reverse direction" onclick="routeReverse('+idx+');return false"><span class="mi">swap_horiz</span></button>'
+     +'<button class="pin-act" title="Recompute elevation from SRTM" onclick="routeRecomputeElevation('+idx+');return false"><span class="mi">terrain</span></button>'
+     +'<button class="pin-act" title="Route color" onclick="routeColorPicker('+idx+');return false"><span class="mi">palette</span></button>'
+     +'<button class="pin-act" title="Delete route" onclick="routeDelete('+idx+');return false"><span class="mi">delete</span></button>'
+     +'</span>';
+ }
+ if(row.length||actions) h+='<div class="rt-dl">'+row.join('')+actions+'</div>';
  return h;
 }
 // ---- route export (runtime conversion, no server) ----
@@ -996,7 +1152,8 @@ Object.keys(groups).sort().forEach(gn=>{
  groups[gn].forEach(i=>{const r=R[i];
    const it=document.createElement('div');it.className='it';
    it.innerHTML='<span class="sw" style="background:'+(r.color||accent())+'"></span>'+
-     '<span class="nm">'+r.name+'</span>'+
+     '<span class="nm">'+esc(r.name)+'</span>'+
+     '<span class="it-dot" title="Local edits not yet saved"></span>'+
      '<span class="it-dl" title="Download GPX"><span class="material-symbols-outlined">download</span></span>';
    it.onclick=()=>{
      if(!map.hasLayer(lg[i])){ map.addLayer(lg[i]); it.style.opacity=1; }
@@ -1017,6 +1174,794 @@ Object.keys(groups).sort().forEach(gn=>{
    h.querySelector('.tw').textContent=v?'▼':'▶';};
  wrap.appendChild(h);wrap.appendChild(box);list.appendChild(wrap);
 });
+// ---- Phase 1: route editing (rename / reverse / delete / split) ---------
+// Helper: build (or rebuild) lg[idx] from R[idx].polys. Idempotent — if lg[idx]
+// already exists, its old polylines are cleared first. Used by reverse + split +
+// wipeAndRebuildRoutes.
+function buildRouteLayer(idx){
+ const r=R[idx]; if(!r) return null;
+ if(lg[idx]){ try{ map.removeLayer(lg[idx]); }catch(e){} lg[idx].clearLayers(); }
+ else lg[idx]=L.layerGroup();
+ const opt={color:(r.color||accent()),weight:effWeight(r),opacity:(r.opacity!=null?r.opacity:0.9)};
+ if(r.style!=='solid'||(r.dash&&r.dash[0])) opt.dashArray=((r.dash&&r.dash[0])||8)+','+((r.dash&&r.dash[1])||6);
+ const plList=[]; const tip=esc(r.name);
+ (r.polys||[]).forEach(p=>{
+   const pl=L.polyline(p,opt);
+   pl.bindPopup(popupHTML(r,idx),{maxWidth:300,minWidth:240,autoPan:true,autoPanPadding:[60,60],keepInView:true,offset:[0,-12]});
+   pl.bindTooltip(tip,{sticky:true,direction:'top',offset:[0,-4],className:'rt-tip'});
+   pl.on('click',()=>selectRoute(idx,{fromMap:true}));
+   pl._routeIdx=idx;
+   pl.addTo(lg[idx]);
+   plList.push(pl);
+ });
+ polysByIdx[idx]=plList;
+ if(!map.hasLayer(lg[idx])) map.addLayer(lg[idx]);
+ return lg[idx];
+}
+// Rebuilds the sidebar route groups (everything except #pinsSection) from R.
+// Clears + repopulates itemByIdx / boxByIdx / headerByIdx.
+function rebuildSidebarRouteGroups(){
+ list.querySelectorAll(':scope > .grp').forEach(el=>{ if(el.id!=='pinsSection') el.remove(); });
+ Object.keys(itemByIdx).forEach(k=>delete itemByIdx[k]);
+ Object.keys(boxByIdx).forEach(k=>delete boxByIdx[k]);
+ Object.keys(headerByIdx).forEach(k=>delete headerByIdx[k]);
+ const grps={};
+ R.forEach((r,i)=>{ (grps[r.group]=grps[r.group]||[]).push(i); });
+ Object.keys(grps).sort().forEach(gn=>{
+   const wrap=document.createElement('div'); wrap.className='grp';
+   const h=document.createElement('div'); h.className='gh';
+   const indices=grps[gn];
+   h.innerHTML='<span class="tw">▼</span>'
+     +'<span class="gn">'+(gn||'(route)')+'</span>'
+     +'<span class="gp-eye" title="Show / hide this group"><span class="material-symbols-outlined">visibility</span></span>'
+     +'<span class="gcount">'+indices.length+'</span>';
+   const eyeBtn=h.querySelector('.gp-eye');
+   const eyeIcon=eyeBtn.querySelector('.material-symbols-outlined');
+   eyeBtn.onclick=(ev)=>{
+     ev.stopPropagation();
+     const anyOn=indices.some(i=>map.hasLayer(lg[i]));
+     indices.forEach(i=>{ if(anyOn){ map.removeLayer(lg[i]); } else { map.addLayer(lg[i]); } });
+     indices.forEach(i=>{ const it=itemByIdx[i]; if(it) it.style.opacity = anyOn ? 0.4 : 1; });
+     eyeIcon.textContent = indices.some(i=>map.hasLayer(lg[i])) ? 'visibility' : 'visibility_off';
+   };
+   const box=document.createElement('div');
+   indices.forEach(i=>{ const r=R[i];
+     const it=document.createElement('div'); it.className='it';
+     it.innerHTML='<span class="sw" style="background:'+(r.color||accent())+'"></span>'
+       +'<span class="nm">'+esc(r.name)+'</span>'
+       +'<span class="it-dot" title="Local edits not yet saved"></span>'
+       +'<span class="it-dl" title="Download GPX"><span class="material-symbols-outlined">download</span></span>';
+     it.onclick=()=>{
+       if(!map.hasLayer(lg[i])){ map.addLayer(lg[i]); it.style.opacity=1; }
+       const pl=(polysByIdx[i]||[])[0];
+       if(pl){ try{ pl.openPopup(pl.getCenter()); }catch(e){ try{ pl.openPopup(); }catch(_){} } }
+       try{ map.fitBounds(lg[i].getLayers()[0].getBounds().pad(.2)); }catch(e){}
+       selectRoute(i,{fromMap:false});
+     };
+     it.querySelector('.it-dl').onclick=(ev)=>{ ev.stopPropagation(); dlRoute(i,'gpx'); };
+     itemByIdx[i]=it; boxByIdx[i]=box; headerByIdx[i]=h;
+     box.appendChild(it);
+   });
+   h.onclick=()=>{ const v=box.style.display==='none'; box.style.display=v?'':'none'; h.querySelector('.tw').textContent=v?'▼':'▶'; };
+   wrap.appendChild(h); wrap.appendChild(box); list.appendChild(wrap);
+ });
+}
+// Wipe all route layers + sidebar and rebuild from R. Used after structural
+// mutations (delete, split) where indices shift and stale closures would break.
+function wipeAndRebuildRoutes(){
+ try{ map.closePopup(); }catch(e){}
+ Object.keys(lg).forEach(k=>{ try{ map.removeLayer(lg[k]); }catch(e){} delete lg[k]; });
+ Object.keys(polysByIdx).forEach(k=>delete polysByIdx[k]);
+ R.forEach((_,i)=>buildRouteLayer(i));
+ rebuildSidebarRouteGroups();
+ if(selectedIdx!=null){
+   if(selectedIdx<R.length){ styleRoute(selectedIdx,true); const it=itemByIdx[selectedIdx]; if(it) it.classList.add('active'); }
+   else selectedIdx=null;
+ }
+ if(typeof refreshRouteDirtyDots==='function') refreshRouteDirtyDots();
+}
+// Recompute distance_km from current polys (planar via turf). Doesn't touch
+// elev_up_m (the inserted split vertex has no altitude and would bias climb).
+function _routeRecomputeDistance(r){
+ if(!window.turf){ return; }
+ let dist=0;
+ (r.polys||[]).forEach(poly=>{
+   if(poly.length<2) return;
+   try{
+     const line=turf.lineString(poly.map(p=>[p[1],p[0]]));
+     dist += turf.length(line,{units:'kilometers'});
+   }catch(e){}
+ });
+ r.distance_km = +(dist.toFixed(1));
+}
+// --- inline rename --------------------------------------------------------
+window.routeNameSave=function(idx, text){
+ const r=R[idx]; if(!r) return;
+ const v=(text||'').replace(/\s+/g,' ').trim();
+ if(!v || v===r.name) return;
+ r.name=v;
+ r.edited_at=(new Date()).toISOString();
+ (r.edit_ops=r.edit_ops||[]).push({op:'rename', at:r.edited_at});
+ (polysByIdx[idx]||[]).forEach(pl=>{ pl.setPopupContent(popupHTML(r,idx)); pl.setTooltipContent(esc(v)); });
+ const it=itemByIdx[idx]; if(it){ const nm=it.querySelector('.nm'); if(nm) nm.textContent=v; }
+ saveLocalRouteState();
+};
+// --- reverse --------------------------------------------------------------
+window.routeReverse=function(idx){
+ const r=R[idx]; if(!r) return;
+ r.polys=(r.polys||[]).map(p=>p.slice().reverse()).reverse();
+ if(r.profile && r.profile.length){
+   const total=r.profile[r.profile.length-1][0];
+   r.profile=r.profile.slice().reverse().map(p=>[total-p[0], p[1]]);
+ }
+ r.edited_at=(new Date()).toISOString();
+ (r.edit_ops=r.edit_ops||[]).push({op:'reverse', at:r.edited_at});
+ buildRouteLayer(idx);
+ saveLocalRouteState();
+};
+// --- delete ---------------------------------------------------------------
+window.routeDelete=function(idx){
+ const r=R[idx]; if(!r) return;
+ if(!confirm('Delete "'+(r.name||'this route')+'" from the local copy?\n\n(Discard restores it, Cloud Save commits the deletion.)')) return;
+ if(selectedIdx===idx) selectedIdx=null;
+ else if(selectedIdx!=null && selectedIdx>idx) selectedIdx--;
+ R.splice(idx,1);
+ wipeAndRebuildRoutes();
+ saveLocalRouteState();
+};
+// --- split ----------------------------------------------------------------
+// UX: click ✂ -> scissors marker appears at the route midpoint, draggable;
+// banner with Confirm/Cancel. Snaps to nearest point on line via turf.
+let _splitState=null;
+function _splitCleanup(){
+ if(!_splitState) return;
+ try{ map.removeLayer(_splitState.marker); }catch(e){}
+ const b=document.getElementById('splitBanner'); if(b) b.remove();
+ document.removeEventListener('keydown', _splitState.escHandler);
+ _splitState=null;
+}
+function _splitSnap(latlng, polyCoords){
+ const line=turf.lineString(polyCoords.map(c=>[c[1],c[0]]));
+ const pt=turf.point([latlng.lng, latlng.lat]);
+ const snap=turf.nearestPointOnLine(line, pt, {units:'kilometers'});
+ const [lon,lat]=snap.geometry.coordinates;
+ return {latlng:L.latLng(lat,lon), segIdx:snap.properties.index, distKm:snap.properties.location};
+}
+window.routeSplitStart=function(idx){
+ if(_splitState){ _splitCleanup(); }
+ if(!window.turf){ alert('Turf.js failed to load — cannot split. Check your network.'); return; }
+ const r=R[idx]; if(!r || !r.polys || !r.polys.length) return;
+ // pick the longest poly (most routes are single-poly anyway)
+ let polyIdx=0, longestLen=0;
+ r.polys.forEach((p,i)=>{ if(p.length>longestLen){ longestLen=p.length; polyIdx=i; } });
+ const poly=r.polys[polyIdx];
+ const startV=poly[Math.floor(poly.length/2)];
+ try{ map.closePopup(); }catch(e){}
+ const scissorsIcon=L.divIcon({html:'<div class="rt-scissors">✂</div>', className:'', iconSize:[28,28], iconAnchor:[14,14]});
+ const marker=L.marker([startV[0],startV[1]],{icon:scissorsIcon, draggable:true, zIndexOffset:1000, autoPan:true}).addTo(map);
+ _splitState={routeIdx:idx, polyIdx, marker, snap:null, escHandler:null};
+ // initial snap
+ _splitState.snap=_splitSnap(marker.getLatLng(), poly);
+ marker.setLatLng(_splitState.snap.latlng);
+ marker.on('drag', ()=>{
+   const sn=_splitSnap(marker.getLatLng(), poly);
+   _splitState.snap=sn; marker.setLatLng(sn.latlng);
+ });
+ // banner
+ const banner=document.createElement('div'); banner.id='splitBanner';
+ banner.innerHTML='<span>✂ Drag to the split point, then <b>Confirm</b>. ESC to cancel.</span>'
+   +'<button class="ok" onclick="window._splitConfirm();return false">Confirm</button>'
+   +'<button onclick="window._splitCancelBtn();return false">Cancel</button>';
+ document.body.appendChild(banner);
+ _splitState.escHandler=(ev)=>{ if(ev.key==='Escape') _splitCleanup(); };
+ document.addEventListener('keydown', _splitState.escHandler);
+};
+window._splitCancelBtn=_splitCleanup;
+window._splitConfirm=function(){
+ if(!_splitState || !_splitState.snap){ _splitCleanup(); return; }
+ const {routeIdx:idx, polyIdx, snap}=_splitState;
+ const r=R[idx]; if(!r){ _splitCleanup(); return; }
+ const poly=r.polys[polyIdx];
+ const splitPt=[snap.latlng.lat, snap.latlng.lng];
+ const polyA=poly.slice(0, snap.segIdx+1).concat([splitPt]);
+ const polyB=[splitPt].concat(poly.slice(snap.segIdx+1));
+ if(polyA.length<2 || polyB.length<2){
+   alert('Split point is too close to a route endpoint — drag it further in.'); return;
+ }
+ const polysA=r.polys.slice(0,polyIdx).concat([polyA]);
+ const polysB=[polyB].concat(r.polys.slice(polyIdx+1));
+ const baseName=(r.name||'route').replace(/\s*[\(（](前半|後半)[\)）]\s*$/u,'').trim();
+ const nowIso=(new Date()).toISOString();
+ const newA=JSON.parse(JSON.stringify(r));
+ newA.polys=polysA; newA.name=baseName+' (前半)';
+ newA.id=(r.id||'route')+'-a'; newA.seed_id=r.seed_id;
+ if(newA.original_distance_km==null && r.distance_km!=null) newA.original_distance_km=r.distance_km;
+ if(newA.original_elev_up_m==null && r.elev_up_m!=null) newA.original_elev_up_m=r.elev_up_m;
+ delete newA.distance_km; delete newA.elev_up_m; delete newA.profile;
+ newA.edited_at=nowIso; newA.edit_ops=(r.edit_ops||[]).slice(); newA.edit_ops.push({op:'split-a', at:nowIso});
+ _routeRecomputeDistance(newA);
+ const newB=JSON.parse(JSON.stringify(r));
+ newB.polys=polysB; newB.name=baseName+' (後半)';
+ newB.id=(r.id||'route')+'-b'; newB.seed_id=null;   // brand-new entity
+ if(r.distance_km!=null) newB.original_distance_km=r.distance_km;
+ if(r.elev_up_m!=null) newB.original_elev_up_m=r.elev_up_m;
+ delete newB.distance_km; delete newB.elev_up_m; delete newB.profile;
+ newB.edited_at=nowIso; newB.edit_ops=[{op:'split-b', at:nowIso, from_seed:r.seed_id}];
+ _routeRecomputeDistance(newB);
+ R.splice(idx, 1, newA, newB);
+ _splitCleanup();
+ wipeAndRebuildRoutes();
+ saveLocalRouteState();
+};
+// --- vertex-drag editor ---------------------------------------------------
+// UX: click ✎ -> dot at each vertex.
+//   • Drag a dot     -> reshape that vertex.
+//   • Shift-click    -> delete that vertex (needs at least 2 left).
+//   • Click the line -> insert a new vertex at the snap point.
+// Done commits, Cancel/ESC restores. Multi-poly routes show vertices for ALL polys.
+let _vertState=null;
+function _vertCleanup(){
+ if(!_vertState) return;
+ _vertState.markers.forEach(m=>{ try{ map.removeLayer(m); }catch(e){} });
+ const b=document.getElementById('vertBanner'); if(b) b.remove();
+ document.removeEventListener('keydown', _vertState.escHandler);
+ // (polyline click + popup is restored by buildRouteLayer() in _vertDone/_vertCancel)
+ _vertState=null;
+}
+function _vertSpawnMarker(idx, polyIdx, vertIdx, isEnd){
+ const poly=R[idx].polys[polyIdx];
+ const pt=poly[vertIdx];
+ const cls=isEnd?'rt-vert endpoint':'rt-vert';
+ const ico=L.divIcon({html:'<div class="'+cls+'"></div>', className:'', iconSize:[10,10], iconAnchor:[5,5]});
+ const m=L.marker([pt[0],pt[1]],{icon:ico, draggable:true, zIndexOffset:600, keyboard:false});
+ m._polyIdx=polyIdx; m._vertIdx=vertIdx;
+ m.on('drag', ()=>{
+   const ll=m.getLatLng();
+   const cur=R[idx].polys[polyIdx][m._vertIdx];
+   if(cur.length>2) R[idx].polys[polyIdx][m._vertIdx]=[ll.lat, ll.lng, cur[2]];
+   else R[idx].polys[polyIdx][m._vertIdx]=[ll.lat, ll.lng];
+   const pl=(polysByIdx[idx]||[])[polyIdx]; if(pl) pl.setLatLngs(R[idx].polys[polyIdx]);
+ });
+ // shift-click to delete
+ m.on('click', (ev)=>{
+   const oe=ev.originalEvent;
+   if(!oe || !oe.shiftKey) return;
+   L.DomEvent.stopPropagation(ev);
+   const cPoly=R[idx].polys[m._polyIdx];
+   if(cPoly.length<=2){ alert('Cannot delete — a line needs at least 2 points.'); return; }
+   cPoly.splice(m._vertIdx, 1);
+   _vertRebuildPolyMarkers(idx, m._polyIdx);
+   const pl=(polysByIdx[idx]||[])[m._polyIdx]; if(pl) pl.setLatLngs(cPoly);
+   _vertUpdateBanner();
+ });
+ return m;
+}
+function _vertRebuildPolyMarkers(idx, polyIdx){
+ // Remove existing markers for THIS poly only.
+ _vertState.markers = _vertState.markers.filter(m=>{
+   if(m._polyIdx===polyIdx){ try{ map.removeLayer(m); }catch(e){} return false; }
+   return true;
+ });
+ const poly=R[idx].polys[polyIdx];
+ poly.forEach((pt,vi)=>{
+   const isEnd = (vi===0 || vi===poly.length-1);
+   const m=_vertSpawnMarker(idx, polyIdx, vi, isEnd);
+   m.addTo(map);
+   _vertState.markers.push(m);
+ });
+}
+function _vertUpdateBanner(){
+ if(!_vertState) return;
+ const r=R[_vertState.routeIdx]; if(!r) return;
+ let total=0; r.polys.forEach(p=>total+=p.length);
+ const span=document.querySelector('#vertBanner span'); if(span) span.innerHTML=
+   '✎ Drag · click line to insert · shift-click dot to delete ('+total+' points). <b>Done</b> saves · ESC cancels.';
+}
+function _vertHandleMapClick(ev){
+ if(!_vertState) return;
+ if(!window.turf) return;
+ const r=R[_vertState.routeIdx]; if(!r) return;
+ // Find the nearest snap point across ALL polys; if within ~15 px of a line, insert there.
+ const clickLL=ev.latlng;
+ const clickPx=map.latLngToContainerPoint(clickLL);
+ let best={pxDist:Infinity};
+ r.polys.forEach((poly,pi)=>{
+   if(poly.length<2) return;
+   try{
+     const line=turf.lineString(poly.map(c=>[c[1],c[0]]));
+     const snap=turf.nearestPointOnLine(line, turf.point([clickLL.lng, clickLL.lat]), {units:'kilometers'});
+     const ll=L.latLng(snap.geometry.coordinates[1], snap.geometry.coordinates[0]);
+     const px=map.latLngToContainerPoint(ll).distanceTo(clickPx);
+     if(px<best.pxDist){ best={pxDist:px, polyIdx:pi, segIdx:snap.properties.index, latlng:ll}; }
+   }catch(e){}
+ });
+ const TOL_PX=15;
+ if(best.pxDist>TOL_PX) return;   // click was nowhere near the line
+ const poly=r.polys[best.polyIdx];
+ const newPt=[best.latlng.lat, best.latlng.lng];   // no altitude; recompute later if needed
+ poly.splice(best.segIdx+1, 0, newPt);
+ _vertRebuildPolyMarkers(_vertState.routeIdx, best.polyIdx);
+ const pl=(polysByIdx[_vertState.routeIdx]||[])[best.polyIdx]; if(pl) pl.setLatLngs(poly);
+ _vertUpdateBanner();
+}
+window.routeEditVerticesStart=function(idx){
+ if(_vertState) _vertCleanup();
+ const r=R[idx]; if(!r) return;
+ try{ map.closePopup(); }catch(e){}
+ const orig=JSON.parse(JSON.stringify(r.polys));
+ const markers=[];
+ let totalVerts=0;
+ _vertState={routeIdx:idx, orig, markers, escHandler:null};   // set early so spawn handlers can reference it
+ r.polys.forEach((poly,pi)=>{
+   poly.forEach((pt,vi)=>{
+     const isEnd = (vi===0 || vi===poly.length-1);
+     const m=_vertSpawnMarker(idx, pi, vi, isEnd);
+     m.addTo(map);
+     markers.push(m);
+   });
+   totalVerts += poly.length;
+ });
+ // Replace each polyline's click with an inserter (and unbind its popup so the
+ // route popup doesn't open mid-edit). buildRouteLayer() in Done/Cancel restores
+ // the original click + popup.
+ (polysByIdx[idx]||[]).forEach(pl=>{
+   pl.off('click');
+   pl.unbindPopup();
+   pl.on('click', (ev)=>{ L.DomEvent.stopPropagation(ev); _vertHandleMapClick(ev); });
+ });
+ const banner=document.createElement('div'); banner.id='vertBanner';
+ banner.innerHTML='<span>✎ Drag · click line to insert · shift-click dot to delete ('+totalVerts+' points). <b>Done</b> saves · ESC cancels.</span>'
+   +'<button class="ok" onclick="window._vertDone();return false">Done</button>'
+   +'<button onclick="window._vertCancel();return false">Cancel</button>';
+ document.body.appendChild(banner);
+ _vertState.escHandler=(ev)=>{ if(ev.key==='Escape') window._vertCancel(); };
+ document.addEventListener('keydown', _vertState.escHandler);
+};
+window._vertDone=function(){
+ if(!_vertState) return;
+ const idx=_vertState.routeIdx;
+ const r=R[idx];
+ r.edited_at=(new Date()).toISOString();
+ (r.edit_ops=r.edit_ops||[]).push({op:'edit-vertices', at:r.edited_at});
+ if(r.original_distance_km==null && r.distance_km!=null) r.original_distance_km=r.distance_km;
+ if(r.original_elev_up_m==null && r.elev_up_m!=null) r.original_elev_up_m=r.elev_up_m;
+ _routeRecomputeDistance(r);
+ buildRouteLayer(idx);   // refresh popup HTML + tooltip
+ _vertCleanup();
+ saveLocalRouteState();
+};
+window._vertCancel=function(){
+ if(!_vertState) return;
+ const idx=_vertState.routeIdx;
+ R[idx].polys = _vertState.orig;
+ buildRouteLayer(idx);
+ _vertCleanup();
+};
+// --- merge two routes -----------------------------------------------------
+// UX: click ⤢ on route A -> click any other route B on the map -> auto-chain
+// using the closest endpoint pair (so the join makes geographic sense).
+let _mergeState=null;
+function _mergeCleanup(restore){
+ if(!_mergeState) return;
+ const b=document.getElementById('vertBanner'); if(b) b.remove();
+ document.removeEventListener('keydown', _mergeState.escHandler);
+ _mergeState=null;
+ if(restore) wipeAndRebuildRoutes();   // restores all polylines' click + popup
+}
+function _endpointDistKm(p,q){
+ const dLat=(p[0]-q[0])*111;
+ const dLng=(p[1]-q[1])*111*Math.cos(p[0]*Math.PI/180);
+ return Math.hypot(dLat,dLng);
+}
+window.routeMergeStart=function(idx){
+ if(_vertState||_splitState||_mergeState) return;
+ const r=R[idx]; if(!r || R.length<2) return;
+ try{ map.closePopup(); }catch(e){}
+ _mergeState={routeIdxA:idx, escHandler:null};
+ // Override every OTHER route's click to mean "pick me to merge".
+ R.forEach((rB,i)=>{
+   if(i===idx) return;
+   (polysByIdx[i]||[]).forEach(pl=>{
+     pl.off('click');
+     pl.unbindPopup();
+     pl.on('click', (ev)=>{ L.DomEvent.stopPropagation(ev); window._mergePick(i); });
+   });
+ });
+ const banner=document.createElement('div'); banner.id='vertBanner';
+ banner.innerHTML='<span>⤢ Click another route to merge with <b>'+esc(r.name)+'</b>. ESC cancels.</span>'
+   +'<button onclick="window._mergeCancel();return false">Cancel</button>';
+ document.body.appendChild(banner);
+ _mergeState.escHandler=(ev)=>{ if(ev.key==='Escape') window._mergeCancel(); };
+ document.addEventListener('keydown', _mergeState.escHandler);
+};
+window._mergeCancel=function(){ _mergeCleanup(true); };
+window._mergePick=function(idxB){
+ if(!_mergeState) return;
+ const idxA=_mergeState.routeIdxA;
+ const A=R[idxA], B=R[idxB];
+ if(!A||!B){ _mergeCleanup(true); return; }
+ const aStart=A.polys[0][0];
+ const aLastPoly=A.polys[A.polys.length-1];
+ const aEnd=aLastPoly[aLastPoly.length-1];
+ const bStart=B.polys[0][0];
+ const bLastPoly=B.polys[B.polys.length-1];
+ const bEnd=bLastPoly[bLastPoly.length-1];
+ const ds={
+   aEnd_bStart:_endpointDistKm(aEnd,bStart),
+   aEnd_bEnd:_endpointDistKm(aEnd,bEnd),
+   aStart_bStart:_endpointDistKm(aStart,bStart),
+   aStart_bEnd:_endpointDistKm(aStart,bEnd),
+ };
+ const best=Object.keys(ds).reduce((m,k)=>ds[k]<ds[m]?k:m, 'aEnd_bStart');
+ const rev=(polys)=>polys.slice().reverse().map(p=>p.slice().reverse());
+ let polys;
+ if(best==='aEnd_bStart')        polys = A.polys.concat(B.polys);
+ else if(best==='aEnd_bEnd')     polys = A.polys.concat(rev(B.polys));
+ else if(best==='aStart_bStart') polys = rev(A.polys).concat(B.polys);
+ else                            polys = rev(A.polys).concat(rev(B.polys));
+ const nowIso=(new Date()).toISOString();
+ const merged=JSON.parse(JSON.stringify(A));
+ merged.polys=polys;
+ merged.name=(A.name||'route') + ' + ' + (B.name||'route');
+ merged.id=(A.id||'route')+'-m';
+ if(merged.original_distance_km==null && A.distance_km!=null) merged.original_distance_km=A.distance_km;
+ if(merged.original_elev_up_m==null && A.elev_up_m!=null) merged.original_elev_up_m=A.elev_up_m;
+ delete merged.distance_km; delete merged.elev_up_m; delete merged.profile;
+ merged.edited_at=nowIso;
+ merged.edit_ops=(A.edit_ops||[]).slice();
+ merged.edit_ops.push({op:'merge', at:nowIso, with_seed:B.seed_id, with_name:B.name, pairing:best});
+ _routeRecomputeDistance(merged);
+ R[idxA]=merged;
+ R.splice(idxB,1);
+ if(selectedIdx===idxB) selectedIdx=null;
+ else if(selectedIdx!=null && selectedIdx>idxB) selectedIdx--;
+ _mergeCleanup(false);
+ wipeAndRebuildRoutes();
+ saveLocalRouteState();
+};
+// --- color picker ---------------------------------------------------------
+function _routePalette(){
+ return [
+  ['Red',     '#e0564f'], ['Orange',  '#fb8c00'], ['Amber',   '#f4b400'],
+  ['Green',   '#0f9d58'], ['Teal',    '#26c6da'], ['Blue',    '#2979ff'],
+  ['Indigo',  '#5c6bc0'], ['Purple',  '#7e57c2'], ['Pink',    '#ec407a'],
+  ['Gray',    '#9aa4b0'],
+ ];
+}
+window.routeColorPicker=function(idx){
+ const r=R[idx]; if(!r) return;
+ const cur=r.color||'#2979ff';
+ const swatches=_routePalette().map(([nm,hex])=>
+   '<button class="swc" title="'+esc(nm)+'" style="background:'+hex+'" '
+   +'onclick="window._routeColorApply('+idx+',\''+hex+'\');return false"></button>'
+ ).join('');
+ const html='<div class="rt-pal">'
+   +'<div style="font-size:11px;color:var(--mut)">Route color</div>'
+   +'<div class="rt-pal-grid">'+swatches+'</div>'
+   +'<div class="rt-pal-custom">Custom <input type="color" value="'+cur+'" '
+   +'oninput="window._routeColorApply('+idx+',this.value);"></div>'
+   +'</div>';
+ const pl=(polysByIdx[idx]||[])[0]; if(!pl) return;
+ try{
+   L.popup({maxWidth:240, minWidth:200, closeButton:true, autoClose:false})
+     .setLatLng(pl.getCenter()).setContent(html).openOn(map);
+ }catch(e){}
+};
+window._routeColorApply=function(idx, hex){
+ const r=R[idx]; if(!r) return;
+ r.color=hex;
+ r.edited_at=(new Date()).toISOString();
+ (r.edit_ops=r.edit_ops||[]).push({op:'color', at:r.edited_at, hex});
+ buildRouteLayer(idx);
+ const it=itemByIdx[idx]; if(it){ const sw=it.querySelector('.sw'); if(sw) sw.style.background=hex; }
+ saveLocalRouteState();
+};
+// --- elevation recompute (OpenTopoData SRTM30m) ---------------------------
+// Free public API; rate-limit 1 req/sec, 100 locations/req, 100 reqs/day.
+// For a 500-vertex route: 5 batches ≈ 6s. Fail gracefully on rate-limit.
+function _elevBanner(text, isErr){
+ let b=document.getElementById('elevBanner');
+ if(!b){ b=document.createElement('div'); b.id='elevBanner'; document.body.appendChild(b); }
+ b.textContent=text;
+ b.className = isErr?'err':'';
+ if(isErr) setTimeout(_elevBannerHide, 5000);
+}
+function _elevBannerHide(){ const b=document.getElementById('elevBanner'); if(b) b.remove(); }
+async function routeRecomputeElevation(idx){
+ const r=R[idx]; if(!r || !r.polys || !r.polys.length) return;
+ try{ map.closePopup(); }catch(e){}
+ const refs=[], locs=[];
+ r.polys.forEach((poly,pi)=>{
+   poly.forEach((pt,vi)=>{ refs.push({pi,vi}); locs.push([pt[0],pt[1]]); });
+ });
+ if(!locs.length) return;
+ const BATCH=100, total=Math.ceil(locs.length/BATCH);
+ _elevBanner('Recomputing elevation: 0/'+total+' batches…');
+ const alts=new Array(locs.length).fill(null);
+ try{
+   for(let bi=0; bi<total; bi++){
+     const slice=locs.slice(bi*BATCH, (bi+1)*BATCH);
+     const url='https://api.opentopodata.org/v1/srtm30m?locations='
+       + slice.map(([la,ln])=>la.toFixed(6)+','+ln.toFixed(6)).join('|');
+     const res=await fetch(url);
+     if(!res.ok) throw new Error('SRTM HTTP '+res.status);
+     const j=await res.json();
+     if(j.status!=='OK') throw new Error('SRTM '+j.status);
+     j.results.forEach((row,i)=>{ if(row && row.elevation!=null) alts[bi*BATCH+i]=row.elevation; });
+     _elevBanner('Recomputing elevation: '+(bi+1)+'/'+total+' batches…');
+     if(bi+1<total) await new Promise(rs=>setTimeout(rs, 1100));   // 1 req/sec
+   }
+ }catch(e){
+   _elevBanner('Elevation fetch failed: '+(e.message||e), true);
+   return;
+ }
+ refs.forEach((ref,i)=>{
+   const alt=alts[i]; if(alt==null) return;
+   const cur=r.polys[ref.pi][ref.vi];
+   r.polys[ref.pi][ref.vi]=[cur[0], cur[1], alt];
+ });
+ let climb=0;
+ r.polys.forEach(poly=>{
+   for(let i=1;i<poly.length;i++){
+     if(poly[i].length>2 && poly[i-1].length>2){
+       const d=poly[i][2]-poly[i-1][2]; if(d>0) climb+=d;
+     }
+   }
+ });
+ if(r.original_elev_up_m==null && r.elev_up_m!=null) r.original_elev_up_m=r.elev_up_m;
+ r.elev_up_m=Math.round(climb);
+ // Rebuild profile [cumDist, alt] across all polys
+ if(window.turf){
+   r.profile=[];
+   let cumKm=0;
+   r.polys.forEach(poly=>{
+     for(let i=0;i<poly.length;i++){
+       if(i>0){
+         const a=poly[i-1], b=poly[i];
+         try{ cumKm += turf.distance([a[1],a[0]],[b[1],b[0]],{units:'kilometers'}); }catch(e){}
+       }
+       if(poly[i].length>2) r.profile.push([+(cumKm.toFixed(4)), +poly[i][2]]);
+     }
+   });
+ }
+ r.edited_at=(new Date()).toISOString();
+ (r.edit_ops=r.edit_ops||[]).push({op:'recompute-elevation', at:r.edited_at, climb_m:r.elev_up_m});
+ _routeRecomputeDistance(r);
+ buildRouteLayer(idx);
+ _elevBanner('✓ Elevation recomputed · ↑'+r.elev_up_m+' m');
+ setTimeout(_elevBannerHide, 3000);
+ saveLocalRouteState();
+}
+window.routeRecomputeElevation=routeRecomputeElevation;
+// --- extend along basemap (OpenRouteService) ------------------------------
+// UX: click ⤴ → click on the map to extend; ORS routes from the route's
+// current end to the clicked point along cyclable streets. Multiple clicks
+// chain. Done commits, Cancel restores.
+let _extendState=null;
+function _extendCleanup(restore){
+ if(!_extendState) return;
+ const idx=_extendState.routeIdx;
+ const orig=_extendState.orig;
+ if(_extendState.mapClickHandler) map.off('click', _extendState.mapClickHandler);
+ if(_extendState.endpointMarker){ try{ map.removeLayer(_extendState.endpointMarker); }catch(e){} }
+ const b=document.getElementById('vertBanner'); if(b) b.remove();
+ document.removeEventListener('keydown', _extendState.escHandler);
+ const wantsRestore=restore && orig!=null;
+ _extendState=null;
+ if(idx!=null){
+   if(wantsRestore) R[idx].polys = orig;
+   buildRouteLayer(idx);
+ }
+}
+function _extendRefreshEndpointMarker(idx){
+ const r=R[idx]; if(!r||!r.polys||!r.polys.length){
+   // empty route — no endpoint to mark yet (waiting for the user's first click)
+   if(_extendState && _extendState.endpointMarker){
+     try{ map.removeLayer(_extendState.endpointMarker); }catch(e){}
+     _extendState.endpointMarker=null;
+   }
+   return;
+ }
+ const last=r.polys[r.polys.length-1];
+ const ep=last[last.length-1];
+ if(!_extendState.endpointMarker){
+   const ico=L.divIcon({html:'<div class="rt-vert endpoint"></div>', className:'', iconSize:[10,10], iconAnchor:[5,5]});
+   _extendState.endpointMarker=L.marker([ep[0],ep[1]],{icon:ico, interactive:false, zIndexOffset:700}).addTo(map);
+ } else {
+   _extendState.endpointMarker.setLatLng([ep[0],ep[1]]);
+ }
+}
+window.routeExtendStart=function(idx, opts){
+ const cfg=window.MYMAP_CONFIG||{};
+ const key=cfg.openRouteServiceApiKey;
+ const allowStraight = !!(opts && opts.allowStraight);
+ if(!key && !allowStraight){
+   alert('Add `openRouteServiceApiKey` to config.js to enable Extend.\n(Free key: https://openrouteservice.org/dev/#/signup)');
+   return;
+ }
+ if(_vertState||_splitState||_mergeState||_extendState) return;
+ const r=R[idx]; if(!r||!r.polys) return;
+ try{ map.closePopup(); }catch(e){}
+ _extendState={routeIdx:idx, orig:null, busy:false, endpointMarker:null, escHandler:null, mapClickHandler:null, allowStraight, wasNew: !!(opts && opts.wasNew)};
+ _extendRefreshEndpointMarker(idx);
+ const banner=document.createElement('div'); banner.id='vertBanner';
+ const initialMsg = r.polys.length
+   ? '⤴ Click on the map to extend <b>'+esc(r.name)+'</b> from its end (yellow dot). ESC cancels.'
+   : '✏ Click on the map to set the start of <b>'+esc(r.name)+'</b>, then keep clicking to extend.';
+ banner.innerHTML='<span>'+initialMsg+'</span>'
+   +'<button class="ok" onclick="window._extendDone();return false">Done</button>'
+   +'<button onclick="window._extendCancel();return false">Cancel</button>';
+ document.body.appendChild(banner);
+ _extendState.escHandler=(ev)=>{ if(ev.key==='Escape') window._extendCancel(); };
+ document.addEventListener('keydown', _extendState.escHandler);
+ _extendState.mapClickHandler=async (ev)=>{
+   if(_extendState.busy) return;
+   _extendState.busy=true;
+   await _extendAppend(idx, ev.latlng);
+   _extendState.busy=false;
+ };
+ map.on('click', _extendState.mapClickHandler);
+};
+window._extendCancel=function(){
+ const idx=_extendState && _extendState.routeIdx;
+ const wasNew=_extendState && _extendState.wasNew;
+ _extendCleanup(true);
+ // If this was a brand-new route and the user cancelled before drawing anything
+ // useful, remove the stub so we don't leave a zombie route in R.
+ if(wasNew && idx!=null){
+   const r=R[idx];
+   const useful = r && r.polys && r.polys.some(p=>p.length>=2);
+   if(!useful){ R.splice(idx,1); wipeAndRebuildRoutes(); saveLocalRouteState(); }
+ }
+};
+window._extendDone=function(){
+ if(!_extendState) return;
+ const idx=_extendState.routeIdx;
+ const orig=_extendState.orig;
+ const wasNew=_extendState.wasNew;
+ const r=R[idx];
+ const useful = r && r.polys && r.polys.some(p=>p.length>=2);
+ if(!useful){
+   // user finished without drawing a real line — drop the stub if it was new
+   _extendCleanup(false);
+   if(wasNew && idx!=null){ R.splice(idx,1); wipeAndRebuildRoutes(); }
+   saveLocalRouteState();
+   return;
+ }
+ if(!orig){ _extendCleanup(false); return; }
+ if(r.original_distance_km==null && r.distance_km!=null) r.original_distance_km=r.distance_km;
+ if(r.original_elev_up_m==null && r.elev_up_m!=null) r.original_elev_up_m=r.elev_up_m;
+ delete r.elev_up_m; delete r.profile;
+ r.edited_at=(new Date()).toISOString();
+ (r.edit_ops=r.edit_ops||[]).push({op:'extend', at:r.edited_at});
+ _routeRecomputeDistance(r);
+ _extendCleanup(false);
+ saveLocalRouteState();
+};
+async function _extendAppend(idx, clickLL){
+ const r=R[idx]; if(!r) return;
+ if(!_extendState.orig) _extendState.orig=JSON.parse(JSON.stringify(r.polys));
+ // First click on a brand-new (empty) route -> just plant the start vertex.
+ if(!r.polys.length){
+   r.polys.push([[clickLL.lat, clickLL.lng]]);
+   buildRouteLayer(idx);
+   _extendRefreshEndpointMarker(idx);
+   return;
+ }
+ const cfg=window.MYMAP_CONFIG||{};
+ const key=cfg.openRouteServiceApiKey;
+ const profile=cfg.openRouteServiceProfile||'cycling-regular';
+ const lastPoly=r.polys[r.polys.length-1];
+ const fromPt=lastPoly[lastPoly.length-1];
+ // No ORS key (only happens via Create-new flow): append a straight line.
+ if(!key){
+   if(lastPoly.length===1){
+     lastPoly.push([clickLL.lat, clickLL.lng]);
+   } else {
+     r.polys.push([[fromPt[0],fromPt[1]], [clickLL.lat, clickLL.lng]]);
+   }
+   buildRouteLayer(idx);
+   _extendRefreshEndpointMarker(idx);
+   return;
+ }
+ const url='https://api.openrouteservice.org/v2/directions/'+encodeURIComponent(profile)
+   +'?api_key='+encodeURIComponent(key)
+   +'&start='+fromPt[1].toFixed(6)+','+fromPt[0].toFixed(6)
+   +'&end='+clickLL.lng.toFixed(6)+','+clickLL.lat.toFixed(6);
+ _elevBanner('Extending route via ORS…');
+ try{
+   const res=await fetch(url);
+   if(!res.ok){
+     let msg='ORS HTTP '+res.status;
+     try{ const j=await res.json(); if(j&&j.error&&j.error.message) msg += ' — '+j.error.message; }catch(e){}
+     throw new Error(msg);
+   }
+   const j=await res.json();
+   const coords = j.features && j.features[0] && j.features[0].geometry && j.features[0].geometry.coordinates;
+   if(!coords||!coords.length) throw new Error('ORS returned no route');
+   const newPoly = coords.map(c=>[c[1], c[0]]);
+   r.polys.push(newPoly);
+   buildRouteLayer(idx);
+   _extendRefreshEndpointMarker(idx);
+   _elevBannerHide();
+ }catch(e){
+   _elevBanner('Extend failed: '+(e.message||e), true);
+ }
+}
+// --- sidebar: per-route dirty dot ----------------------------------------
+function refreshRouteDirtyDots(){
+ if(!SEED_ROUTES) return;
+ const seedBy=new Map(SEED_ROUTES.map(s=>[s.seed_id,s]));
+ R.forEach((r,i)=>{
+   const it=itemByIdx[i]; if(!it) return;
+   let dirty=false;
+   if(r.seed_id==null) dirty=true;
+   else {
+     const s=seedBy.get(r.seed_id);
+     if(!s) dirty=true;
+     else if(normRoute(r)!==normRoute(s)) dirty=true;
+   }
+   it.classList.toggle('dirty', dirty);
+ });
+}
+// --- sidebar: search box + "+ new route" button --------------------------
+function setupRouteSearch(){
+ if(document.getElementById('routeSearch')) return;   // already created
+ const sb=document.createElement('div'); sb.id='routeSearch';
+ sb.innerHTML='<input id="routeSearchInput" placeholder="Search routes…" type="text" autocomplete="off" />'
+   +'<button id="routeNewBtn" title="Create a new route">+</button>';
+ const pins=document.getElementById('pinsSection');
+ if(pins && pins.nextSibling) list.insertBefore(sb, pins.nextSibling);
+ else if(pins) list.appendChild(sb);
+ else list.insertBefore(sb, list.firstChild);
+ sb.querySelector('#routeSearchInput').oninput=(ev)=>{
+   const q=(ev.target.value||'').trim().toLowerCase();
+   list.querySelectorAll(':scope > .grp').forEach(grp=>{
+     if(grp.id==='pinsSection') return;
+     let anyVisible=false;
+     grp.querySelectorAll('.it').forEach(it=>{
+       const nm=it.querySelector('.nm');
+       const matches = !q || (nm && nm.textContent.toLowerCase().includes(q));
+       it.style.display = matches ? '' : 'none';
+       if(matches) anyVisible=true;
+     });
+     grp.style.display = (anyVisible || !q) ? '' : 'none';
+   });
+ };
+ sb.querySelector('#routeNewBtn').onclick=routeCreateNew;
+}
+// --- create new route from scratch ---------------------------------------
+function routeCreateNew(){
+ const cfg=window.MYMAP_CONFIG||{};
+ const hasORS = !!cfg.openRouteServiceApiKey;
+ if(!hasORS){
+   if(!confirm('No OpenRouteService key — clicks will draw straight lines instead of following streets.\n\nAdd `openRouteServiceApiKey` to config.js for cyclable routing.\n\nContinue drawing with straight lines?')) return;
+ }
+ const nm=prompt('Name of the new route:');
+ if(nm==null || !nm.trim()) return;
+ const gn=prompt('Group:', 'My routes');
+ if(gn==null) return;
+ const palette=_routePalette();
+ const color=palette[Math.floor(Math.random()*palette.length)][1];
+ const nowIso=(new Date()).toISOString();
+ const r={
+   id:'rt-new-'+nowIso.replace(/[^0-9]/g,'').slice(0,14),
+   name:nm.trim(),
+   group:gn.trim()||'My routes',
+   polys:[],
+   seed_id:null,
+   color, weight:2, opacity:0.9,
+   edited_at:nowIso,
+   edit_ops:[{op:'create', at:nowIso}]
+ };
+ R.push(r);
+ const newIdx=R.length-1;
+ wipeAndRebuildRoutes();
+ saveLocalRouteState();   // ticks the dirty badge immediately
+ // Hand off to the extend flow in "draw" mode
+ window.routeExtendStart(newIdx, {allowStraight:true, wasNew:true});
+}
+window.routeCreateNew=routeCreateNew;
 // Fit all routes into the part of the map NOT covered by the panel.
 // Leaflet sizes the zoom to the current viewport; we just inset the left
 // edge by the panel width (when open) so routes aren't hidden behind it.
@@ -1036,10 +1981,29 @@ function fitAll(){
  try{ map.fitBounds(bounds,{paddingTopLeft:tl,paddingBottomRight:[24,24],animate:false}); }
  catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
 }
+setupRouteSearch();   // inject the search box + "+ new route" button above route groups
+refreshRouteDirtyDots();   // mark any pre-loaded localStorage edits in the sidebar
 fitAll();
 applyWeights();  // set zoom-adaptive thickness for the initial zoom
 hideLoading();   // routes drawn + map fitted — reveal the map
 window.__mmlog('map ready in '+(((Date.now()-__t0)/1000).toFixed(1))+'s');
+// ---- per-map view persistence (remember last center+zoom across refreshes) ----
+(function(){
+ const sv=(ST.view||{})[MAP_ID];
+ if(sv && Number.isFinite(sv.lat) && Number.isFinite(sv.lng) && Number.isFinite(sv.z)){
+   map.setView([sv.lat,sv.lng], sv.z, {animate:false});
+ }
+ let t=null;
+ map.on('moveend zoomend', ()=>{
+   clearTimeout(t);
+   t=setTimeout(()=>{
+     const c=map.getCenter();
+     const all=Object.assign({}, loadS().view||{});
+     all[MAP_ID]={lat:+c.lat.toFixed(5), lng:+c.lng.toFixed(5), z:map.getZoom()};
+     saveS({view:all});
+   }, 250);   // debounce so panning doesn't write on every frame
+ });
+})();
 // ---- locate me (GPS), Google-Maps style: blue dot + accuracy ring, pan to it ----
 (function(){
  const btn=document.getElementById('locBtn'); if(!btn) return;
@@ -1077,10 +2041,9 @@ function savePins(){ try{ localStorage.setItem(PIN_KEY,JSON.stringify(
   PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})))); }catch(e){}
  updateDirtyBadge();
 }
-// Count of pin changes vs the shipped seed (data/maps/<id>/pins.json). Added,
-// removed, and edited (name/coords/place) each count as one. Drives the badge
-// on the admin button so you know there's something to save / can be discarded.
-function diffCount(){
+// Combined dirty count: pins + routes (single badge). Added, removed, edited each
+// count as one. Drives the admin button so you know there's something to save.
+function pinDiffCount(){
  if(SEED_PINS==null) return 0;
  const k=p=>(p.name||'')+'@'+p.coords[0].toFixed(4)+','+p.coords[1].toFixed(4);
  const norm=p=>JSON.stringify(p.place||null);
@@ -1091,6 +2054,7 @@ function diffCount(){
  sm.forEach((_,key)=>{ if(!pm.has(key)) n++; });
  return n;
 }
+function diffCount(){ return pinDiffCount() + routeDiffCount(); }
 function updateDirtyBadge(){
  const btn=document.getElementById('adminBtn'); if(!btn) return;
  const n=diffCount();
@@ -1435,19 +2399,31 @@ function previewPlace(pl,nm){
  refreshTkClr();
  btn.onclick=()=>{ box.hidden=!box.hidden; if(!box.hidden){ tIn.value=localStorage.getItem(TKEY)||''; tIn.focus(); setMsg(''); refreshTkClr(); } };
  document.getElementById('ghForget').onclick=()=>{ localStorage.removeItem(TKEY); tIn.value=''; setMsg('Token forgotten.'); refreshTkClr(); };
- // Discard: wipe local pins for this map and re-seed from the repo's pins.json.
- // Works without a token — purely local. Refuses if the seed hasn't arrived yet.
+ // Discard: wipe local pins+routes for this map and re-seed from the repo files.
+ // Works without a token — purely local. Pins restore in-place; routes need a
+ // page reload (rendering is async-batched, simplest path is to let the page
+ // re-init from the seed).
  document.getElementById('ghDiscard').onclick=()=>{
    const n=diffCount();
    if(n===0){ setMsg('No local changes to discard.'); return; }
    if(SEED_PINS==null){ setMsg('Seed pins not loaded yet — try again in a moment.',true); return; }
-   if(!confirm('Discard '+n+' local change'+(n>1?'s':'')+' and restore the repo\'s pins?')) return;
+   if(!confirm('Discard '+n+' local change'+(n>1?'s':'')+' and restore the repo\'s pins & routes?')) return;
+   const hadRouteDiff = routeDiffCount() > 0;
+   // pins
    localStorage.removeItem(PIN_KEY);
    PINS.slice().forEach(p=>pinLayer.removeLayer(p.marker));
    PINS.length=0; pinSeq=1; map.closePopup();
    SEED_PINS.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));
-   renderPinsList(); updateCounts(); updateDirtyBadge();
-   setMsg('Restored '+SEED_PINS.length+' pin(s) from the repo.');
+   renderPinsList(); updateCounts();
+   // routes
+   localStorage.removeItem(RKEY); localStorage.removeItem(RDEL_KEY);
+   updateDirtyBadge();
+   if(hadRouteDiff){
+     setMsg('Restored. Reloading to refresh routes…');
+     setTimeout(()=>location.reload(), 700);
+   } else {
+     setMsg('Restored '+SEED_PINS.length+' pin(s) from the repo.');
+   }
  };
  const saveBtn=document.getElementById('ghSave');
  // After committing, watch the DEPLOYED file until it matches what we pushed,
@@ -1471,32 +2447,52 @@ function previewPlace(pl,nm){
          else setMsg('✓ Committed (couldn’t auto-confirm the deploy).'); });
    })();
  }
+ // shared helper: PUT a single file to the repo. Returns the commit short SHA.
+ async function commitFile(token, repoPath, jsonStr){
+   const api='https://api.github.com/repos/'+repo.owner+'/'+repo.name+'/contents/'+repoPath;
+   const hdr={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+   const b64=btoa(unescape(encodeURIComponent(jsonStr)));
+   let sha=null;
+   const g=await fetch(api+'?ref='+encodeURIComponent(repo.branch),{headers:hdr});
+   window.__mmlog('admin: GET '+repoPath+' sha -> HTTP '+g.status);
+   if(g.ok){ sha=(await g.json()).sha; }
+   else if(g.status!==404){ const e=await g.json().catch(()=>({})); throw new Error('read '+repoPath+' '+g.status+': '+(e.message||'')); }
+   const body={message:'Update '+repoPath+' via MyMap admin',content:b64,branch:repo.branch};
+   if(sha) body.sha=sha;
+   const r=await fetch(api,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},hdr),body:JSON.stringify(body)});
+   window.__mmlog('admin: PUT '+repoPath+' -> HTTP '+r.status);
+   if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error('write '+repoPath+' '+r.status+': '+(e.message||'')); }
+   return ((await r.json().catch(()=>({}))).commit||{}).sha||'';
+ }
  async function save(){
    window.__mmlog('admin: Save clicked');
    const token=(tIn.value||'').trim();
    if(!token){ setMsg('Paste a token first.',true); return; }
    localStorage.setItem(TKEY,token); refreshTkClr();   // remember for next time + reveal the inline X
-   const api='https://api.github.com/repos/'+repo.owner+'/'+repo.name+'/contents/'+path;
-   const hdr={Authorization:'Bearer '+token,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+   const routesPath='data/maps/'+MAP_ID+'/routes.geojson';
+   const pinsDirty=pinDiffCount()>0, routesDirty=routeDiffCount()>0;
+   if(!pinsDirty && !routesDirty){ setMsg('Nothing to save — no local changes.'); return; }
    const json=JSON.stringify(PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})),null,2)+'\n';
-   const b64=btoa(unescape(encodeURIComponent(json)));   // utf-8-safe base64 (CJK names)
-   saveBtn.disabled=true; setMsg('Saving '+PINS.length+' pin(s)…');
+   const routesJson=routesDirty ? JSON.stringify({type:'FeatureCollection',features:R.map(routeToFeature)},null,2)+'\n' : null;
+   saveBtn.disabled=true;
+   const what=[]; if(pinsDirty) what.push(PINS.length+' pin(s)'); if(routesDirty) what.push(R.length+' route(s)');
+   setMsg('Saving '+what.join(' + ')+'…');
    try{
-     let sha=null;
-     const g=await fetch(api+'?ref='+encodeURIComponent(repo.branch),{headers:hdr});
-     window.__mmlog('admin: GET sha -> HTTP '+g.status);
-     if(g.ok){ sha=(await g.json()).sha; }                // existing file -> need its sha
-     else if(g.status!==404){ const e=await g.json().catch(()=>({})); throw new Error('read '+g.status+': '+(e.message||'')); }
-     const body={message:'Update '+path+' via MyMap admin',content:b64,branch:repo.branch};
-     if(sha) body.sha=sha;
-     const r=await fetch(api,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},hdr),body:JSON.stringify(body)});
-     window.__mmlog('admin: PUT -> HTTP '+r.status);
-     if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error('write '+r.status+': '+(e.message||'')); }
-     const cs=((await r.json().catch(()=>({}))).commit||{}).sha||'';
-     window.__mmlog('admin: committed '+cs.slice(0,7));
-     setMsg('✓ Committed'+(cs?' ('+cs.slice(0,7)+')':'')+' — checking deploy…');
-     pollDeploy(json);
-     SEED_PINS=JSON.parse(json); updateDirtyBadge();   // just-committed state is the new seed -> badge clears
+     let cs1='', cs2='';
+     if(pinsDirty){
+       cs1=await commitFile(token, path, json);
+       SEED_PINS=JSON.parse(json);
+     }
+     if(routesDirty){
+       cs2=await commitFile(token, routesPath, routesJson);
+       SEED_ROUTES=R.map(rt=>JSON.parse(JSON.stringify(rt)));
+       localStorage.removeItem(RKEY); localStorage.removeItem(RDEL_KEY);
+     }
+     const tag=[cs1,cs2].filter(Boolean).map(s=>s.slice(0,7)).join('+');
+     setMsg('✓ Committed'+(tag?' ('+tag+')':'')+' — checking deploy…');
+     window.__mmlog('admin: committed '+tag);
+     if(pinsDirty) pollDeploy(json);   // deploy poll only watches pins.json
+     updateDirtyBadge();
    }catch(e){ setMsg('Save failed: '+(e.message||e),true); }
    finally{ saveBtn.disabled=false; }
  }

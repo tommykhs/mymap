@@ -9,6 +9,11 @@
 window.MYMAP_CONFIG = {
   googleMapsApiKey: "AIzaSyDBYbqFsFJF6OBylMihGdhmbS1rpw3zVSU",
   googleMapType: "roadmap",       // roadmap | satellite | hybrid | terrain
+  // OpenRouteService key for the route "Extend along basemap" feature (⤴ icon
+  // in the route popup). Free tier at https://openrouteservice.org/ — 2000
+  // req/day, cycling-regular profile by default. Leave "" to disable extend.
+  openRouteServiceApiKey: "",
+  openRouteServiceProfile: "cycling-regular",   // cycling-regular | cycling-road | cycling-mountain | foot-walking
   // Target repo for the admin "Save pins to repo" button (writes data/maps/<id>/pins.json
   // via the GitHub API using a token YOU paste at runtime — the token is NOT stored here).
   repo: { owner: "tommykhs", name: "mymap", branch: "master" }
