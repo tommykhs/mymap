@@ -353,11 +353,14 @@
    background:#fff;border:2px solid #2979ff;border-radius:50%;
    box-shadow:0 2px 6px rgba(0,0,0,.4);color:#2979ff;cursor:grab;user-select:none}
  .rt-scissors:active{cursor:grabbing}
- /* Vertex-drag editor: draggable dot at each route vertex */
+ /* Vertex-drag editor: small visible dot inside a larger transparent touch
+    target. The host div is sized by the divIcon (22x22) so finger taps land
+    reliably; the visible dot stays 10x10 to keep the route readable. */
+ .rt-vert-host{display:flex;align-items:center;justify-content:center;cursor:grab}
+ .rt-vert-host:active{cursor:grabbing}
  .rt-vert{width:10px;height:10px;background:#2979ff;border:2px solid #fff;
-   border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.5);cursor:grab;
-   box-sizing:border-box}
- .rt-vert:active{cursor:grabbing}
+   border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.5);box-sizing:border-box;
+   pointer-events:none}   /* dot is decorative; click/drag is handled by .rt-vert-host */
  .rt-vert.endpoint{background:#f4b400}   /* first / last vertex stand out */
  /* Search / "+ new route" row + per-item dirty dot */
  #routeSearch{margin:8px 0 4px;display:flex;gap:6px;align-items:center}
@@ -402,6 +405,21 @@
    .placesearch.open{left:10px;right:10px;width:auto}
    .placesearch.open .ps-toggle{display:none}
    .leaflet-top.leaflet-right{margin-top:46px}
+   /* Route-edit modal banners (split/vert/merge/extend) + elev status banner:
+      stretch full-width with the same left/right margin, wrap text + buttons to
+      multiple lines so the long help string never gets clipped on narrow phones. */
+   #splitBanner, #vertBanner, #elevBanner{
+     left:8px; right:8px; transform:none; max-width:none;
+     flex-wrap:wrap; gap:8px; padding:10px 12px; font-size:13px;
+     justify-content:center;
+   }
+   #splitBanner > span, #vertBanner > span{flex-basis:100%; text-align:center; line-height:1.4}
+   #splitBanner button, #vertBanner button{flex:1 1 auto; min-width:96px; padding:8px 12px; font-size:13px}
+   /* Popup action row: 8 icons can be too wide for a 240px popup — let them wrap,
+      and use slightly larger padding for thumb-sized hit targets. */
+   .rt-actions{flex-wrap:wrap; gap:4px}
+   .pin-act{padding:4px 6px}
+   .pin-act .mi{font-size:18px}
  }
 </style></head><body>
 <div id="app-header"></div>
@@ -1412,7 +1430,8 @@ function _vertSpawnMarker(idx, polyIdx, vertIdx, isEnd){
  const poly=R[idx].polys[polyIdx];
  const pt=poly[vertIdx];
  const cls=isEnd?'rt-vert endpoint':'rt-vert';
- const ico=L.divIcon({html:'<div class="'+cls+'"></div>', className:'', iconSize:[10,10], iconAnchor:[5,5]});
+ // 22x22 host = generous touch target on mobile; visible dot stays 10x10 inside.
+ const ico=L.divIcon({html:'<div class="'+cls+'"></div>', className:'rt-vert-host', iconSize:[22,22], iconAnchor:[11,11]});
  const m=L.marker([pt[0],pt[1]],{icon:ico, draggable:true, zIndexOffset:600, keyboard:false});
  m._polyIdx=polyIdx; m._vertIdx=vertIdx;
  m.on('drag', ()=>{
