@@ -11,8 +11,10 @@ window.MYMAP_CONFIG = {
   googleMapType: "roadmap",       // roadmap | satellite | hybrid | terrain
   // OpenRouteService key for the route "Extend along basemap" feature (⤴ icon
   // in the route popup). Free tier at https://openrouteservice.org/ — 2000
-  // req/day, cycling-regular profile by default. Leave "" to disable extend.
-  openRouteServiceApiKey: "",
+  // req/day. ORS does NOT support HTTP-referrer restrictions, so this key is
+  // effectively public once committed; mirror is kept in Bitwarden under
+  // "🏠 MyMap — APIs" (rotate from openrouteservice.org/dev if abused).
+  openRouteServiceApiKey: "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjJjMDY3MTllNzk2YjRkZmNhMDk4NjFiNWVmNjMwMTQyIiwiaCI6Im11cm11cjY0In0=",
   openRouteServiceProfile: "cycling-regular",   // cycling-regular | cycling-road | cycling-mountain | foot-walking
   // Target repo for the admin "Save pins to repo" button (writes data/maps/<id>/pins.json
   // via the GitHub API using a token YOU paste at runtime — the token is NOT stored here).
