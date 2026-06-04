@@ -2302,17 +2302,22 @@ function pinDiffCount(){
 }
 function diffCount(){ return pinDiffCount() + routeDiffCount(); }
 function updateDirtyBadge(){
- const btn=document.getElementById('adminBtn'); if(!btn) return;
  const n=diffCount();
- let b=btn.querySelector('.dirty-badge');
- if(n>0){
-   if(!b){ b=document.createElement('span'); b.className='dirty-badge'; btn.appendChild(b); }
-   b.textContent=n>99?'99+':n;
-   btn.title='Save pins to repo (admin) — '+n+' unsaved change'+(n>1?'s':'');
- } else {
-   if(b) b.remove();
-   btn.title='Save pins to repo (admin)';
- }
+ // Mirror the badge onto BOTH the outer cloud_upload entry point (adminBtn)
+ // AND the Save button inside the admin panel (ghSave), so users see the
+ // pending-change count whether the panel is collapsed or expanded.
+ [['adminBtn','Save pins to repo (admin)'], ['ghSave','Save My places to the repo']].forEach(([id, baseTitle])=>{
+   const btn=document.getElementById(id); if(!btn) return;
+   let b=btn.querySelector('.dirty-badge');
+   if(n>0){
+     if(!b){ b=document.createElement('span'); b.className='dirty-badge'; btn.appendChild(b); }
+     b.textContent=n>99?'99+':n;
+     btn.title=baseTitle+' — '+n+' unsaved change'+(n>1?'s':'');
+   } else {
+     if(b) b.remove();
+     btn.title=baseTitle;
+   }
+ });
 }
 // Pins use Google My Maps "Newer" icons. place.icon = a My Maps icon ID; we render
 // the REAL My Maps pin image (container + icon + color) so it's WYSIWYG with export.
@@ -2676,21 +2681,30 @@ function previewPlace(pl,nm){
  // so the UI can say "live" rather than guessing a delay. Only meaningful on the
  // Pages origin (there the relative URL IS the deployed file); on localhost the
  // relative URL is the local copy, so we skip and just report the commit.
- function pollDeploy(expected){
+ // Poll the deployed copy of each (filename, expected JSON) pair until it
+ // matches what we just committed. On localhost the relative URL is the
+ // local file (not the live one), so just report "committed" — Pages still
+ // updates within ~1 min and a hard-refresh will show it.
+ function pollDeploy(targets){
+   if(!targets || !targets.length) return;
+   const what = targets.map(t=>t.label).join(' + ');
    if(!/\.github\.io$/.test(location.hostname)){
-     setMsg('✓ Committed. It’ll be live on the site in ~1 min.'); return;
+     setMsg('✓ Committed '+what+'. Live on the site in ~1 min — hard-refresh to see.'); return;
    }
    let tries=0; const MAX=30;
    (function check(){
-     fetch('data/maps/'+MAP_ID+'/pins.json?_='+Date.now(),{cache:'no-store'})
-       .then(r=>r.ok?r.text():Promise.reject('HTTP '+r.status))
-       .then(t=>{
-         if(t.trim()===expected.trim()){ setMsg('✓ Live — your pins are now the shared default.'); }
-         else if(++tries<MAX){ setMsg('✓ Committed — deploying… ('+tries+')'); setTimeout(check,4000); }
-         else setMsg('✓ Committed. Deploy is taking longer than usual — it’ll appear shortly.');
-       })
-       .catch(()=>{ if(++tries<MAX) setTimeout(check,4000);
-         else setMsg('✓ Committed (couldn’t auto-confirm the deploy).'); });
+     Promise.all(targets.map(t =>
+       fetch(t.path+'?_='+Date.now(),{cache:'no-store'})
+         .then(r=>r.ok?r.text():Promise.reject('HTTP '+r.status))
+         .then(text=>text.trim()===t.expected.trim())
+     ))
+     .then(results=>{
+       if(results.every(Boolean)){ setMsg('✓ Live — '+what+' deployed.'); }
+       else if(++tries<MAX){ setMsg('✓ Committed — deploying '+what+'… ('+tries+')'); setTimeout(check,4000); }
+       else setMsg('✓ Committed. Deploy of '+what+' is taking longer than usual — it’ll appear shortly.');
+     })
+     .catch(()=>{ if(++tries<MAX) setTimeout(check,4000);
+       else setMsg('✓ Committed (couldn’t auto-confirm the deploy of '+what+').'); });
    })();
  }
  // shared helper: PUT a single file to the repo. Returns the commit short SHA.
@@ -2737,7 +2751,11 @@ function previewPlace(pl,nm){
      const tag=[cs1,cs2].filter(Boolean).map(s=>s.slice(0,7)).join('+');
      setMsg('✓ Committed'+(tag?' ('+tag+')':'')+' — checking deploy…');
      window.__mmlog('admin: committed '+tag);
-     if(pinsDirty) pollDeploy(json);   // deploy poll only watches pins.json
+     // Poll deployment for whichever files were just committed.
+     const targets=[];
+     if(pinsDirty)   targets.push({path:path,        expected:json,       label:'pins'});
+     if(routesDirty) targets.push({path:routesPath,  expected:routesJson, label:'routes'});
+     pollDeploy(targets);
      updateDirtyBadge();
    }catch(e){ setMsg('Save failed: '+(e.message||e),true); }
    finally{ saveBtn.disabled=false; }
