@@ -426,11 +426,14 @@
    }
    #splitBanner > span, #vertBanner > span{flex-basis:100%; text-align:center; line-height:1.4}
    #splitBanner button, #vertBanner button{flex:1 1 auto; min-width:96px; padding:8px 12px; font-size:13px}
-   /* Popup action row: 8 icons can be too wide for a 240px popup — let them wrap,
-      and use slightly larger padding for thumb-sized hit targets. */
-   .rt-actions{flex-wrap:wrap; gap:4px}
-   .pin-act{padding:4px 6px}
-   .pin-act .mi{font-size:18px}
+   /* Popup action row: 8 icons would crowd against the GPX / GeoJSON / etc.
+      links on mobile and overflow to a second row. Force the actions onto
+      their own line (flex-basis:100%) and tighten the button padding so
+      all 8 still fit comfortably edge-to-edge. */
+   .rt-actions{flex:0 0 100%; margin-left:0; justify-content:flex-end;
+     flex-wrap:nowrap; gap:2px; margin-top:4px}
+   .pin-act{padding:3px 5px}
+   .pin-act .mi{font-size:17px}
  }
 </style></head><body>
 <div id="app-header"></div>
