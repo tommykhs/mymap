@@ -380,17 +380,20 @@
     stroke→fill) so they pop on any basemap without a background pill. */
  .rt-chev, .rt-km{pointer-events:none;display:block;line-height:0}
  .rt-chev svg, .rt-km svg{display:block;overflow:visible}
- /* Search / "+ new route" row + per-item dirty dot */
- #routeSearch{margin:8px 0 4px;display:flex;gap:6px;align-items:center}
+ /* Route-editor toolbar row at the top of the sidebar.
+    Background tint + bottom border so the row separates clearly from the
+    route list below, otherwise the dark-on-dark theme makes it blend in. */
+ #routeSearch{margin:6px 0 6px;padding:5px 6px;display:flex;gap:6px;align-items:center;
+   background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:8px}
  #routeSearch input{flex:1;background:var(--bg);border:1px solid var(--bd);color:var(--fg);
    border-radius:6px;padding:5px 8px;font:inherit;font-size:12px;outline:none}
  #routeSearch input:focus{border-color:var(--ac)}
  #routeNewBtn, #undoBtn, #redoBtn{background:var(--bg2);border:1px solid var(--bd);color:var(--fg);
-   border-radius:6px;width:26px;height:26px;cursor:pointer;font-size:18px;line-height:1;
-   padding:0;display:flex;align-items:center;justify-content:center}
+   border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:18px;line-height:1;
+   padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
  #routeNewBtn:hover, #undoBtn:not(:disabled):hover, #redoBtn:not(:disabled):hover{
-   background:var(--hv);color:var(--ac)}
- #undoBtn:disabled, #redoBtn:disabled{opacity:.35;cursor:not-allowed}
+   background:var(--hv);color:var(--ac);border-color:var(--ac)}
+ #undoBtn:disabled, #redoBtn:disabled{opacity:.5;cursor:not-allowed}
  #undoBtn .material-symbols-outlined, #redoBtn .material-symbols-outlined{font-size:18px}
  .it .it-dot{flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:#e0564f;
    margin-left:2px;display:none}
