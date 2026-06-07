@@ -264,7 +264,7 @@
  .searchbox button:hover{background:var(--hv)}
  .searchbox button .material-symbols-outlined{font-size:18px}
  /* ---- floating place-search (Google My Maps style) ---- */
- .placesearch{position:absolute;top:54px;left:350px;z-index:1100;width:300px}
+ .placesearch{position:absolute;top:54px;left:350px;z-index:1100;width:440px}
  body.fs .placesearch{top:10px}
  .placesearch .ps-bar{display:flex;align-items:center;gap:2px;background:var(--surface);
    border:1px solid var(--bd);border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.55);padding:3px 5px}
@@ -280,11 +280,29 @@
  #psresults{margin-top:6px;max-height:260px;overflow:auto;background:var(--surface);
    border:1px solid var(--bd);border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.55);padding:4px}
  #psresults:empty{display:none}
- #psresults .pr{padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12px}
+ #psresults .pr{padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12px;
+   display:flex;align-items:center;gap:6px}
  #psresults .pr:hover{background:var(--hv)}
- #psresults .pr b{color:var(--fg)}
- #psresults .pr .a{color:var(--mut);font-size:11px;display:block;
+ #psresults .pr b{color:var(--fg);flex:0 0 auto;max-width:60%;
+   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ #psresults .pr .a{color:var(--mut);font-size:11px;flex:1;min-width:0;
    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ /* Section headers in the unified search results (Routes / Pins / Add a place) */
+ #psresults .pr-hdr{font-size:10px;text-transform:uppercase;color:var(--mut);
+   padding:8px 8px 3px;letter-spacing:.6px;font-weight:600;cursor:default}
+ #psresults .pr-hdr:first-child{padding-top:4px}
+ /* Per-result type icons: colored bar for routes, pin glyph for pins, +-pin for places */
+ .pr-sw{display:inline-block;width:14px;height:3px;border-radius:2px;flex-shrink:0}
+ .pr-ic{font-family:'Material Symbols Outlined';font-weight:normal;font-size:15px;
+   line-height:1;flex-shrink:0;opacity:.85}
+ /* Divider + edit-tool buttons living inside the ps-bar (right of the search input) */
+ .ps-divider{width:1px;height:20px;background:var(--bd);margin:0 3px;flex-shrink:0}
+ .ps-tool{flex-shrink:0;background:none;border:none;color:var(--mut);cursor:pointer;
+   width:28px;height:28px;padding:0;border-radius:5px;display:flex;
+   align-items:center;justify-content:center}
+ .ps-tool:hover:not(:disabled){background:var(--hv);color:var(--ac)}
+ .ps-tool:disabled{opacity:.45;cursor:not-allowed}
+ .ps-tool .material-symbols-outlined{font-size:17px}
  #psmsg{margin:6px 0 0}
  #psmsg:empty{display:none}
  #psmsg:not(:empty){background:var(--surface);border:1px solid var(--bd);border-radius:8px;
@@ -380,21 +398,6 @@
     stroke→fill) so they pop on any basemap without a background pill. */
  .rt-chev, .rt-km{pointer-events:none;display:block;line-height:0}
  .rt-chev svg, .rt-km svg{display:block;overflow:visible}
- /* Route-editor toolbar row at the top of the sidebar.
-    Background tint + bottom border so the row separates clearly from the
-    route list below, otherwise the dark-on-dark theme makes it blend in. */
- #routeSearch{margin:6px 0 6px;padding:5px 6px;display:flex;gap:6px;align-items:center;
-   background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:8px}
- #routeSearch input{flex:1;background:var(--bg);border:1px solid var(--bd);color:var(--fg);
-   border-radius:6px;padding:5px 8px;font:inherit;font-size:12px;outline:none}
- #routeSearch input:focus{border-color:var(--ac)}
- #routeNewBtn, #undoBtn, #redoBtn{background:var(--bg2);border:1px solid var(--bd);color:var(--fg);
-   border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:18px;line-height:1;
-   padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
- #routeNewBtn:hover, #undoBtn:not(:disabled):hover, #redoBtn:not(:disabled):hover{
-   background:var(--hv);color:var(--ac);border-color:var(--ac)}
- #undoBtn:disabled, #redoBtn:disabled{opacity:.5;cursor:not-allowed}
- #undoBtn .material-symbols-outlined, #redoBtn .material-symbols-outlined{font-size:18px}
  .it .it-dot{flex:0 0 auto;width:6px;height:6px;border-radius:50%;background:#e0564f;
    margin-left:2px;display:none}
  .it.dirty .it-dot{display:block}
@@ -511,11 +514,15 @@
 </div>
 <!-- floating place-search (Google My Maps style): lives outside the panel -->
 <div class="placesearch" id="searchBox">
- <button id="psToggle" class="ps-toggle" title="Search a place to add a pin"><span class="material-symbols-outlined">search</span></button>
+ <button id="psToggle" class="ps-toggle" title="Search routes, pins, or places"><span class="material-symbols-outlined">search</span></button>
  <div class="ps-bar">
   <button id="psgo" class="ps-go" title="Search"><span class="material-symbols-outlined">search</span></button>
-  <input type="text" id="psq" placeholder="Search a place to add a pin…" autocomplete="off">
+  <input type="text" id="psq" placeholder="Search routes, pins, or places…" autocomplete="off">
   <button id="psClear" class="ps-clear" title="Clear" hidden><span class="material-symbols-outlined">close</span></button>
+  <span class="ps-divider" aria-hidden="true"></span>
+  <button id="undoBtn" class="ps-tool" disabled type="button"><span class="material-symbols-outlined">undo</span></button>
+  <button id="redoBtn" class="ps-tool" disabled type="button"><span class="material-symbols-outlined">redo</span></button>
+  <button id="routeNewBtn" class="ps-tool" type="button" title="Create a new route"><span class="material-symbols-outlined">add</span></button>
  </div>
  <div id="psresults"></div>
  <p class="sub" id="psmsg"></p>
@@ -2206,37 +2213,6 @@ function refreshRouteDirtyDots(){
  });
 }
 // --- sidebar: search box + "+ new route" button --------------------------
-function setupRouteSearch(){
- if(document.getElementById('routeSearch')) return;   // already created
- const sb=document.createElement('div'); sb.id='routeSearch';
- sb.innerHTML=
-    '<button id="undoBtn" disabled type="button"><span class="material-symbols-outlined">undo</span></button>'
-   +'<button id="redoBtn" disabled type="button"><span class="material-symbols-outlined">redo</span></button>'
-   +'<input id="routeSearchInput" placeholder="Search routes…" type="text" autocomplete="off" />'
-   +'<button id="routeNewBtn" title="Create a new route">+</button>';
- // Always at the top of the list (above pinsSection) so the undo / redo /
- // search / "+" controls are visible immediately when the panel opens,
- // instead of being scrolled below a long list of pin categories.
- list.insertBefore(sb, list.firstChild);
- sb.querySelector('#routeSearchInput').oninput=(ev)=>{
-   const q=(ev.target.value||'').trim().toLowerCase();
-   list.querySelectorAll(':scope > .grp').forEach(grp=>{
-     if(grp.id==='pinsSection') return;
-     let anyVisible=false;
-     grp.querySelectorAll('.it').forEach(it=>{
-       const nm=it.querySelector('.nm');
-       const matches = !q || (nm && nm.textContent.toLowerCase().includes(q));
-       it.style.display = matches ? '' : 'none';
-       if(matches) anyVisible=true;
-     });
-     grp.style.display = (anyVisible || !q) ? '' : 'none';
-   });
- };
- sb.querySelector('#routeNewBtn').onclick=routeCreateNew;
- sb.querySelector('#undoBtn').onclick=()=>_doUndo();
- sb.querySelector('#redoBtn').onclick=()=>_doRedo();
- _updateUndoBtns();
-}
 // --- create new route from scratch ---------------------------------------
 function routeCreateNew(){
  const cfg=window.MYMAP_CONFIG||{};
@@ -2369,7 +2345,6 @@ function fitAll(){
  try{ map.fitBounds(bounds,{paddingTopLeft:tl,paddingBottomRight:[24,24],animate:false}); }
  catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
 }
-setupRouteSearch();   // inject the search box + "+ new route" button above route groups
 refreshRouteDirtyDots();   // mark any pre-loaded localStorage edits in the sidebar
 fitAll();
 applyWeights();  // set zoom-adaptive thickness for the initial zoom
@@ -2561,13 +2536,7 @@ function renderPinsList(){
  let sec=document.getElementById('pinsSection');
  if(!PINS.length){ if(sec) sec.remove(); updateCounts(); return; }
  if(!sec){ sec=document.createElement('div'); sec.className='grp'; sec.id='pinsSection';
-   // Slot pinsSection right AFTER the routeSearch row (undo/redo/search/+)
-   // so the search row stays at the very top of the sidebar.
-   const rs=document.getElementById('routeSearch');
-   if(rs && rs.nextSibling) list.insertBefore(sec, rs.nextSibling);
-   else if(rs) list.appendChild(sec);
-   else list.insertBefore(sec, list.firstChild);
- }
+   list.insertBefore(sec,list.firstChild); }
  sec.innerHTML='';
  const groups={};
  PIN_CATS.forEach(c=>groups[c.k]=[]);
@@ -2712,12 +2681,54 @@ window.pinEdit=function(id){ openPinEditor(id); };
 // ---- place search (Google Places via the Maps JS SDK; referrer-restricted) --
 let previewMarker=null;
 function clearPreview(){ if(previewMarker){ map.removeLayer(previewMarker); previewMarker=null; } }
+// Unified search: filters local routes + pins as you type, AND queries Google
+// Places for new places to add. Renders three sections in #psresults — picking
+// a route/pin focuses it; picking a place runs the existing add-pin preview.
 async function placeSearch(q){
  const msg=document.getElementById('psmsg'), box=document.getElementById('psresults');
  box.innerHTML=''; clearPreview(); q=(q||'').trim();
  if(!q){ msg.textContent=''; return; }
- if(!CFG.googleMapsApiKey){ msg.textContent='No Google API key in config.js'; return; }
- msg.textContent='Searching…';
+ const qLow=q.toLowerCase();
+ const _hdr=(label,n)=>{
+   const h=document.createElement('div'); h.className='pr pr-hdr';
+   h.textContent=label+(n>0?' ('+n+')':''); box.appendChild(h);
+ };
+ // --- 1. Routes (instant, local) ---
+ const routeMatches=R.map((r,i)=>({r,i}))
+   .filter(({r})=>r.name && r.name.toLowerCase().includes(qLow))
+   .slice(0, 8);
+ if(routeMatches.length){
+   _hdr('Routes', routeMatches.length);
+   routeMatches.forEach(({r,i})=>{
+     const d=document.createElement('div'); d.className='pr';
+     const meta=[r.group||'', r.distance_km?r.distance_km+' km':''].filter(Boolean).join(' · ');
+     d.innerHTML='<span class="pr-sw" style="background:'+(r.color||accent())+'"></span>'
+       +'<b>'+esc(r.name)+'</b><span class="a">'+esc(meta)+'</span>';
+     d.onclick=()=>focusRoute(i);
+     box.appendChild(d);
+   });
+ }
+ // --- 2. Pins (instant, local) ---
+ const pinMatches=PINS
+   .filter(p=>p.name && p.name.toLowerCase().includes(qLow))
+   .slice(0, 8);
+ if(pinMatches.length){
+   _hdr('Pins', pinMatches.length);
+   pinMatches.forEach(p=>{
+     const d=document.createElement('div'); d.className='pr';
+     d.innerHTML='<span class="pr-ic">push_pin</span>'
+       +'<b>'+esc(p.name)+'</b>'
+       +'<span class="a">'+esc((p.place&&p.place.address)||'')+'</span>';
+     d.onclick=()=>focusPin(p);
+     box.appendChild(d);
+   });
+ }
+ // --- 3. Google Places (network, debounced via the user pressing Enter / button) ---
+ if(!CFG.googleMapsApiKey){
+   msg.textContent = (routeMatches.length||pinMatches.length) ? '' : 'No matches. (No Google key → place search disabled.)';
+   return;
+ }
+ msg.textContent='Searching places…';
  try{
    await loadGoogle();
    const {Place}=await google.maps.importLibrary('places');
@@ -2728,16 +2739,35 @@ async function placeSearch(q){
      locationBias:b?{north:b.getNorth(),south:b.getSouth(),east:b.getEast(),west:b.getWest()}:undefined,
      maxResultCount:10, language:'ja', region:'jp'
    });
-   if(!places||!places.length){ msg.textContent='No results (try panning to the area)'; return; }
-   msg.textContent=places.length+' result'+(places.length>1?'s':'')+' — click to preview';
+   if(!places||!places.length){
+     msg.textContent = (routeMatches.length||pinMatches.length) ? '' : 'No matches. (Try panning to the area for place search.)';
+     return;
+   }
+   _hdr('Add a place', places.length);
    places.forEach(pl=>{
      const nm=pl.displayName||'(no name)';
      const d=document.createElement('div'); d.className='pr';
-     d.innerHTML='<b>'+esc(nm)+'</b>'+(pl.rating?' ★'+pl.rating:'')
+     d.innerHTML='<span class="pr-ic">add_location</span>'
+       +'<b>'+esc(nm)+(pl.rating?' ★'+pl.rating:'')+'</b>'
        +'<span class="a">'+esc(pl.formattedAddress||'')+'</span>';
-     d.onclick=()=>previewPlace(pl,nm); box.appendChild(d);
+     d.onclick=()=>previewPlace(pl,nm);
+     box.appendChild(d);
    });
- }catch(e){ msg.textContent='Search failed: '+(e.message||e); window.__mmlog('place search: '+(e.message||e),true); }
+   msg.textContent='';
+ }catch(e){ msg.textContent='Place search failed: '+(e.message||e); window.__mmlog('place search: '+(e.message||e),true); }
+}
+// Picking a route from the unified search: open its popup, fly to it,
+// clear the search dropdown, and (on mobile) collapse the search bar.
+function focusRoute(idx){
+ try{
+   const pl=(polysByIdx[idx]||[])[0];
+   if(pl){ try{ pl.openPopup(pl.getCenter()); }catch(e){ try{ pl.openPopup(); }catch(_){} } }
+   try{ map.fitBounds(lg[idx].getLayers()[0].getBounds().pad(.2)); }catch(e){}
+   selectRoute(idx,{fromMap:false});
+ }catch(e){}
+ const r=document.getElementById('psresults'); if(r) r.innerHTML='';
+ const m=document.getElementById('psmsg');     if(m) m.textContent='';
+ if(window.__psCollapse) window.__psCollapse();
 }
 function previewPlace(pl,nm){
  clearPreview();
@@ -2760,23 +2790,75 @@ function previewPlace(pl,nm){
  box.appendChild(btn);
  L.popup({offset:[0,-10]}).setLatLng(ll).setContent(box).openOn(map);
 }
-// floating place-search box: search, clear, and (mobile) expand/collapse
+// Unified search bar + edit toolbar (undo / redo / + new route).
+// On every keystroke we re-render the routes + pins sections instantly
+// (purely local filter, no network). Google Places only kicks in on Enter
+// or the magnifier button to avoid burning API quota on each letter.
 (function(){
  const box=document.getElementById('searchBox'), q=document.getElementById('psq'),
        clr=document.getElementById('psClear'), tog=document.getElementById('psToggle');
  const isMobile=()=>window.matchMedia('(max-width:600px)').matches;
- // ✕ hides when empty on desktop; stays visible on mobile to double as a close button
  const updateClr=()=>{ clr.hidden = isMobile() ? false : !q.value; };
+ // Live "local-only" filter that skips the Google call. Identical to placeSearch
+ // but bails before the network step — keeps each keystroke instant + free.
+ async function liveFilter(qs){
+   const msg=document.getElementById('psmsg'), resBox=document.getElementById('psresults');
+   resBox.innerHTML=''; qs=(qs||'').trim();
+   if(!qs){ msg.textContent=''; return; }
+   const qLow=qs.toLowerCase();
+   const _hdr=(label,n)=>{
+     const h=document.createElement('div'); h.className='pr pr-hdr';
+     h.textContent=label+(n>0?' ('+n+')':''); resBox.appendChild(h);
+   };
+   const routeMatches=R.map((r,i)=>({r,i}))
+     .filter(({r})=>r.name && r.name.toLowerCase().includes(qLow)).slice(0,8);
+   if(routeMatches.length){
+     _hdr('Routes', routeMatches.length);
+     routeMatches.forEach(({r,i})=>{
+       const d=document.createElement('div'); d.className='pr';
+       const meta=[r.group||'', r.distance_km?r.distance_km+' km':''].filter(Boolean).join(' · ');
+       d.innerHTML='<span class="pr-sw" style="background:'+(r.color||accent())+'"></span>'
+         +'<b>'+esc(r.name)+'</b><span class="a">'+esc(meta)+'</span>';
+       d.onclick=()=>focusRoute(i);
+       resBox.appendChild(d);
+     });
+   }
+   const pinMatches=PINS.filter(p=>p.name && p.name.toLowerCase().includes(qLow)).slice(0,8);
+   if(pinMatches.length){
+     _hdr('Pins', pinMatches.length);
+     pinMatches.forEach(p=>{
+       const d=document.createElement('div'); d.className='pr';
+       d.innerHTML='<span class="pr-ic">push_pin</span>'
+         +'<b>'+esc(p.name)+'</b>'
+         +'<span class="a">'+esc((p.place&&p.place.address)||'')+'</span>';
+       d.onclick=()=>focusPin(p);
+       resBox.appendChild(d);
+     });
+   }
+   if(!routeMatches.length && !pinMatches.length){
+     msg.textContent=CFG.googleMapsApiKey ? 'No local matches — press Enter to search places.' : 'No matches.';
+   } else {
+     msg.textContent=CFG.googleMapsApiKey ? 'Press Enter to also search places.' : '';
+   }
+ }
  document.getElementById('psgo').onclick=()=>placeSearch(q.value);
  q.addEventListener('keydown',e=>{ if(e.key==='Enter') placeSearch(e.target.value); });
- q.addEventListener('input',updateClr);
+ q.addEventListener('input',()=>{ updateClr(); liveFilter(q.value); });
  clr.onclick=()=>{
-   if(q.value){ q.value=''; placeSearch(''); q.focus(); updateClr(); }   // clear text
-   else if(isMobile()){ box.classList.remove('open'); }                  // empty + mobile -> collapse
+   if(q.value){ q.value=''; liveFilter(''); q.focus(); updateClr(); }
+   else if(isMobile()){ box.classList.remove('open'); }
  };
  tog.onclick=()=>{ box.classList.add('open'); updateClr(); q.focus(); };
  updateClr();
- window.__psCollapse=()=>{ if(isMobile()) box.classList.remove('open'); };  // free the map after a pick
+ window.__psCollapse=()=>{ if(isMobile()) box.classList.remove('open'); };
+ // Wire the edit-toolbar buttons that share the same ps-bar surface.
+ const undoB=document.getElementById('undoBtn');
+ const redoB=document.getElementById('redoBtn');
+ const newB =document.getElementById('routeNewBtn');
+ if(undoB) undoB.onclick=()=>window._doUndo && window._doUndo();
+ if(redoB) redoB.onclick=()=>window._doRedo && window._doRedo();
+ if(newB)  newB.onclick =()=>window.routeCreateNew && window.routeCreateNew();
+ if(typeof _updateUndoBtns==='function') _updateUndoBtns();
 })();
 
 // ---- admin: commit My-places pins straight to the repo via the GitHub API ----
