@@ -1421,6 +1421,26 @@ function _routeRecomputeDistance(r){
  });
  r.distance_km = +(dist.toFixed(1));
 }
+// Climb from a 1-D altitude sequence — same 3-point smoothing + positive-
+// delta sum as _profileFromPolys, used when polys carry no altitudes but
+// we already have a profile (e.g. after reversing one of the 700+ offline-
+// preprocessed routes whose altitudes live only in the profile field).
+function _climbFromAlts(alts){
+ if(!alts || alts.length < 2) return 0;
+ const half = 1;   // SMOOTH=3 ⇒ half=1
+ const sm = alts.map((_, i)=>{
+   let sum=0, n=0;
+   const lo=Math.max(0,i-half), hi=Math.min(alts.length,i+half+1);
+   for(let j=lo; j<hi; j++){ if(alts[j] != null){ sum += alts[j]; n++; } }
+   return n > 0 ? sum/n : null;
+ });
+ let climb = 0;
+ for(let i=1; i<sm.length; i++){
+   if(sm[i-1] == null || sm[i] == null) continue;
+   if(sm[i] > sm[i-1]) climb += sm[i] - sm[i-1];
+ }
+ return Math.round(climb);
+}
 // Build profile + elev_up_m the same way as the offline enrich_routes.py:
 //  1. Walk polys collecting (lat, lng, alt, cumulative metres).
 //  2. Downsample to ~TARGET points (MIN_POINTS floor for very short routes).
@@ -1498,12 +1518,19 @@ window.routeReverse=function(idx){
    const total=r.profile[r.profile.length-1][0];
    r.profile=r.profile.slice().reverse().map(p=>[total-p[0], p[1]]);
  }
- // Climb is direction-dependent — the original direction's descents become
- // the reversed direction's climbs. Recompute so the popup shows the right
- // number for the new travel direction (also rebuilds the profile so the
- // sparkline matches the 80-point sampling used everywhere else).
+ // Climb is direction-dependent. Try to recompute from poly altitudes first
+ // (works for in-browser-edited routes). If polys carry no altitudes (the
+ // 700+ offline-preprocessed routes only have altitudes in the profile),
+ // keep the just-reversed profile and recompute climb from its altitude
+ // sequence with the same 3-point smoothing.
  if(r.original_elev_up_m==null && r.elev_up_m!=null) r.original_elev_up_m=r.elev_up_m;
- { const pr=_profileFromPolys(r.polys); r.elev_up_m=pr.elev_up_m; r.profile=pr.profile; }
+ const pr=_profileFromPolys(r.polys);
+ if(pr.profile.length > 0){
+   r.elev_up_m = pr.elev_up_m;
+   r.profile   = pr.profile;
+ } else if(r.profile && r.profile.length){
+   r.elev_up_m = _climbFromAlts(r.profile.map(p=>p[1]));
+ }
  r.edited_at=(new Date()).toISOString();
  (r.edit_ops=r.edit_ops||[]).push({op:'reverse', at:r.edited_at});
  buildRouteLayer(idx);
