@@ -324,7 +324,14 @@
  /* keep the pin/icon images at their true colors against any browser forced-dark / high-contrast scheme */
  img.leaflet-marker-icon, .pe-ic img, #pinsSection .it img, .placesearch img{forced-color-adjust:none}
  /* admin button "unsaved changes" badge */
- #adminBtn{position:relative}
+ /* Both cloud-save buttons need position:relative so their dirty-badge
+    (absolute positioned) sits on the corner instead of floating away. */
+ #adminBtn, #ghSave{position:relative}
+ /* Louder always-visible cue when there are unsaved changes — a red tint /
+    outline on the button itself, so a small badge isn't the only signal. */
+ #adminBtn:has(.dirty-badge), #ghSave:has(.dirty-badge){
+   color:#e0564f; box-shadow:inset 0 0 0 1px rgba(224,86,79,.5);
+ }
  /* admin: inline X inside the token input, shown only when a token is stored */
  .tk-wrap{flex:1;position:relative;display:flex;min-width:0}
  .tk-wrap input{flex:1;padding-right:26px;min-width:0}
@@ -1567,6 +1574,8 @@ function _vertCleanup(){
  _vertState.markers.forEach(m=>{ try{ map.removeLayer(m); }catch(e){} });
  const b=document.getElementById('vertBanner'); if(b) b.remove();
  document.removeEventListener('keydown', _vertState.escHandler);
+ // Restore the default map cursor (we switched it to crosshair on enter).
+ try{ map.getContainer().style.cursor=''; }catch(e){}
  // (polyline click + popup is restored by buildRouteLayer() in _vertDone/_vertCancel)
  _vertState=null;
 }
@@ -1585,17 +1594,36 @@ function _vertSpawnMarker(idx, polyIdx, vertIdx, isEnd){
    else R[idx].polys[polyIdx][m._vertIdx]=[ll.lat, ll.lng];
    const pl=(polysByIdx[idx]||[])[polyIdx]; if(pl) pl.setLatLngs(R[idx].polys[polyIdx]);
  });
- // shift-click to delete
- m.on('click', (ev)=>{
-   const oe=ev.originalEvent;
-   if(!oe || !oe.shiftKey) return;
-   L.DomEvent.stopPropagation(ev);
+ // Tap (or shift-click on desktop) -> open a small popup with a Delete button.
+ // Shift-click skips the popup for power users; everyone else gets one tap to
+ // open + one tap to confirm — works the same on touch and desktop.
+ const tryDelete = ()=>{
    const cPoly=R[idx].polys[m._polyIdx];
    if(cPoly.length<=2){ alert('Cannot delete — a line needs at least 2 points.'); return; }
    cPoly.splice(m._vertIdx, 1);
    _vertRebuildPolyMarkers(idx, m._polyIdx);
    const pl=(polysByIdx[idx]||[])[m._polyIdx]; if(pl) pl.setLatLngs(cPoly);
    _vertUpdateBanner();
+   try{ map.closePopup(); }catch(e){}
+ };
+ m.on('click', (ev)=>{
+   const oe=ev.originalEvent;
+   L.DomEvent.stopPropagation(ev);
+   if(oe && oe.shiftKey){ tryDelete(); return; }
+   // Tap-popup with Delete button — wire onclick via a closure so we don't
+   // have to thread idx/polyIdx/vertIdx through a global window function.
+   const html='<div style="font-size:11px;line-height:1.3">'
+     +'Vertex #'+(m._vertIdx+1)+' / '+R[idx].polys[m._polyIdx].length
+     +'<div style="margin-top:6px"><button id="_vertDelBtn" '
+     +'style="font:inherit;font-size:11px;padding:4px 10px;background:#e0564f;color:#fff;'
+     +'border:none;border-radius:5px;cursor:pointer">Delete this point</button></div></div>';
+   const popup=L.popup({maxWidth:160, minWidth:80, closeButton:true, autoClose:true, offset:[0,-10]})
+     .setLatLng(m.getLatLng()).setContent(html).openOn(map);
+   // Bind the click handler after the popup mounts.
+   setTimeout(()=>{
+     const b=document.getElementById('_vertDelBtn');
+     if(b) b.onclick=tryDelete;
+   }, 0);
  });
  return m;
 }
@@ -1618,7 +1646,7 @@ function _vertUpdateBanner(){
  const r=R[_vertState.routeIdx]; if(!r) return;
  let total=0; r.polys.forEach(p=>total+=p.length);
  const span=document.querySelector('#vertBanner span'); if(span) span.innerHTML=
-   '✎ Drag · click line to insert · shift-click dot to delete ('+total+' points). <b>Done</b> saves · ESC cancels.';
+   '✎ Drag · click line to insert · tap a dot to delete ('+total+' points). <b>Done</b> saves · ESC cancels.';
 }
 function _vertHandleMapClick(ev){
  if(!_vertState) return;
@@ -1673,8 +1701,11 @@ window.routeEditVerticesStart=function(idx){
    pl.unbindPopup();
    pl.on('click', (ev)=>{ L.DomEvent.stopPropagation(ev); _vertHandleMapClick(ev); });
  });
+ // Crosshair cursor while in edit mode — visual cue that clicks now do
+ // something different (insert a vertex / tap a dot to act on it).
+ try{ map.getContainer().style.cursor='crosshair'; }catch(e){}
  const banner=document.createElement('div'); banner.id='vertBanner';
- banner.innerHTML='<span>✎ Drag · click line to insert · shift-click dot to delete ('+totalVerts+' points). <b>Done</b> saves · ESC cancels.</span>'
+ banner.innerHTML='<span>✎ Drag · click line to insert · tap a dot to delete ('+totalVerts+' points). <b>Done</b> saves · ESC cancels.</span>'
    +'<button class="ok" onclick="window._vertDone();return false">Done</button>'
    +'<button onclick="window._vertCancel();return false">Cancel</button>';
  document.body.appendChild(banner);
