@@ -1421,6 +1421,61 @@ function _routeRecomputeDistance(r){
  });
  r.distance_km = +(dist.toFixed(1));
 }
+// Build profile + elev_up_m the same way as the offline enrich_routes.py:
+//  1. Walk polys collecting (lat, lng, alt, cumulative metres).
+//  2. Downsample to ~TARGET points (MIN_POINTS floor for very short routes).
+//  3. Apply a 3-point moving average to the sampled altitudes — kills SRTM
+//     30m pixel jitter that survives downsampling alone on switchback
+//     mountain roads (invisible on flat / rolling routes).
+//  4. Sum positive deltas across the smoothed samples.
+// Same algorithm as enrich_routes.py / enrich_elevation.py so manual
+// recomputes and offline preprocessing give matching numbers.
+function _profileFromPolys(polys, target, minPts){
+ target = target || 80; minPts = minPts || 20;
+ const SMOOTH = 3;
+ const pts = []; let cum=0, last=null;
+ (polys||[]).forEach(poly=>{
+   poly.forEach(pt=>{
+     if(last){
+       const dLat=(pt[0]-last[0])*111000;
+       const dLng=(pt[1]-last[1])*111000*Math.cos(pt[0]*Math.PI/180);
+       cum += Math.hypot(dLat, dLng);
+     }
+     pts.push({lat:pt[0], lng:pt[1], alt: pt.length>2 ? pt[2] : null, cum});
+     last = pt;
+   });
+ });
+ if(pts.length < 2) return {profile:[], elev_up_m:0};
+ let samples;
+ if(pts.length <= Math.max(target, minPts)){
+   samples = pts;
+ } else {
+   const step = Math.max(1, Math.floor(pts.length/target));
+   samples = [];
+   for(let i=0; i<pts.length; i+=step) samples.push(pts[i]);
+   if(samples[samples.length-1] !== pts[pts.length-1]) samples.push(pts[pts.length-1]);
+ }
+ // 3-point moving average over sampled altitudes (skip nulls).
+ const half = SMOOTH >> 1;
+ const smAlts = samples.map((s, i)=>{
+   if(s.alt == null) return null;
+   let sum=0, n=0;
+   const lo=Math.max(0, i-half), hi=Math.min(samples.length, i+half+1);
+   for(let j=lo; j<hi; j++){ if(samples[j].alt != null){ sum += samples[j].alt; n++; } }
+   return n > 0 ? sum/n : null;
+ });
+ let climb = 0;
+ for(let i=1; i<smAlts.length; i++){
+   const a = smAlts[i-1], b = smAlts[i];
+   if(a == null || b == null) continue;
+   if(b > a) climb += b - a;
+ }
+ const profile = samples
+   .map((s, i)=>[s.cum, smAlts[i]])
+   .filter(([_, a])=>a != null)
+   .map(([c, a])=>[+(c/1000).toFixed(2), Math.round(a)]);
+ return {profile, elev_up_m: Math.round(climb)};
+}
 // --- inline rename --------------------------------------------------------
 window.routeNameSave=function(idx, text){
  const r=R[idx]; if(!r) return;
@@ -1443,6 +1498,12 @@ window.routeReverse=function(idx){
    const total=r.profile[r.profile.length-1][0];
    r.profile=r.profile.slice().reverse().map(p=>[total-p[0], p[1]]);
  }
+ // Climb is direction-dependent — the original direction's descents become
+ // the reversed direction's climbs. Recompute so the popup shows the right
+ // number for the new travel direction (also rebuilds the profile so the
+ // sparkline matches the 80-point sampling used everywhere else).
+ if(r.original_elev_up_m==null && r.elev_up_m!=null) r.original_elev_up_m=r.elev_up_m;
+ { const pr=_profileFromPolys(r.polys); r.elev_up_m=pr.elev_up_m; r.profile=pr.profile; }
  r.edited_at=(new Date()).toISOString();
  (r.edit_ops=r.edit_ops||[]).push({op:'reverse', at:r.edited_at});
  buildRouteLayer(idx);
@@ -1929,30 +1990,11 @@ async function routeRecomputeElevation(idx){
    const cur=r.polys[ref.pi][ref.vi];
    r.polys[ref.pi][ref.vi]=[cur[0], cur[1], alt];
  });
- let climb=0;
- r.polys.forEach(poly=>{
-   for(let i=1;i<poly.length;i++){
-     if(poly[i].length>2 && poly[i-1].length>2){
-       const d=poly[i][2]-poly[i-1][2]; if(d>0) climb+=d;
-     }
-   }
- });
  if(r.original_elev_up_m==null && r.elev_up_m!=null) r.original_elev_up_m=r.elev_up_m;
- r.elev_up_m=Math.round(climb);
- // Rebuild profile [cumDist, alt] across all polys
- if(window.turf){
-   r.profile=[];
-   let cumKm=0;
-   r.polys.forEach(poly=>{
-     for(let i=0;i<poly.length;i++){
-       if(i>0){
-         const a=poly[i-1], b=poly[i];
-         try{ cumKm += turf.distance([a[1],a[0]],[b[1],b[0]],{units:'kilometers'}); }catch(e){}
-       }
-       if(poly[i].length>2) r.profile.push([+(cumKm.toFixed(4)), +poly[i][2]]);
-     }
-   });
- }
+ // One source of truth — downsamples to 80 points (with 20-floor) and builds
+ // both elev_up_m and profile from the same samples. Matches the original
+ // offline pipeline so recomputed routes look the same as the existing 700.
+ { const pr=_profileFromPolys(r.polys); r.elev_up_m=pr.elev_up_m; r.profile=pr.profile; }
  r.edited_at=(new Date()).toISOString();
  (r.edit_ops=r.edit_ops||[]).push({op:'recompute-elevation', at:r.edited_at, climb_m:r.elev_up_m});
  _routeRecomputeDistance(r);
@@ -2005,28 +2047,7 @@ async function _fillMissingAltitudes(idx){
    const cur=r.polys[ref.pi][ref.vi];
    r.polys[ref.pi][ref.vi]=[cur[0], cur[1], alt];
  });
- let climb=0;
- r.polys.forEach(poly=>{
-   for(let i=1;i<poly.length;i++){
-     if(poly[i].length>2 && poly[i-1].length>2){
-       const d=poly[i][2]-poly[i-1][2]; if(d>0) climb+=d;
-     }
-   }
- });
- r.elev_up_m=Math.round(climb);
- if(window.turf){
-   r.profile=[];
-   let cumKm=0;
-   r.polys.forEach(poly=>{
-     for(let i=0;i<poly.length;i++){
-       if(i>0){
-         const a=poly[i-1], b=poly[i];
-         try{ cumKm += turf.distance([a[1],a[0]],[b[1],b[0]],{units:'kilometers'}); }catch(e){}
-       }
-       if(poly[i].length>2) r.profile.push([+(cumKm.toFixed(4)), +poly[i][2]]);
-     }
-   });
- }
+ { const pr=_profileFromPolys(r.polys); r.elev_up_m=pr.elev_up_m; r.profile=pr.profile; }
  _elevBanner('✓ Altitudes filled · ↑'+r.elev_up_m+' m');
  setTimeout(_elevBannerHide, 2500);
  return true;
