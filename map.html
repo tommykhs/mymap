@@ -2558,7 +2558,13 @@ function renderPinsList(){
  let sec=document.getElementById('pinsSection');
  if(!PINS.length){ if(sec) sec.remove(); updateCounts(); return; }
  if(!sec){ sec=document.createElement('div'); sec.className='grp'; sec.id='pinsSection';
-   list.insertBefore(sec,list.firstChild); }
+   // Slot pinsSection right AFTER the routeSearch row (undo/redo/search/+)
+   // so the search row stays at the very top of the sidebar.
+   const rs=document.getElementById('routeSearch');
+   if(rs && rs.nextSibling) list.insertBefore(sec, rs.nextSibling);
+   else if(rs) list.appendChild(sec);
+   else list.insertBefore(sec, list.firstChild);
+ }
  sec.innerHTML='';
  const groups={};
  PIN_CATS.forEach(c=>groups[c.k]=[]);
