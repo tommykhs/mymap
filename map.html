@@ -2211,10 +2211,10 @@ function setupRouteSearch(){
    +'<button id="redoBtn" disabled type="button"><span class="material-symbols-outlined">redo</span></button>'
    +'<input id="routeSearchInput" placeholder="Search routes…" type="text" autocomplete="off" />'
    +'<button id="routeNewBtn" title="Create a new route">+</button>';
- const pins=document.getElementById('pinsSection');
- if(pins && pins.nextSibling) list.insertBefore(sb, pins.nextSibling);
- else if(pins) list.appendChild(sb);
- else list.insertBefore(sb, list.firstChild);
+ // Always at the top of the list (above pinsSection) so the undo / redo /
+ // search / "+" controls are visible immediately when the panel opens,
+ // instead of being scrolled below a long list of pin categories.
+ list.insertBefore(sb, list.firstChild);
  sb.querySelector('#routeSearchInput').oninput=(ev)=>{
    const q=(ev.target.value||'').trim().toLowerCase();
    list.querySelectorAll(':scope > .grp').forEach(grp=>{
