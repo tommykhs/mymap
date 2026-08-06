@@ -531,6 +531,7 @@
 // Route data is loaded at runtime from data/routes_base.geojson (keeps this
 // file tiny). Convert each GeoJSON Feature back to the internal route shape.
 let R=[];
+let ROUTES_READY=false;   // true once the routes fetch has resolved (see fitAll)
 function featureToRoute(f){
  const p=f.properties||{};
  const co=(f.geometry&&f.geometry.coordinates)||[];
@@ -2390,9 +2391,31 @@ function fitAll(){
    // mobile: panel is a short box at the TOP -> inset the top by its height.
    tl = mobile ? [24, Math.round(r.height)+24] : [Math.round(r.width)+24, 24];
  }
- try{ map.fitBounds(bounds,{paddingTopLeft:tl,paddingBottomRight:[24,24],animate:false}); }
- catch(e){ try{ map.fitBounds(bounds.pad(.05)); }catch(_){} }
+ // `bounds` only ever collects ROUTE geometry. On a pins-only map it stays
+ // empty, fitBounds throws, and the map is left with no view at all — Leaflet
+ // then draws nothing: no tiles, no markers, just a blank pane. Fall back to
+ // the pins, then to a world view, so the map always ends up somewhere.
+ let b=bounds;
+ if(!b.isValid()){
+   // PINS is declared further down this script, so on the first call (from the
+   // routes flow) it can still be in its temporal dead zone — and TDZ throws on
+   // ANY reference, `typeof` included, which is why this needs a try/catch
+   // rather than a guard. Swallowing it is correct: the pins genuinely aren't
+   // loaded yet, and the pin loader calls fitAll() again once they are.
+   try{
+     const ll=PINS.map(p=>{ try{ return p.marker.getLatLng(); }catch(e){ return null; } }).filter(Boolean);
+     if(ll.length) b=L.latLngBounds(ll);
+   }catch(e){}
+ }
+ // Nothing to fit yet (pins-only map, pins still in flight): bail without
+ // touching the view. Do NOT park it on a world view — that fires moveend, the
+ // persistence handler saves it, and the next load restores that empty view and
+ // skips the refit below. The pin loader calls fitAll() again once pins land.
+ if(!b.isValid()) return;
+ try{ map.fitBounds(b,{paddingTopLeft:tl,paddingBottomRight:[24,24],animate:false}); }
+ catch(e){ try{ map.fitBounds(b.pad(.05)); }catch(_){} }
 }
+ROUTES_READY=true;
 refreshRouteDirtyDots();   // mark any pre-loaded localStorage edits in the sidebar
 fitAll();
 applyWeights();  // set zoom-adaptive thickness for the initial zoom
@@ -2493,7 +2516,7 @@ const ICON_LIB=[
  [1569,'ferry_4x','Ferry'],[1537,'car-ferry_4x','Car ferry'],[1681,'sailing-boat_4x','Sailing'],[1716,'train_4x','Train'],[1532,'bus_4x','Bus'],[1504,'airport-plane_4x','Airport'],[1538,'car_4x','Car'],[1704,'taxi_4x','Taxi'],[1522,'bicycle_4x','Bike'],[1644,'parking_4x','Parking'],[1596,'hiking-solo_4x','Hiking'],[1731,'walking-pedestrian_4x','Walk'],
  [1534,'cafe-cup_4x','Cafe'],[1577,'food-fork-knife_4x','Food'],[1567,'fast-food_4x','Fast food'],[1517,'bar-cocktail_4x','Bar'],[1685,'shopping-cart_4x','Market'],[1684,'shopping-bag_4x','Shopping'],
  [1602,'hotel-bed_4x','Hotel'],[1608,'info_4x','Info'],[1807,'hospital-h_4x','Hospital'],[1646,'pharmacy_4x','Pharmacy'],[1510,'atm_4x','ATM'],[1581,'fuel-gasoline_4x','Fuel'],[1733,'wc-unisex_4x','Toilet'],[1664,'reading-library_4x','Library'],[1526,'book_4x','Book'],[1682,'school-crossing_4x','School'],
- [1521,'beach_4x','Beach'],[1701,'swimming_4x','Swim'],[1634,'mountain_4x','Mountain'],[1730,'volcano_4x','Volcano'],[1892,'waterfall_4x','Waterfall'],[1720,'tree_4x','Tree'],[1765,'camping-tent_4x','Camping'],
+ [1521,'beach_4x','Beach'],[1701,'swimming_4x','Swim'],[1634,'mountain_4x','Mountain'],[1730,'volcano_4x','Volcano'],[1892,'waterfall_4x','Waterfall'],[1720,'tree_4x','Tree'],[1765,'camping-tent_4x','Camping'],[1607,'ice-cream_4x','Ice Cream'],
 ];
 const ICON_NAME={}; ICON_LIB.forEach(x=>ICON_NAME[x[0]]=x[1]);
 // legacy: pins saved before this stored a Material glyph name -> map to a My Maps id
@@ -3067,6 +3090,13 @@ function updateCounts(){
      SEED_PINS=Array.isArray(seed)?seed:[];
      SEED_PINS.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));
      renderPinsList(); updateCounts(); updateDirtyBadge();
+     // Pins arrive after fitAll() has already run. On a pins-only map that
+     // first fit had nothing to work with, so fit again now the pins exist.
+     // Requires ROUTES_READY: until the routes fetch resolves R is [] for
+     // EVERY map, and refitting then would yank a route map to its pins and
+     // straight back again. If routes win the race instead, their own fitAll()
+     // already falls back to the pins. Skipped if this browser remembers a view.
+     if(ROUTES_READY && !R.length && !(ST.view||{})[MAP_ID]) fitAll();
    });
  } else {
    renderPinsList(); updateCounts();   // saved===[] : user cleared, respect it
