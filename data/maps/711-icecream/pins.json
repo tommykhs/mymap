@@ -1,6 +1,6 @@
 [
  {
-  "name": "7-11 荷李活道123號荷李活華庭地下3號舖",
+  "name": "7-11便利店 (荷李活華庭店)",
   "coords": [
    22.284073,
    114.150921
@@ -8,13 +8,13 @@
   "place": {
    "address": "上環｜香港荷李活道123號荷李活華庭地下3號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.284073,114.150921",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ4wzUCnwABDQRUZa5z4r5yEg",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 伊利近街 40 號地下",
+  "name": "7-11便利店 (伊利近街店)",
   "coords": [
    22.28153,
    114.152665
@@ -22,13 +22,13 @@
   "place": {
    "address": "中環｜香港中環伊利近街 40 號地下  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2815295,114.1526649",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJX_1VqHsABDQRoM9Y-COzywI",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 北角道 8 號隆運大廈地下C, D, E 及 F舖",
+  "name": "7-11便利店 (隆運大廈店)",
   "coords": [
    22.290928,
    114.196858
@@ -36,13 +36,13 @@
   "place": {
    "address": "北角｜香港北角北角道 8 號隆運大廈地下C, D, E 及 F舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.290928,114.196858",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJnQO6eQMBBDQRXTd3C_0_zbQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 淺水灣海灘道 33 號海濱中心地下 B 舖",
+  "name": "7-11便利店 (淺水灣店)",
   "coords": [
    22.237174,
    114.197146
@@ -50,13 +50,13 @@
   "place": {
    "address": "南區｜香港淺水灣海灘道 33 號海濱中心地下 B 舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.237173743609,114.1971462965",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJRwPPWX-qBjQRyV4UKQlreQQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 赤柱大街 90A 號德偉閣地下 A 舖",
+  "name": "7-11便利店 (赤柱大街店)",
   "coords": [
    22.218697,
    114.21138
@@ -64,13 +64,13 @@
   "place": {
    "address": "南區｜香港赤柱大街 90A 號德偉閣地下 A 舖",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.218697,114.21138",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJZ0LUT2KrBjQRKVqIgoZKKco",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 環翠道11號興華(一)邨興華廣場地下 3 號舖",
+  "name": "7-Eleven 柴灣興華邨",
   "coords": [
    22.262141,
    114.235411
@@ -78,13 +78,13 @@
   "place": {
    "address": "柴灣｜香港柴灣環翠道11號興華(一)邨興華廣場地下 3 號舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.262141478572,114.23541069031",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ9WIkHYkBBDQR_aq8x17LLYk",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 華廈街1號環翠邨環翠商場地下G18舖",
+  "name": "7-ELEVEN (環翠商場)",
   "coords": [
    22.262797,
    114.237665
@@ -92,13 +92,13 @@
   "place": {
    "address": "柴灣｜香港柴灣華廈街1號環翠邨環翠商場地下G18舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.262797,114.237665",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJgR6MYwABBDQR2gc0082EqoU",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 道113-117號得利商業大廈地下A1號舖",
+  "name": "7-11便利商店 灣仔道得利商業大廈店",
   "coords": [
    22.276637,
    114.175584
@@ -106,13 +106,13 @@
   "place": {
    "address": "灣仔｜灣仔道113-117號得利商業大廈地下A1號舖",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.276637,114.175584",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJeVriEVsABDQR2z94bWWGcsA",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 愛禮街 2 號愛蝶灣地下 5 號舖",
+  "name": "7-11便利店 (愛蝶灣店)",
   "coords": [
    22.281055,
    114.228716
@@ -120,13 +120,13 @@
   "place": {
    "address": "筲箕灣｜香港筲箕灣愛禮街 2 號愛蝶灣地下 5 號舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2810548,114.228716",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ1dgjwXkBBDQRRMVAhhu6OTw",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 石塘咀山道 20-24 號高雅大廈地下 C 舖及閣樓",
+  "name": "7-11便利店 (山道店)",
   "coords": [
    22.285668,
    114.1348
@@ -134,13 +134,13 @@
   "place": {
    "address": "西環｜香港石塘咀山道 20-24 號高雅大廈地下 C 舖及閣樓  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2856685,114.1348002",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJsyExiIT_AzQRHmBLbPtOfrY",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 糖街15-23號銅鑼灣中心地下4號舖",
+  "name": "7-11便利店 (糖街31號店)",
   "coords": [
    22.279983,
    114.186679
@@ -148,13 +148,13 @@
   "place": {
    "address": "銅鑼灣｜香港糖街15-23號銅鑼灣中心地下4號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.279983,114.186679",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJBVSGHBgBBDQRnnyyn0YVhyE",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 摩頓臺 13-33 號灣景樓地下 8及9 號舖",
+  "name": "7-11便利店 (摩頓臺店)",
   "coords": [
    22.279656,
    114.188921
@@ -162,13 +162,13 @@
   "place": {
    "address": "銅鑼灣｜香港銅鑼灣摩頓臺 13-33 號灣景樓地下 8及9 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2796559,114.1889212",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJJeAl9FQABDQRTy43jhneHeU",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 銅鑼灣道 19-23 號建康商業大廈地下 3 號舖",
+  "name": "7-11便利店 (建康商業大廈店)",
   "coords": [
    22.278741,
    114.188534
@@ -176,13 +176,13 @@
   "place": {
    "address": "銅鑼灣｜香港銅鑼灣銅鑼灣道 19-23 號建康商業大廈地下 3 號舖  ·  HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2787415,114.1885344",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJsxp6cAABBDQRgF0AH_RCpV4",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 駱克道 478-484 號本德大廈地下 G 舖",
+  "name": "7-11便利店 (駱克道478號本德大廈地下 G 舖)",
   "coords": [
    22.280243,
    114.18233
@@ -190,13 +190,13 @@
   "place": {
    "address": "銅鑼灣｜香港銅鑼灣駱克道 478-484 號本德大廈地下 G 舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2802429,114.1823296",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ16fcI1cABDQRYMbWcUGZCR8",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 薄扶林置富花園置富南區廣場 4 樓 401及401A號舖",
+  "name": "7-11便利店 (置富南區廣場店)",
   "coords": [
    22.258627,
    114.137494
@@ -204,13 +204,13 @@
   "place": {
    "address": "香港仔｜香港薄扶林置富花園置富南區廣場 4 樓 401及401A號舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.258626529061,114.13749396801",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJg8n14vn_AzQR4hnpmAb6iXw",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 南寧街 7-11號香港仔中心地下 25 號舖",
+  "name": "7-11便利店 (香港仔中心商場2期南寧街店)",
   "coords": [
    22.248482,
    114.153295
@@ -218,13 +218,13 @@
   "place": {
    "address": "香港仔｜香港香港仔南寧街 7-11號香港仔中心地下 25 號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2484818,114.1532945",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJoaeCcgMABDQR4y50W7n9Zck",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 華貴道 3 號華貴邨華貴商場 (華貴坊) 地下 1 號舖",
+  "name": "7-11便利店 (華貴坊店)",
   "coords": [
    22.249792,
    114.13953
@@ -232,13 +232,13 @@
   "place": {
    "address": "香港仔｜香港香港仔華貴道 3 號華貴邨華貴商場 (華貴坊) 地下 1 號舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.249792,114.13953",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJZcB-8_7_AzQRrmc8-GM-V0M",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 鴨俐洲海怡半島海怡廣場西座地下 G47 號舖",
+  "name": "7-11便利店 (利東商場二期店)",
   "coords": [
    22.23903,
    114.152284
@@ -246,13 +246,13 @@
   "place": {
    "address": "香港仔｜香港鴨俐洲海怡半島海怡廣場西座地下 G47 號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.239029564802,114.15228366852",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJpfSTKqaqBjQRqGz3Hs_0NFk",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 鴨脷洲大街 25-31 號年豐大廈地下 6-9 號舖",
+  "name": "7-11便利店 (鴨脷洲大街店)",
   "coords": [
    22.244359,
    114.156894
@@ -260,13 +260,13 @@
   "place": {
    "address": "香港仔｜香港鴨脷洲大街 25-31 號年豐大廈地下 6-9 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.244358552176,114.15689438581",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJIbJbWR0ABDQR23JMypvRwBo",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 康山道2號 康怡廣場南座4字樓 50A舖",
+  "name": "7-11 鰂魚涌康怡廣場",
   "coords": [
    22.284106,
    114.216328
@@ -274,7 +274,7 @@
   "place": {
    "address": "鰂魚涌｜香港 康山道2號 康怡廣場南座4字樓 50A舖",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.284106,114.216328",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJCUwosHQBBDQRzXwMWkLrj-s",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
@@ -288,13 +288,13 @@
   "place": {
    "address": "鰂魚涌｜香港港島東太古城第 5 期寧安閣 G506-G507 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.285279,114.220157",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJyV5EbHMBBDQRML8yvfdxyIQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 海光街13-15號海光苑地下5及6D號舖",
+  "name": "7-11便利店 (濱海大廈店)",
   "coords": [
    22.287873,
    114.211041
@@ -302,13 +302,13 @@
   "place": {
    "address": "鰂魚涌｜香港鰂魚涌海光街13-15號海光苑地下5及6D號舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.287873,114.211041",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ-bAd28kBBDQR__CMC9FD4G0",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 獅子石道 87 號地下",
+  "name": "7-11便利店 (獅子石道店)",
   "coords": [
    22.330391,
    114.188224
@@ -316,13 +316,13 @@
   "place": {
    "address": "九龍城｜九龍九龍城獅子石道 87 號地下  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3303913,114.1882237",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJpzOJEtYGBDQRL22fSSIlc50",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 衙前圍道 96 號地下 A-D 舖",
+  "name": "7-11便利店 (福興樓店)",
   "coords": [
    22.329106,
    114.189417
@@ -330,13 +330,13 @@
   "place": {
    "address": "九龍城｜九龍九龍城衙前圍道 96 號地下 A-D 舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3291059,114.1894168",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJW38UMCsHBDQRupQ3NcaFoEE",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 宏照道33號國際交易中心地下9號舖",
+  "name": "7-11便利店 (國際交易中心店)",
   "coords": [
    22.321097,
    114.209422
@@ -344,13 +344,13 @@
   "place": {
    "address": "九龍灣｜九龍九龍灣宏照道33號國際交易中心地下9號舖  ·  HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3210973,114.2094216",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ47SyiTMBBDQR8y6_KM3FkPQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 大角咀道 38 號新九龍廣場地下 079-080 號舖",
+  "name": "7-11便利店 (新九龍廣場店)",
   "coords": [
    22.319765,
    114.162607
@@ -358,13 +358,13 @@
   "place": {
    "address": "大角咀｜九龍大角咀大角咀道 38 號新九龍廣場地下 079-080 號舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3197653,114.1626069",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ_1PykrkABDQRbHqf7J70xMg",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 福全街 25 & 27 號宏福樓地下",
+  "name": "7-11便利店 (福全街店)",
   "coords": [
    22.320835,
    114.164534
@@ -372,13 +372,13 @@
   "place": {
    "address": "大角咀｜九龍大角咀福全街 25 & 27 號宏福樓地下  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3208349,114.1645344",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJaWii1bkABDQR9_Z2T8NPnoQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 旺角旺角道 21號地下",
+  "name": "7-11便利店 (旺角道21號店)",
   "coords": [
    22.320274,
    114.167128
@@ -386,13 +386,13 @@
   "place": {
    "address": "太子｜九龍旺角旺角道 21號地下  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.320274,114.167128",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJy7ofA7gABDQRAaXpQy1ZpyM",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 加拿芬道 22 號地下",
+  "name": "7-11便利店 (棉登徑店)",
   "coords": [
    22.298219,
    114.173312
@@ -400,13 +400,13 @@
   "place": {
    "address": "尖沙咀｜九龍尖沙咀加拿芬道 22 號地下  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2982188,114.1733125",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJReOX6-sABDQRq39wPOX_rJ0",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 海港城港威商場四樓4015-6號舖",
+  "name": "7-11便利店 (海港城店)",
   "coords": [
    22.298609,
    114.16856
@@ -414,13 +414,13 @@
   "place": {
    "address": "尖沙咀｜九龍尖沙咀海港城港威商場四樓4015-6號舖  ·  HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.298609,114.16856",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJp9nK4v4BBDQRQdpH_hVMhbc",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 漆咸道南57-59號金馬倫中心地下G1B, G2, G3號舗",
+  "name": "7-11便利店 (金馬倫中心店)",
   "coords": [
    22.299317,
    114.175582
@@ -428,13 +428,13 @@
   "place": {
    "address": "尖沙咀｜九龍尖沙咀漆咸道南57-59號金馬倫中心地下G1B, G2, G3號舗  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.299317,114.175582",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJpb9EWe4ABDQRM5w8leva4k0",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 赫德道 5-9A 號德裕中心地下 1 & 2 號舖",
+  "name": "7-11便利店 (德裕中心店)",
   "coords": [
    22.297949,
    114.174195
@@ -442,13 +442,13 @@
   "place": {
    "address": "尖沙咀｜九龍尖沙咀赫德道 5-9A 號德裕中心地下 1 & 2 號舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.2979489,114.1741949",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJs12UDu4ABDQRTqpLA-j_CP4",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 金巴利道 27-33 號永利大廈地下 3 號舖",
+  "name": "7-11便利店 (金巴利道店)",
   "coords": [
    22.300823,
    114.173522
@@ -456,7 +456,7 @@
   "place": {
    "address": "尖沙咀｜九龍尖沙咀金巴利道 27-33 號永利大廈地下 3 號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3008235,114.1735215",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJpzhiLuwABDQRwjyubRYkG5k",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
@@ -470,13 +470,13 @@
   "place": {
    "address": "尖沙咀｜九龍尖沙嘴加拿分道20號 加拿芬廣場地下G21號舗",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.29972315,114.1733226",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJaRmsagABBDQRLuPrpmTnP6s",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 九龍尖沙咀廣東道33號中港城中國客運碼頭離境大堂禁區笵圍3號舖",
+  "name": "7-11便利店 中港城UG/F48-49號店",
   "coords": [
    22.300579,
    114.167785
@@ -484,13 +484,13 @@
   "place": {
    "address": "尖沙咀｜香港九龍尖沙咀廣東道33號中港城中國客運碼頭離境大堂禁區笵圍3號舖",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.300579,114.167785",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ06hR0pIABDQRyb-YSawsuyg",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 邨金華樓地下 6 號舖",
+  "name": "7-11 彩虹地鐵站",
   "coords": [
    22.33461,
    114.206708
@@ -498,13 +498,13 @@
   "place": {
    "address": "彩虹｜九龍彩虹邨金華樓地下 6 號舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.334610168556,114.20670837164",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJy1v1Sc8GBDQRp0Siihse5LM",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 芳華里 1-11 號毓華樓地下 D 舖及閣樓",
+  "name": "7-11便利店 慈雲山中心一樓店",
   "coords": [
    22.347023,
    114.201759
@@ -512,13 +512,13 @@
   "place": {
    "address": "慈雲山｜九龍慈雲山芳華里 1-11 號毓華樓地下 D 舖及閣樓  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3470235,114.2017588",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJRVYDeN0GBDQRXYvMjVs92_g",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 亞皆老街 99 號地下",
+  "name": "7-11便利店 (亞皆老街99號店)",
   "coords": [
    22.319704,
    114.171091
@@ -526,13 +526,13 @@
   "place": {
    "address": "旺角｜九龍旺角亞皆老街 99 號地下  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.319704,114.1710911",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJe0oLgsgABDQRvkgMiATxyhc",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 豉油街 60-102, 104A & 104B 號鴻都大廈地下 16 號舖",
+  "name": "7-11便利店 豉油街店",
   "coords": [
    22.316902,
    114.172583
@@ -540,13 +540,13 @@
   "place": {
    "address": "旺角｜九龍旺角豉油街 60-102, 104A & 104B 號鴻都大廈地下 16 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.316902214851,114.17258262634",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ-VYBYsYABDQRm9ZUEKwn4QY",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 西洋菜南街158號地下",
+  "name": "7-11便利店 (通菜街93號店)",
   "coords": [
    22.32045,
    114.169832
@@ -554,13 +554,13 @@
   "place": {
    "address": "旺角｜九龍西洋菜南街158號地下",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.32044968,114.1698318",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJAXsa1McABDQRyBWcA_2MeNc",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 登打士街55號鴻達樓地下1號舖連閣樓",
+  "name": "7-11便利店 (登打士街店)",
   "coords": [
    22.31575,
    114.171638
@@ -568,13 +568,13 @@
   "place": {
    "address": "旺角｜旺角登打士街55號鴻達樓地下1號舖連閣樓  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.31575,114.171638",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJddkesDoBBDQRusyBLNlLjm4",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 橫頭磡富美街 17 號橫頭磡邨宏暉中心第三層 L305-L308 號舖",
+  "name": "7-11便利店 橫頭磡村店",
   "coords": [
    22.340909,
    114.187252
@@ -582,13 +582,13 @@
   "place": {
    "address": "樂富｜九龍橫頭磡富美街 17 號橫頭磡邨宏暉中心第三層 L305-L308 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.340909261397,114.18725162744",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJTS0PPyYHBDQRYSjzmVP1gQc",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 眾方街 3 號駿發花園戲院大樓地下 H1 舖",
+  "name": "7-11便利店 (駿發花園店)",
   "coords": [
    22.310897,
    114.168911
@@ -596,13 +596,13 @@
   "place": {
    "address": "油麻地｜九龍油麻地眾方街 3 號駿發花園戲院大樓地下 H1 舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.310897326404,114.1689106822",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJf4ARacAABDQRYaeqj6dV_-8",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 香港理工大學邵逸夫綜合大樓二字樓 VA206 室",
+  "name": "7-11便利店 (理工大學店)",
   "coords": [
    22.304269,
    114.179255
@@ -610,13 +610,13 @@
   "place": {
    "address": "紅磡｜九龍紅磡香港理工大學邵逸夫綜合大樓二字樓 VA206 室  ·  HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3042688,114.1792554",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJyQwbj-gABDQRi8nIZUuImVQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 黃埔花園紫荊苑 11 期地下 G3C 號舖",
+  "name": "7-11便利店 (黃埔天地時尚坊店)",
   "coords": [
    22.305403,
    114.190382
@@ -624,13 +624,13 @@
   "place": {
    "address": "紅磡｜九龍紅磡黃埔花園紫荊苑 11 期地下 G3C 號舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.305403371659,114.19038176537",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJlz3wC-AABDQRuBbDWTga4TU",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 土瓜灣馬頭圍道37-39號紅磡商業中心地下42舖部份 (名為42C號舖)",
+  "name": "7-11便利店 (馬頭圍道店）",
   "coords": [
    22.310348,
    114.188057
@@ -638,13 +638,13 @@
   "place": {
    "address": "紅磡｜土瓜灣馬頭圍道37-39號紅磡商業中心地下42舖部份 (名為42C號舖)  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.310348,114.188057",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJcdzwzd4ABDQRJncMSE25Zlg",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 荔枝角海麗邨海麗商場地下 8 號舖",
+  "name": "7-11便利店 (海麗商場店)",
   "coords": [
    22.332474,
    114.146855
@@ -652,13 +652,13 @@
   "place": {
    "address": "長沙灣｜九龍荔枝角海麗邨海麗商場地下 8 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.332474019297,114.14685487747",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ-a4pAqsABDQRsISXgt03uUA",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 順寧道360號麗寶花園低層地下4號舖B部份",
+  "name": "7-11便利店 (麗寶花園店)",
   "coords": [
    22.340218,
    114.15523
@@ -666,13 +666,13 @@
   "place": {
    "address": "長沙灣｜九龍長沙灣順寧道360號麗寶花園低層地下4號舖B部份",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.340218,114.15523",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJUX3t5lEHBDQRg6gSxgdd7jA",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 龍翔道136號黃大仙上邨黃大仙中心北館一樓N116號舖",
+  "name": "7-11便利店 (黃大仙中心店)",
   "coords": [
    22.341977,
    114.192715
@@ -680,13 +680,13 @@
   "place": {
    "address": "黃大仙｜九龍黃大仙龍翔道136號黃大仙上邨黃大仙中心北館一樓N116號舖  ·  Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.341977275508,114.19271528721",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJcdwEgdgGBDQRx6fghhKYMNA",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 氹仔 地堡街 191號  泉褔新邨 第一期 地下 A/B座",
+  "name": "7-11 便利店",
   "coords": [
    22.152833,
    113.555172
@@ -694,7 +694,7 @@
   "place": {
    "address": "澳門｜澳門 氹仔 地堡街 191號  泉褔新邨 第一期 地下 A/B座  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.152833,113.5551722",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJF-Yp4AtxATQRagUhzModeBY",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
@@ -708,13 +708,13 @@
   "place": {
    "address": "澳門｜澳門高美士街56號南園地下E及F座  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.192488830958,113.55022162199",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJwUGqtMJ6ATQRX8LRQC5Nbb0",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 又新街 38 號恒富大廈地下 12 及 13 號舖",
+  "name": "又新街7-11有格生活智能櫃",
   "coords": [
    22.444202,
    114.031241
@@ -722,13 +722,13 @@
   "place": {
    "address": "元朗｜新界元朗又新街 38 號恒富大廈地下 12 及 13 號舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.444201993589,114.03124094009",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ27_UVKfwAzQR5oXHgmmfUOQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 康景街 3-19 號利景樓地下 F 及部份 G 舖",
+  "name": "7-Eleven 康景街",
   "coords": [
    22.444065,
    114.027755
@@ -736,13 +736,13 @@
   "place": {
    "address": "元朗｜新界元朗康景街 3-19 號利景樓地下 F 及部份 G 舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.444065,114.0277551",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJY3dwYaDwAzQRHmKh7TgfeYM",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 積輝街 14-18 號金禧花園地下 15 號舖",
+  "name": "7-Eleven (金禧花園店)",
   "coords": [
    22.374375,
    114.177381
@@ -750,13 +750,13 @@
   "place": {
    "address": "大圍｜新界大圍積輝街 14-18 號金禧花園地下 15 號舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.374374774451,114.17738109827",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJjSTmNwAHBDQRgxxrT21fUao",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 沙田大圍顯徑邨顯徑商場地下 114 號舖",
+  "name": "7-11便利店 (下徑口村店)",
   "coords": [
    22.377936,
    114.194003
@@ -764,13 +764,13 @@
   "place": {
    "address": "大圍｜新界沙田大圍顯徑邨顯徑商場地下 114 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3779356,114.194003",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJcxRzFg4HBDQRvAmLYinEHME",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 大榮里 2 & 4 號及寶鄉街 54 號行樂樓地下 A 舖",
+  "name": "7-11便利店 (大榮里店)",
   "coords": [
    22.447641,
    114.166193
@@ -778,13 +778,13 @@
   "place": {
    "address": "大埔｜新界大埔大榮里 2 & 4 號及寶鄉街 54 號行樂樓地下 A 舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.4476406,114.1661927",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ1eJsI7kJBDQRtOcKJ8hZivI",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 汀角路10號大元商場地下S4B & S4C號舖",
+  "name": "7-11便利店 (大元邨店)",
   "coords": [
    22.455932,
    114.167505
@@ -792,13 +792,13 @@
   "place": {
    "address": "大埔｜新界大埔汀角路10號大元商場地下S4B & S4C號舖  ·  HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.4559322,114.167505",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJN2iUGUgIBDQRUdJavIYL5UE",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 露屏路 10 號香港教育大學中央大樓C座地下C-P-13室",
+  "name": "7-11便利店 (香港教育大學店)",
   "coords": [
    22.469032,
    114.194227
@@ -806,13 +806,13 @@
   "place": {
    "address": "大埔｜新界大埔露屏路 10 號香港教育大學中央大樓C座地下C-P-13室  ·  HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.4690319,114.194227",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ6WEm_QYJBDQRHNwSZ8TidPs",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 新界大埔 安埔路12號 富善邨富善商場地下G010舖",
+  "name": "7-11便利店 (富善邨店)",
   "coords": [
    22.454,
    114.174864
@@ -820,13 +820,13 @@
   "place": {
    "address": "大埔｜香港新界大埔 安埔路12號 富善邨富善商場地下G010舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.454,114.174864",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJEx5bTk8IBDQRfO11u2RF9yc",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 元朗天水圍置富嘉湖第2期地下G33-G34號舖",
+  "name": "7-11便利店 (+WOO二期店)",
   "coords": [
    22.45733,
    114.004644
@@ -834,13 +834,13 @@
   "place": {
    "address": "天水圍｜新界元朗天水圍置富嘉湖第2期地下G33-G34號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.457330349132,114.0046441555",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ9b5RxofwAzQRVLUMAfFlKCw",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 天瑞路71-77號天澤邨天澤商場地下 11 號舖",
+  "name": "7-11便利店 天水圍天澤邨店",
   "coords": [
    22.468242,
    113.99884
@@ -848,13 +848,13 @@
   "place": {
    "address": "天水圍｜新界天水圍天瑞路71-77號天澤邨天澤商場地下 11 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.46824160485,113.99883985519",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJu9zUYGDwAzQRAtq5N-nu3Rg",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 屏欣苑屏欣商場地下 5 號舖",
+  "name": "7-11便利店 (天水圍站2店)",
   "coords": [
    22.446014,
    114.003427
@@ -862,13 +862,13 @@
   "place": {
    "address": "天水圍｜新界天水圍屏欣苑屏欣商場地下 5 號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.446014,114.003427",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJq7oXiH_6AzQRRiLpaz85FZg",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 新界天水圍天慈邨天慈商場地下 1D & 1E 舖",
+  "name": "7-11便利店 (天慈商場店)",
   "coords": [
    22.453187,
    114.006702
@@ -876,13 +876,13 @@
   "place": {
    "address": "天水圍｜香港新界天水圍天慈邨天慈商場地下 1D & 1E 舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.453187,114.006702",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJbwl0IYTwAzQRWYf2ScjQaAI",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 常寧路2號厚德邨厚德商場東翼地下 G41 及 G42 號舖",
+  "name": "7-11便利店 (將軍澳醫院店)",
   "coords": [
    22.317274,
    114.264773
@@ -890,13 +890,13 @@
   "place": {
    "address": "將軍澳｜新界將軍澳常寧路2號厚德邨厚德商場東翼地下 G41 及 G42 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.317274410179,114.26477283239",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJZZlNYwAFBDQRwYkbGibRa2c",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 屯門鄉事會路 83 號 V City 地下 G-12 號舖",
+  "name": "7-11便利店 (V city店)",
   "coords": [
    22.395395,
    113.973906
@@ -904,13 +904,13 @@
   "place": {
    "address": "屯門｜新界屯門屯門鄉事會路 83 號 V City 地下 G-12 號舖  ·  Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3953946,113.9739056",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJDfEs2Tz7AzQRixHRRdh0tNY",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 屯隆街 3 號屯門市廣場 2 期地下 7 號舖",
+  "name": "7-11便利店 (屯門市廣場二期店)",
   "coords": [
    22.393948,
    113.976205
@@ -918,13 +918,13 @@
   "place": {
    "address": "屯門｜新界屯門屯隆街 3 號屯門市廣場 2 期地下 7 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.393947787932,113.97620469332",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJkfdlMRD7AzQRiulpHJHDkxo",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 建榮街25號百利中心地下2A號舖",
+  "name": "7-11便利店 (百利中心店)",
   "coords": [
    22.395991,
    113.969538
@@ -932,13 +932,13 @@
   "place": {
    "address": "屯門｜新界屯門建榮街25號百利中心地下2A號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3959914,113.9695379",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJxVJeMzv7AzQRTxHsHJjCegI",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 景峰徑2號景峰花園地下 G09 及 G10 號舖",
+  "name": "7-11便利店 (景峰花園店)",
   "coords": [
    22.402352,
    113.979807
@@ -946,13 +946,13 @@
   "place": {
    "address": "屯門｜新界屯門景峰徑2號景峰花園地下 G09 及 G10 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.402352,113.979807",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJDQ4JCB_7AzQRh0gVBc3opCA",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 欣田邨欣田商場地下G21號舖",
+  "name": "7-11便利店 (欣田商場店)",
   "coords": [
    22.414941,
    113.976397
@@ -960,13 +960,13 @@
   "place": {
    "address": "屯門｜新界屯門欣田邨欣田商場地下G21號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.414941,113.976397",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ2U6J_Tj7AzQRsgHmByEyNPM",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 田景路31號良景邨良景商場1樓L101號舖",
+  "name": "7-11便利店 (良景廣場店)",
   "coords": [
    22.406396,
    113.962818
@@ -974,13 +974,13 @@
   "place": {
    "address": "屯門｜新界屯門田景路31號良景邨良景商場1樓L101號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.406396497527,113.96281778812",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJJVQ7TCj7AzQRQtR42m4DdCU",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 青山公路 1 號香港黃金海岸黃金海岸商場地下 15, 16 及 17 號舖",
+  "name": "7-11便利店 (黃金海岸店)",
   "coords": [
    22.37146,
    113.992739
@@ -988,13 +988,13 @@
   "place": {
    "address": "屯門｜新界屯門青山公路 1 號香港黃金海岸黃金海岸商場地下 15, 16 及 17 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3714599,113.9927393",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ08jc8nD7AzQReAXjtPBILRQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 深井青山公路深井段41-63號麗都花園地下 2 號舖",
+  "name": "7-11便利店 (麗都花園店)",
   "coords": [
    22.366195,
    114.058911
@@ -1002,13 +1002,13 @@
   "place": {
    "address": "屯門｜新界深井青山公路深井段41-63號麗都花園地下 2 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.36619456212,114.05891060829",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJrzqTvlz5AzQRDVeWcmBAjN0",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 迎東邨迎東商場地下18號舖",
+  "name": "7-11便利店 (迎東商場店)",
   "coords": [
    22.296736,
    113.953319
@@ -1016,13 +1016,13 @@
   "place": {
    "address": "東涌｜新界東涌迎東邨迎東商場地下18號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.296736,113.953319",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJJTisypjjAzQRB6pNaKb4evc",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 大涌橋路 20-30 號河畔花園地下 36 號舖",
+  "name": "7-11便利店 (河畔花園店)",
   "coords": [
    22.381463,
    114.195569
@@ -1030,13 +1030,13 @@
   "place": {
    "address": "沙田｜新界沙田大涌橋路 20-30 號河畔花園地下 36 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.381463241573,114.1955691576",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJeRFrQVIGBDQRM_PZ2FIxCsY",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 沙田頭路29號 新田圍邨榮圍樓4樓5號",
+  "name": "7-11便利店 (新田圍邨店)",
   "coords": [
    22.370367,
    114.18526
@@ -1044,13 +1044,13 @@
   "place": {
    "address": "沙田｜新界沙田沙田頭路29號 新田圍邨榮圍樓4樓5號  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.370367,114.18526",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJsQCfLwEHBDQRK8zGMfbJBJg",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 新界沙田禾輋邨厚和樓3樓209  &210舖",
+  "name": "7-11便利店 (禾輋廣場店)",
   "coords": [
    22.388096,
    114.194507
@@ -1058,13 +1058,13 @@
   "place": {
    "address": "沙田｜香港新界沙田禾輋邨厚和樓3樓209  &210舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.388096,114.194507",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJG6cuZEwGBDQRaNtzDIJtTvg",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 新界粉嶺新運路 38 號祥華邨祥華商場地下 G09 號舖",
+  "name": "7-11便利店 (祥華商場店)",
   "coords": [
    22.493104,
    114.141192
@@ -1072,13 +1072,13 @@
   "place": {
    "address": "粉嶺｜香港新界粉嶺新運路 38 號祥華邨祥華商場地下 G09 號舖  ·  24小時 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.493104,114.141192",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJpYEonB_2AzQR0DI0MooDjV8",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 67-95號荃灣街市街荃灣千色匯地下G8號舖",
+  "name": "7-11便利店 (荃灣千色匯店)",
   "coords": [
    22.371408,
    114.118897
@@ -1086,13 +1086,13 @@
   "place": {
    "address": "荃灣｜新界荃灣 67-95號荃灣街市街荃灣千色匯地下G8號舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.371408324862,114.11889687181",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJq5UiuD35AzQRwek7JqdoSSo",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 白田霸街45號 The Mills 地下G15號舖",
+  "name": "7-11便利店 (南豐紗廠店)",
   "coords": [
    22.375074,
    114.110169
@@ -1100,13 +1100,13 @@
   "place": {
    "address": "荃灣｜新界荃灣白田霸街45號 The Mills 地下G15號舖",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.375074,114.110169",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJn46CO_D4AzQRQhbaIgF_Q8U",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 荔景山路 180 號賢麗苑商場地下 1 號舖",
+  "name": "7-11便利店 (賢麗苑店)",
   "coords": [
    22.348617,
    114.126467
@@ -1114,13 +1114,13 @@
   "place": {
    "address": "葵涌｜新界葵涌荔景山路 180 號賢麗苑商場地下 1 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.348617137852,114.12646740675",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJz8WlsbD4AzQRxlEDp1nRRlQ",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 普通道 11, 15-15A 號地下C & D及部份B舖",
+  "name": "7-11便利店 (普通道店)",
   "coords": [
    22.38061,
    114.270862
@@ -1128,13 +1128,13 @@
   "place": {
    "address": "西貢｜新界西貢普通道 11, 15-15A 號地下C & D及部份B舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3806097,114.2708623",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJrReQjb0FBDQR4BWcXjXCK5Q",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 福民路 74 號合益樓 C 及 D 舖地下及閣樓",
+  "name": "7-11便利店 (福民路店)",
   "coords": [
    22.381835,
    114.273424
@@ -1142,13 +1142,13 @@
   "place": {
    "address": "西貢｜新界西貢福民路 74 號合益樓 C 及 D 舖地下及閣樓  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3818346,114.2734238",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJ66XF4ZcFBDQRnq6oK5BegUE",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 清水灣大學道1號香港科技大學學術大樓LG5 樓層LG5302 & LG5302A號舗",
+  "name": "7-11便利店 香港科技大學店",
   "coords": [
    22.336528,
    114.265776
@@ -1156,7 +1156,7 @@
   "place": {
    "address": "西貢｜西貢清水灣大學道1號香港科技大學學術大樓LG5 樓層LG5302 & LG5302A號舗  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.33652767,114.265776",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJmUcw9moEBDQR4Q3Ba_ayAJs",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
@@ -1170,13 +1170,13 @@
   "place": {
    "address": "香港國際機場｜大嶼山香港國際機場一號客運大樓第五層抵港大堂 5T058 舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.3149715,113.9340063",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJW9TL9NziAzQRq23GWmOcvDE",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 沙田馬鞍山海柏花園馬鞍山廣場第二層 201-202 號舖",
+  "name": "7-11 便利店 海柏花園",
   "coords": [
    22.425154,
    114.231277
@@ -1184,13 +1184,13 @@
   "place": {
    "address": "馬鞍山｜新界沙田馬鞍山海柏花園馬鞍山廣場第二層 201-202 號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.425154249229,114.23127740622",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJlfgmDLEIBDQRG72tCQY8IMk",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 沙安街23號利安邨 利安商場地下G3號舖",
+  "name": "7-11便利店 (利安商場店)",
   "coords": [
    22.426644,
    114.240932
@@ -1198,13 +1198,13 @@
   "place": {
    "address": "馬鞍山｜新界馬鞍山沙安街23號利安邨 利安商場地下G3號舖  ·  24小時 · Slurpee 思樂冰 · HotShot",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.42664446,114.2409322",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJN7Q_fUsPBDQRobG8zffAjIM",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 鞍誠街 8 號新港城 N, P, Q, R 座地下 30及32 號舖",
+  "name": "7-11便利店 (新港城中心三期店)",
   "coords": [
    22.422691,
    114.23148
@@ -1212,13 +1212,13 @@
   "place": {
    "address": "馬鞍山｜新界馬鞍山鞍誠街 8 號新港城 N, P, Q, R 座地下 30及32 號舖  ·  24小時",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.4226905,114.2314804",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJN_bm6LEIBDQRm6s4hKDI8Zk",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
  },
  {
-  "name": "7-11 愉景灣愉景廣場 C座 地下G67 & G67A號舖",
+  "name": "7-11便利店 (愉景廣場店)",
   "coords": [
    22.295701,
    114.016906
@@ -1226,7 +1226,7 @@
   "place": {
    "address": "大嶼山｜香港大嶼山愉景灣愉景廣場 C座 地下G67 & G67A號舖  ·  24小時 · Slurpee 思樂冰",
    "icon": 1607,
-   "url": "https://www.google.com/maps/search/?api=1&query=22.295701,114.016906",
+   "url": "https://www.google.com/maps/place/?q=place_id:ChIJyQppvbv9AzQRIY-e886AOOc",
    "category": "FoodBeverage",
    "color": "#F4B400"
   }
