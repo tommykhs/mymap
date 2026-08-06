@@ -56,9 +56,12 @@ MyMapData.loadLibrary().then(maps=>{
      '<div class="body"><h2>'+(m.title||m.id)+'</h2>'+
      (m.desc?'<div class="desc">'+m.desc+'</div>':'')+
      '<div class="stats">'+
-       '<span class="s"><span class="mi">route</span>'+(m.routes||0)+'</span>'+
-       '<span class="s"><span class="mi">layers</span>'+(m.groups||0)+'</span>'+
-       '<span class="s"><span class="mi">straighten</span>'+km+' km</span>'+
+       // pins-only maps (no routes) show a pin count instead of 0 routes / 0 km
+       (m.routes
+         ? '<span class="s"><span class="mi">route</span>'+m.routes+'</span>'+
+           '<span class="s"><span class="mi">layers</span>'+(m.groups||0)+'</span>'+
+           '<span class="s"><span class="mi">straighten</span>'+km+' km</span>'
+         : '<span class="s"><span class="mi">location_on</span>'+(m.pins||0)+'</span>')+
      '</div></div>';
    grid.appendChild(a);
  });
