@@ -844,5 +844,130 @@
       "icon": 1599,
       "category": "BuildingCulture"
     }
+  },
+  {
+    "name": "尾道 Station Inn the Urashima",
+    "coords": [
+      34.404474,
+      133.1928276
+    ],
+    "place": {
+      "address": "〒722-0036 広島県尾道市東御所町１−１０ 2階",
+      "website": "https://www.hpdsp.net/stationinnurashima/hw/hwp3100/hww3101.do?yadNo=397917",
+      "url": "https://maps.google.com/?cid=1342098697871387683&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#757575",
+      "icon": 1602,
+      "category": "Accommodation",
+      "rating": 4.2
+    }
+  },
+  {
+    "name": "呉 Otomachi Kanran（甘藍）",
+    "coords": [
+      34.2318681,
+      132.62147
+    ],
+    "place": {
+      "address": "〒737-0125 広島県呉市広本町１丁目１１−２７",
+      "website": "https://kanran-hiro.jp/",
+      "url": "https://maps.google.com/?cid=11560720015120808445&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#757575",
+      "icon": 1602,
+      "category": "Accommodation",
+      "rating": 4.7
+    }
+  },
+  {
+    "name": "大三島 Tomarigi 素泊り茶房トマリギ",
+    "coords": [
+      34.2498704,
+      132.99692779999998
+    ],
+    "place": {
+      "address": "〒794-1304 愛媛県今治市大三島町宮浦８８",
+      "website": "https://oomishimatomarigi.wixsite.com/tomarigi",
+      "url": "https://maps.google.com/?cid=5240601790265373190&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#757575",
+      "icon": 1602,
+      "category": "Accommodation",
+      "rating": 4.9
+    }
+  },
+  {
+    "name": "生口島 Bed&Cafe Onzo (瀬戸田)",
+    "coords": [
+      34.304913299999996,
+      133.0865028
+    ],
+    "place": {
+      "address": "〒722-2411 広島県尾道市瀬戸田町瀬戸田４７４−１",
+      "website": "https://www.onzo-setoda.com/",
+      "url": "https://maps.google.com/?cid=16111668974630212113&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#757575",
+      "icon": 1602,
+      "category": "Accommodation",
+      "rating": 4.8
+    }
+  },
+  {
+    "name": "弓削島 Guesthouse tokonoma",
+    "coords": [
+      34.2582874,
+      133.20604649999999
+    ],
+    "place": {
+      "address": "〒794-2506 愛媛県越智郡上島町弓削下弓削２９９",
+      "website": "http://tokonoma.org/",
+      "url": "https://maps.google.com/?cid=11334178267016313318&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#757575",
+      "icon": 1602,
+      "category": "Accommodation",
+      "rating": 4.8
+    }
+  },
+  {
+    "name": "岡山駅前ユニバーサルホテル",
+    "coords": [
+      34.660726499999996,
+      133.9202595
+    ],
+    "place": {
+      "address": "〒700-0903 岡山県岡山市北区幸町９−６",
+      "website": "http://www.universal-group.co.jp/",
+      "url": "https://maps.google.com/?cid=3058350553293291842&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#757575",
+      "icon": 1602,
+      "category": "Accommodation",
+      "rating": 3.1
+    }
+  },
+  {
+    "name": "WeBase 高松",
+    "coords": [
+      34.3417983,
+      134.0507984
+    ],
+    "place": {
+      "address": "〒760-0052 香川県高松市瓦町１丁目２−３",
+      "website": "https://we-base.jp/takamatsu/",
+      "url": "https://maps.google.com/?cid=12779366808462679656&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#757575",
+      "icon": 1602,
+      "category": "Accommodation",
+      "rating": 4.2
+    }
+  },
+  {
+    "name": "広島空港",
+    "coords": [
+      34.437295999999996,
+      132.92062289999998
+    ],
+    "place": {
+      "address": "〒729-0416 広島県三原市本郷町善入寺６４−３１",
+      "rating": 3.7,
+      "website": "http://www.hij.airport.jp/",
+      "url": "https://maps.google.com/?cid=11446563014474813844&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3"
+    }
   }
 ]
