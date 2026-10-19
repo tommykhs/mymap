@@ -539,6 +539,7 @@
   <button id="aon"    title="Show all"><span class="material-symbols-outlined">visibility</span></button>
   <button id="aoff"   title="Hide all"><span class="material-symbols-outlined">visibility_off</span></button>
   <button id="grpToggle" title="Expand / collapse all"><span class="material-symbols-outlined">unfold_less</span></button>
+  <button id="routeNewBtn2" title="Create a new route (draw on the map)"><span class="material-symbols-outlined">route</span></button>
   <button id="exportBtn" title="Export (KML / KMZ)"><span class="material-symbols-outlined">download</span></button>
   <button id="adminBtn" title="Save pins to repo (admin)" style="display:none"><span class="material-symbols-outlined">cloud_upload</span></button>
  </div>
@@ -3135,6 +3136,8 @@ function previewPlace(pl,nm){
  if(undoB) undoB.onclick=()=>window._doUndo && window._doUndo();
  if(redoB) redoB.onclick=()=>window._doRedo && window._doRedo();
  if(newB)  newB.onclick =()=>window.routeCreateNew && window.routeCreateNew();
+ const newB2=document.getElementById('routeNewBtn2');
+ if(newB2) newB2.onclick=()=>window.routeCreateNew && window.routeCreateNew();
  if(typeof _updateUndoBtns==='function') _updateUndoBtns();
 })();
 
