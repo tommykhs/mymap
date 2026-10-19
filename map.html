@@ -121,6 +121,12 @@
    border:1px solid var(--bd)!important;font-size:11px!important;padding:3px 8px!important}
  .rt-tip:before{border-top-color:var(--bd)!important}
  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--bg2);color:var(--fg)}
+ /* Visual separation from the (often dark) basemap: crisp border, strong drop
+    shadow + a subtle highlight ring. Works in both light + dark modes. */
+ .leaflet-popup-content-wrapper{border:1px solid var(--bd);
+   box-shadow:0 10px 28px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04)}
+ .leaflet-popup-tip{border:1px solid var(--bd);
+   box-shadow:0 4px 10px rgba(0,0,0,.4)}
  /* keep Leaflet's own width sizing (min/maxWidth from bindPopup); only allow CJK
     long names to wrap naturally — DO NOT force width:auto or word-break:break-word
     on CJK (that collapses the popup to 1 character per line). */
