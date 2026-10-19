@@ -69,13 +69,11 @@
  .panel-reopen .material-symbols-outlined{font-size:20px}
  .pad{padding:10px 12px}
  .pad .titlebar{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
- .hdr-right{display:flex;align-items:center;gap:4px;flex:0 0 auto}
- .build-stamp{display:inline-flex;align-items:center;gap:3px;color:var(--mut);font-size:11px;line-height:1;padding:3px 7px;border-radius:10px;background:var(--bg2);user-select:none;cursor:default;white-space:nowrap}
- .build-stamp .material-symbols-outlined{font-size:14px}
- .hdr-icon{background:none;border:none;color:var(--mut);cursor:pointer;padding:2px;line-height:0;border-radius:4px;display:inline-flex;align-items:center;justify-content:center}
- .hdr-icon:hover{color:var(--fg);background:var(--hv)}
- .hdr-icon .material-symbols-outlined{font-size:20px}
- .hdr-icon.spinning .material-symbols-outlined{animation:cacheSpin 0.8s linear infinite}
+ .app-header .build-stamp{color:var(--mut);font-size:12px;line-height:1;padding:4px 10px;border-radius:12px;background:var(--bg2);user-select:none;cursor:pointer;white-space:nowrap}
+ .app-header .hdr-icon{background:none;border:none;color:var(--mut);cursor:pointer;padding:4px;line-height:0;border-radius:6px;display:inline-flex;align-items:center;justify-content:center}
+ .app-header .hdr-icon:hover{color:var(--fg);background:var(--hv)}
+ .app-header .hdr-icon .material-symbols-outlined{font-size:20px}
+ .app-header .hdr-icon.spinning .material-symbols-outlined{animation:cacheSpin 0.8s linear infinite}
  @keyframes cacheSpin{to{transform:rotate(-360deg)}}
  .pad h1{margin:0;font-size:16px;color:var(--fg);flex:1}
  .home-link{display:inline-flex;align-items:center;color:var(--mut);text-decoration:none;
@@ -506,11 +504,7 @@
 <div class="panel" id="panel"><div class="pad">
  <div class="titlebar">
   <h1 id="mapTitle">Loading…</h1>
-  <div class="hdr-right">
-   <span id="buildStamp" class="build-stamp" title="Build time of the data currently served" hidden><span class="material-symbols-outlined">schedule</span><span id="buildStampText">…</span></span>
-   <button id="purgeCacheBtn" class="hdr-icon" title="Purge browser cache and reload fresh from server"><span class="material-symbols-outlined">cached</span></button>
-   <button id="panelCollapse" class="panel-collapse" title="Close list"><span class="material-symbols-outlined">left_panel_close</span></button>
-  </div>
+  <button id="panelCollapse" class="panel-collapse" title="Close list"><span class="material-symbols-outlined">left_panel_close</span></button>
  </div>
  <p class="sub" id="mapDesc" hidden></p>
  <div class="counts" id="counts"></div>
@@ -3217,13 +3211,25 @@ function previewPlace(pl,nm){
  };
 })();
 
-// ---- Build-time pill + purge-cache button (header right) ----
+// ---- Build-time + purge-cache button (sticky site header, rightmost) ----
 // Build time = Last-Modified header on the data file this map actually served from.
-// Purge = unregister any SW, delete all `caches` entries, hard-reload with a cache-bust.
+// Purge = unregister any SW, delete all `caches` entries, hard-reload with a cache-bust,
+//        + offer to drop this map's localStorage override so you reload clean from disk.
 (function(){
- const pill=document.getElementById('buildStamp'), pillText=document.getElementById('buildStampText');
- const btn=document.getElementById('purgeCacheBtn');
- if(!pill || !btn) return;
+ const host=document.getElementById('app-header'); if(!host) return;
+ // Build the two controls and append so they land at the far-right (header.sep has flex:1).
+ const btn=document.createElement('button');
+ btn.id='purgeCacheBtn'; btn.className='hdr-icon';
+ btn.title='Purge browser cache and reload fresh from server';
+ btn.innerHTML='<span class="material-symbols-outlined">cached</span>';
+ const pillText=document.createElement('span');
+ pillText.id='buildStampText';
+ const pill=document.createElement('span');
+ pill.id='buildStamp'; pill.className='build-stamp'; pill.hidden=true;
+ pill.title='Build time of the data currently served (click to re-check)';
+ pill.appendChild(pillText);
+ host.appendChild(btn);
+ host.appendChild(pill);
  let BUILD_MS=0;
  function fmtAbs(ms){ try{ return new Date(ms).toLocaleString(); }catch(e){ return new Date(ms).toISOString(); } }
  function fmtRel(ms){
@@ -3237,7 +3243,7 @@ function previewPlace(pl,nm){
    if(s<60*60*24*7) return Math.round(s/86400)+'d ago';
    const d=new Date(ms); return (d.getMonth()+1)+'/'+d.getDate();
  }
- function paint(){ if(!BUILD_MS) return; pillText.textContent='built '+fmtRel(BUILD_MS); pill.title='Current data built '+fmtAbs(BUILD_MS); }
+ function paint(){ if(!BUILD_MS) return; pillText.textContent=fmtRel(BUILD_MS); pill.title='Data served from this build: '+fmtAbs(BUILD_MS); }
  async function probe(){
    // On localhost the dev-server's Last-Modified reflects local disk writes, which is fine too.
    const url='data/maps/'+MAP_ID+'/pins.json?_t='+Date.now();
@@ -3250,7 +3256,6 @@ function previewPlace(pl,nm){
  probe();
  setInterval(paint, 60*1000);
  // Allow click on the pill to re-probe (useful right after a push)
- pill.style.cursor='pointer';
  pill.addEventListener('click', probe);
  btn.onclick=async ()=>{
    if(btn.classList.contains('spinning')) return;
