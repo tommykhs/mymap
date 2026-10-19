@@ -3254,6 +3254,18 @@ function previewPlace(pl,nm){
  pill.addEventListener('click', probe);
  btn.onclick=async ()=>{
    if(btn.classList.contains('spinning')) return;
+   // Decide upfront whether to also drop this map's localStorage override.
+   // If the user has NO local diffs — safe to always drop (that's the usual case).
+   // If they DO — confirm, because the diff might be real in-progress edits.
+   let dropLocal=true;
+   try{
+     const dirty=pinDiffCount()+routeDiffCount();
+     if(dirty>0){
+       dropLocal=confirm('You have '+dirty+' unsaved local change(s) for this map.\n\n'
+         +'OK = discard them AND purge cache (reload fresh from server).\n'
+         +'Cancel = keep local edits, only purge browser cache.');
+     }
+   }catch(e){}
    btn.classList.add('spinning');
    try{
      // 1. Unregister any service worker (we don't ship one, but safe to try).
@@ -3266,7 +3278,15 @@ function previewPlace(pl,nm){
        const keys=await caches.keys().catch(()=>[]);
        for(const k of keys){ try{ await caches.delete(k); }catch(e){} }
      }
-     // 3. Reload with a cache-bust so the HTML/JS themselves re-fetch from origin.
+     // 3. Optionally clear this map's localStorage override so pins/routes reload from disk.
+     if(dropLocal){
+       try{
+         localStorage.removeItem(PIN_KEY);
+         localStorage.removeItem(RKEY);
+         localStorage.removeItem(RDEL_KEY);
+       }catch(e){}
+     }
+     // 4. Reload with a cache-bust so the HTML/JS themselves re-fetch from origin.
      //    Preserve existing query params (map id, etc).
      const u=new URL(location.href);
      u.searchParams.set('_cb', Date.now().toString(36));
