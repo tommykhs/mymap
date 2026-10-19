@@ -69,6 +69,14 @@
  .panel-reopen .material-symbols-outlined{font-size:20px}
  .pad{padding:10px 12px}
  .pad .titlebar{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+ .hdr-right{display:flex;align-items:center;gap:4px;flex:0 0 auto}
+ .build-stamp{display:inline-flex;align-items:center;gap:3px;color:var(--mut);font-size:11px;line-height:1;padding:3px 7px;border-radius:10px;background:var(--bg2);user-select:none;cursor:default;white-space:nowrap}
+ .build-stamp .material-symbols-outlined{font-size:14px}
+ .hdr-icon{background:none;border:none;color:var(--mut);cursor:pointer;padding:2px;line-height:0;border-radius:4px;display:inline-flex;align-items:center;justify-content:center}
+ .hdr-icon:hover{color:var(--fg);background:var(--hv)}
+ .hdr-icon .material-symbols-outlined{font-size:20px}
+ .hdr-icon.spinning .material-symbols-outlined{animation:cacheSpin 0.8s linear infinite}
+ @keyframes cacheSpin{to{transform:rotate(-360deg)}}
  .pad h1{margin:0;font-size:16px;color:var(--fg);flex:1}
  .home-link{display:inline-flex;align-items:center;color:var(--mut);text-decoration:none;
    padding:2px;border-radius:4px}
@@ -498,7 +506,11 @@
 <div class="panel" id="panel"><div class="pad">
  <div class="titlebar">
   <h1 id="mapTitle">Loading…</h1>
-  <button id="panelCollapse" class="panel-collapse" title="Close list"><span class="material-symbols-outlined">left_panel_close</span></button>
+  <div class="hdr-right">
+   <span id="buildStamp" class="build-stamp" title="Build time of the data currently served" hidden><span class="material-symbols-outlined">schedule</span><span id="buildStampText">…</span></span>
+   <button id="purgeCacheBtn" class="hdr-icon" title="Purge browser cache and reload fresh from server"><span class="material-symbols-outlined">cached</span></button>
+   <button id="panelCollapse" class="panel-collapse" title="Close list"><span class="material-symbols-outlined">left_panel_close</span></button>
+  </div>
  </div>
  <p class="sub" id="mapDesc" hidden></p>
  <div class="counts" id="counts"></div>
@@ -3202,6 +3214,68 @@ function previewPlace(pl,nm){
      window.__mmlog('local-save: ok '+what.join(' + '));
    }catch(e){ setMsg('Local save failed: '+(e.message||e),true); window.__mmlog('local-save: '+e); }
    finally{ localBtn.disabled=false; }
+ };
+})();
+
+// ---- Build-time pill + purge-cache button (header right) ----
+// Build time = Last-Modified header on the data file this map actually served from.
+// Purge = unregister any SW, delete all `caches` entries, hard-reload with a cache-bust.
+(function(){
+ const pill=document.getElementById('buildStamp'), pillText=document.getElementById('buildStampText');
+ const btn=document.getElementById('purgeCacheBtn');
+ if(!pill || !btn) return;
+ let BUILD_MS=0;
+ function fmtAbs(ms){ try{ return new Date(ms).toLocaleString(); }catch(e){ return new Date(ms).toISOString(); } }
+ function fmtRel(ms){
+   const s=Math.max(0,(Date.now()-ms)/1000);
+   if(s<45) return 'just now';
+   if(s<90) return '1m ago';
+   if(s<60*45) return Math.round(s/60)+'m ago';
+   if(s<60*90) return '1h ago';
+   if(s<60*60*22) return Math.round(s/3600)+'h ago';
+   if(s<60*60*36) return '1d ago';
+   if(s<60*60*24*7) return Math.round(s/86400)+'d ago';
+   const d=new Date(ms); return (d.getMonth()+1)+'/'+d.getDate();
+ }
+ function paint(){ if(!BUILD_MS) return; pillText.textContent='built '+fmtRel(BUILD_MS); pill.title='Current data built '+fmtAbs(BUILD_MS); }
+ async function probe(){
+   // On localhost the dev-server's Last-Modified reflects local disk writes, which is fine too.
+   const url='data/maps/'+MAP_ID+'/pins.json?_t='+Date.now();
+   try{
+     const r=await fetch(url,{method:'HEAD',cache:'no-store'});
+     const lm=r.headers.get('Last-Modified');
+     if(lm){ const ms=Date.parse(lm); if(!isNaN(ms)){ BUILD_MS=ms; pill.hidden=false; paint(); } }
+   }catch(e){}
+ }
+ probe();
+ setInterval(paint, 60*1000);
+ // Allow click on the pill to re-probe (useful right after a push)
+ pill.style.cursor='pointer';
+ pill.addEventListener('click', probe);
+ btn.onclick=async ()=>{
+   if(btn.classList.contains('spinning')) return;
+   btn.classList.add('spinning');
+   try{
+     // 1. Unregister any service worker (we don't ship one, but safe to try).
+     if(navigator.serviceWorker && navigator.serviceWorker.getRegistrations){
+       const regs=await navigator.serviceWorker.getRegistrations().catch(()=>[]);
+       for(const reg of regs){ try{ await reg.unregister(); }catch(e){} }
+     }
+     // 2. Delete every Cache Storage bucket (fetched-asset cache).
+     if(window.caches && caches.keys){
+       const keys=await caches.keys().catch(()=>[]);
+       for(const k of keys){ try{ await caches.delete(k); }catch(e){} }
+     }
+     // 3. Reload with a cache-bust so the HTML/JS themselves re-fetch from origin.
+     //    Preserve existing query params (map id, etc).
+     const u=new URL(location.href);
+     u.searchParams.set('_cb', Date.now().toString(36));
+     // Give the user a moment to see the spin, then reload.
+     setTimeout(()=>{ location.replace(u.toString()); }, 250);
+   }catch(e){
+     btn.classList.remove('spinning');
+     alert('Purge failed: '+(e.message||e));
+   }
  };
 })();
 
