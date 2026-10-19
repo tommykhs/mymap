@@ -496,7 +496,7 @@
   <button id="aon"    title="Show all"><span class="material-symbols-outlined">visibility</span></button>
   <button id="aoff"   title="Hide all"><span class="material-symbols-outlined">visibility_off</span></button>
   <button id="grpToggle" title="Expand / collapse all"><span class="material-symbols-outlined">unfold_less</span></button>
-  <button id="exportBtn" title="Export (KML / KMZ)"><span class="material-symbols-outlined">ios_share</span></button>
+  <button id="exportBtn" title="Export (KML / KMZ)"><span class="material-symbols-outlined">download</span></button>
   <button id="adminBtn" title="Save pins to repo (admin)" style="display:none"><span class="material-symbols-outlined">cloud_upload</span></button>
  </div>
  <div id="adminBox" class="searchbox" hidden>
@@ -3228,7 +3228,8 @@ window.dlRoute=dlRoute;
    let dh=bits.join('<br/>');
    if(pl.website) dh+=(dh?'<br/>':'')+`<a href="${esc(pl.website)}">Website</a>`;
    if(pl.url)     dh+=(dh?'<br/>':'')+`<a href="${esc(pl.url)}">View in Google Maps &#8599;</a>`;
-   const ed=`<ExtendedData><Data name="category"><value>${cdata(PIN_LAYER)}</value></Data></ExtendedData>`;
+   const cat=pl.category||PIN_LAYER;
+   const ed=`<ExtendedData><Data name="category"><value>${cdata(cat)}</value></Data></ExtendedData>`;
    return `<Placemark><name>${esc(p.name||'')}</name>`
      +(dh?`<description>${cdata(dh)}</description>`:'')
      +`<styleUrl>#${pinStyleId(p)}</styleUrl>${ed}`
@@ -3249,7 +3250,11 @@ window.dlRoute=dlRoute;
    let styleDefs='';
    if(pins&&pins.length){
      styleDefs=pinStyleDefs(pins);
-     body+=`<Folder><name>${esc(PIN_LAYER)}</name>`+pins.map(pinKML).join('')+`</Folder>`;
+     // Split pins by place.category into separate folders (= Google My Maps layers)
+     const byCat={}; pins.forEach(p=>{const c=(p.place||{}).category||PIN_LAYER;(byCat[c]=byCat[c]||[]).push(p);});
+     Object.keys(byCat).forEach(c=>{
+       body+=`<Folder><name>${esc(c)}</name>`+byCat[c].map(pinKML).join('')+`</Folder>`;
+     });
    }
    return `<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2">`
      +`<Document><name>MyMap export</name>${styleDefs}${body}</Document></kml>`;
@@ -3265,9 +3270,9 @@ window.dlRoute=dlRoute;
        .map(c=>PINS.find(p=>p.id===+c.dataset.id)).filter(Boolean);
  function updateMeter(){
    const idx=selIdx(), pins=selPins();
-   // pins form one extra "My places" layer; each pin is 1 feature + 1 point
+   // pins become one layer per place.category (fallback "My places"); each pin is 1 feature + 1 point
    const per={}; idx.forEach(i=>{const g=R[i].group;per[g]=(per[g]||0)+1;});
-   if(pins.length) per[PIN_LAYER]=pins.length;
+   pins.forEach(p=>{const c=(p.place||{}).category||PIN_LAYER;per[c]=(per[c]||0)+1;});
    const layers=Object.keys(per).length, feat=idx.length+pins.length;
    const pts=idx.reduce((s,i)=>s+ptsOf(R[i]),0)+pins.length;
    const maxPer=layers?Math.max(...Object.values(per)):0;
