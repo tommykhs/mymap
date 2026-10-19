@@ -12,9 +12,12 @@
 <link rel="stylesheet" href="header.css"/>
 <style>
  :root{color-scheme:dark;--bg:#1b1f24;--bg2:#23282f;--fg:#e6e6e6;--mut:#9aa4b0;--bd:#3a414b;--ac:#60a5fa;--hv:#2c333d;
-   --surface:rgba(27,31,36,.95);--surface2:rgba(27,31,36,.96);--mapbg:#0e1116;--overlay:rgba(14,17,22,.85)}
+   --surface:rgba(27,31,36,.95);--surface2:rgba(27,31,36,.96);--mapbg:#0e1116;--overlay:rgba(14,17,22,.85);
+   /* popup surface is deliberately brighter than --bg2 so it lifts off Google's dark basemap */
+   --popup-bg:#323a46;--popup-bd:#55606f}
  html.light{--bg:#eef1f5;--bg2:#ffffff;--fg:#1b2430;--mut:#5b6675;--bd:#d3d8e0;--ac:#1d4ed8;--hv:#e8ecf2;
-   --surface:rgba(255,255,255,.96);--surface2:rgba(255,255,255,.97);--mapbg:#e8eaed;--overlay:rgba(245,247,250,.92)}
+   --surface:rgba(255,255,255,.96);--surface2:rgba(255,255,255,.97);--mapbg:#e8eaed;--overlay:rgba(245,247,250,.92);
+   --popup-bg:#ffffff;--popup-bd:#c4ccd6}
  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);
    font-family:-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif}
  #map{position:absolute;top:44px;left:0;right:0;bottom:0;background:var(--mapbg)}
@@ -120,13 +123,13 @@
  .rt-tip{background:var(--surface)!important;color:var(--fg)!important;
    border:1px solid var(--bd)!important;font-size:11px!important;padding:3px 8px!important}
  .rt-tip:before{border-top-color:var(--bd)!important}
- .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--bg2);color:var(--fg)}
- /* Visual separation from the (often dark) basemap: crisp border, strong drop
-    shadow + a subtle highlight ring. Works in both light + dark modes. */
- .leaflet-popup-content-wrapper{border:1px solid var(--bd);
-   box-shadow:0 10px 28px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04)}
- .leaflet-popup-tip{border:1px solid var(--bd);
-   box-shadow:0 4px 10px rgba(0,0,0,.4)}
+ .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--popup-bg);color:var(--fg)}
+ /* Visual separation from the (often dark) basemap: distinct brighter surface,
+    crisp border, strong drop shadow + a highlight ring. Works both modes. */
+ .leaflet-popup-content-wrapper{border:1px solid var(--popup-bd);
+   box-shadow:0 12px 32px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.08)}
+ .leaflet-popup-tip{border:1px solid var(--popup-bd);
+   box-shadow:0 4px 12px rgba(0,0,0,.5)}
  /* keep Leaflet's own width sizing (min/maxWidth from bindPopup); only allow CJK
     long names to wrap naturally — DO NOT force width:auto or word-break:break-word
     on CJK (that collapses the popup to 1 character per line). */
