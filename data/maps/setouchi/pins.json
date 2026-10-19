@@ -972,5 +972,275 @@
       "icon": 1504,
       "category": "Transport"
     }
+  },
+  {
+    "name": "洲江港（Suenoe Port・生口島）",
+    "coords": [
+      34.304759,
+      133.0842671
+    ],
+    "place": {
+      "address": "〒722-2411 広島県尾道市瀬戸田町瀬戸田",
+      "website": "",
+      "url": "https://maps.google.com/?cid=17846032586921915809&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "小漕港（Okogi Port・岩城島）",
+    "coords": [
+      34.2788411,
+      133.144938
+    ],
+    "place": {
+      "address": "〒794-2410 愛媛県越智郡上島町岩城４５３４",
+      "website": "https://www.town.kamijima.lg.jp/site/access/5637.html",
+      "url": "https://maps.google.com/?cid=7731608295404059061&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "上弓削港（Kamiyuge Port・弓削島）",
+    "coords": [
+      34.2772378,
+      133.2098671
+    ],
+    "place": {
+      "address": "〒794-2503 弓削上弓削",
+      "website": "",
+      "url": "https://maps.google.com/?cid=617850982779053627&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "家老渡港（Karouto Port・因島）",
+    "coords": [
+      34.2794038,
+      133.1987594
+    ],
+    "place": {
+      "address": "〒722-2322 広島県尾道市因島三庄町",
+      "website": "",
+      "url": "https://maps.google.com/?cid=10220897109767884400&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "兼吉港（Kaneyoshi・向島）",
+    "coords": [
+      34.4068599,
+      133.2005908
+    ],
+    "place": {
+      "address": "〒722-0035 広島県尾道市土堂２丁目８−６",
+      "website": "https://www.city.onomichi.hiroshima.jp/soshiki/32/65681.html",
+      "url": "https://maps.google.com/?cid=17680053292059484027&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "土堂港（Dodō・尾道）",
+    "coords": [
+      34.4051116,
+      133.20271169999998
+    ],
+    "place": {
+      "address": "〒722-0073 広島県尾道市向島町１−４",
+      "website": "https://www.city.onomichi.hiroshima.jp/soshiki/32/65681.html",
+      "url": "https://maps.google.com/?cid=2547896103264235990&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "岡村港（Okamura Port）",
+    "coords": [
+      34.1845019,
+      132.8839104
+    ],
+    "place": {
+      "address": "〒794-1101 愛媛県今治市関前岡村",
+      "website": "",
+      "url": "https://maps.google.com/?cid=3830414446817202668&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "宗方港（Munakata Port・大三島）",
+    "coords": [
+      34.2035698,
+      132.9435237
+    ],
+    "place": {
+      "address": "〒794-1309 愛媛県今治市大三島町宗方",
+      "website": "",
+      "url": "https://maps.google.com/?cid=4577654976723887677&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "盛港（Sakari Port・大三島）",
+    "coords": [
+      34.293503,
+      133.0279009
+    ],
+    "place": {
+      "address": "〒794-1401 愛媛県今治市上浦町盛",
+      "website": "",
+      "url": "https://maps.google.com/?cid=14619955036681413700&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "大久野島港（兎島・忠海沖）",
+    "coords": [
+      34.3085168,
+      132.99907009999998
+    ],
+    "place": {
+      "address": "〒729-2311 広島県竹原市忠海町大久野島",
+      "website": "https://www.qkamura.or.jp/ohkuno/access/",
+      "url": "https://maps.google.com/?cid=16161996644418624667&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "高松港（Takamatsu Port）",
+    "coords": [
+      34.3541501,
+      134.0487144
+    ],
+    "place": {
+      "address": "〒760-0019 香川県高松市サンポート８−２２",
+      "website": "https://www.pref.kagawa.lg.jp/content/etc/subsite/port_takamatsu/kaisou1st1/index.shtml",
+      "url": "https://maps.google.com/?cid=7624962309433303979&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1569,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "三原駅（JR Mihara Station）",
+    "coords": [
+      34.4007078,
+      133.0831972
+    ],
+    "place": {
+      "address": "〒723-0014 広島県三原市城町１丁目１ 広島県三原市城町１丁目１−１",
+      "website": "",
+      "url": "https://maps.google.com/?cid=17973020481236548405&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1716,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "倉敷駅（JR Kurashiki Station）",
+    "coords": [
+      34.6019289,
+      133.7657774
+    ],
+    "place": {
+      "address": "〒710-0055 岡山県倉敷市阿知１丁目１−１",
+      "website": "https://www.jr-odekake.net/eki/top.php?id=0650612",
+      "url": "https://maps.google.com/?cid=3497512129008383077&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1716,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "岡山駅（JR Okayama Station）",
+    "coords": [
+      34.6661212,
+      133.9177335
+    ],
+    "place": {
+      "address": "〒700-0024 岡山県岡山市北区駅元町１−１",
+      "website": "https://www.jr-odekake.net/eki/top?id=0650608",
+      "url": "https://maps.google.com/?cid=11733851383390654295&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1716,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "宇野駅（JR Uno Station）",
+    "coords": [
+      34.494500599999995,
+      133.9538747
+    ],
+    "place": {
+      "address": "〒706-0002 岡山県玉野市築港１丁目１",
+      "website": "",
+      "url": "https://maps.google.com/?cid=1425988292580661669&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1716,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "高松駅（JR Takamatsu Station）",
+    "coords": [
+      34.3506795,
+      134.0469281
+    ],
+    "place": {
+      "address": "〒760-0011 香川県高松市浜ノ町１ １−２０",
+      "website": "",
+      "url": "https://maps.google.com/?cid=15424481607408764635&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1716,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "高松空港（Takamatsu Airport）",
+    "coords": [
+      34.2148952,
+      134.0147183
+    ],
+    "place": {
+      "address": "〒761-1401 香川県高松市香南町岡１３１２−７",
+      "website": "https://www.takamatsu-airport.com/",
+      "url": "https://maps.google.com/?cid=14859179371882281863&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1504,
+      "category": "Transport"
+    }
+  },
+  {
+    "name": "千光寺山ロープウェイ 山麓駅",
+    "coords": [
+      34.410674799999995,
+      133.2014873
+    ],
+    "place": {
+      "address": "〒722-0046 広島県尾道市長江１丁目３−３",
+      "website": "https://mt-senkoji-rw.jp/",
+      "url": "https://maps.google.com/?cid=14081088447951924909&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "color": "#263238",
+      "icon": 1533,
+      "category": "Transport"
+    }
   }
 ]
