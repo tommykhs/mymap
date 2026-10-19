@@ -931,7 +931,7 @@ map.on('popupopen', (e) => {
    document.removeEventListener('touchend',  onUp);
  };
  const onDown = (ev) => {
-   if (ev.target.closest && ev.target.closest('a, .leaflet-popup-close-button, button')) return;
+   if (ev.target.closest && ev.target.closest('a, .leaflet-popup-close-button, button, input, select, textarea, label')) return;
    dragging=true;
    sx = ev.touches ? ev.touches[0].clientX : ev.clientX;
    sy = ev.touches ? ev.touches[0].clientY : ev.clientY;
@@ -1156,8 +1156,8 @@ function statsLine(r){
  }
  const hasRelief = (yMax!=null && yMin!=null && (yMax-yMin)>1);
  const parts=[];
- if(r.distance_km) parts.push('<span class="mi">straighten</span>'+r.distance_km+' km');
- if(r.elev_up_m)   parts.push('<span class="mi">trending_up</span>'+r.elev_up_m+' m');
+ if(r.distance_km!=null) parts.push('<span class="mi">straighten</span>'+r.distance_km+' km');
+ if(r.elev_up_m!=null)   parts.push('<span class="mi">trending_up</span>'+r.elev_up_m+' m');
  if(hasRelief)     parts.push('<span class="mi">terrain</span>'+Math.round(yMax)+' m');
  if(!parts.length) return '';
  return '<div class="rt-stats">'+parts.join('<span style="opacity:.5">·</span>')+'</div>';
@@ -1201,8 +1201,7 @@ function popupHTML(r,idx){
      +'<button class="pin-act" title="Extend along basemap (click map to add)" onclick="routeExtendStart('+idx+');return false"><span class="mi">north_east</span></button>'
      +'<button class="pin-act" title="Reverse direction" onclick="routeReverse('+idx+');return false"><span class="mi">swap_horiz</span></button>'
      +'<button class="pin-act" title="Recompute elevation from SRTM" onclick="routeRecomputeElevation('+idx+');return false"><span class="mi">terrain</span></button>'
-     +'<button class="pin-act" title="Route color" onclick="routeColorPicker('+idx+');return false"><span class="mi">palette</span></button>'
-     +'<button class="pin-act" title="Route thickness" onclick="routeWeightPicker('+idx+');return false"><span class="mi">line_weight</span></button>'
+     +'<button class="pin-act" title="Route color + thickness" onclick="routeColorPicker('+idx+');return false"><span class="mi">palette</span></button>'
      +'<button class="pin-act" title="Delete route" onclick="routeDelete('+idx+');return false"><span class="mi">delete</span></button>'
      +'</span>';
  }
@@ -1275,7 +1274,8 @@ await new Promise(resolve=>{
      const idx=i, r=R[idx];
      const g=L.layerGroup();
      const opt={color:(r.color||accent()),weight:effWeight(r),opacity:r.opacity};
-     if(r.style!=='solid'||r.dash[0])opt.dashArray=(r.dash[0]||8)+','+(r.dash[1]||6);
+     const dsh=r.dash||[0,0];
+     if(r.style && r.style!=='solid' || dsh[0]) opt.dashArray=(dsh[0]||8)+','+(dsh[1]||6);
      const plList=[]; const tip=esc(r.name);
      r.polys.forEach(p=>{
        const pl=L.polyline(p,opt);
@@ -1395,7 +1395,8 @@ function buildRouteLayer(idx){
  if(lg[idx]){ try{ map.removeLayer(lg[idx]); }catch(e){} lg[idx].clearLayers(); }
  else lg[idx]=L.layerGroup();
  const opt={color:(r.color||accent()),weight:effWeight(r),opacity:(r.opacity!=null?r.opacity:0.9)};
- if(r.style!=='solid'||(r.dash&&r.dash[0])) opt.dashArray=((r.dash&&r.dash[0])||8)+','+((r.dash&&r.dash[1])||6);
+ const dsh=r.dash||[0,0];
+ if(r.style && r.style!=='solid' || dsh[0]) opt.dashArray=(dsh[0]||8)+','+(dsh[1]||6);
  const plList=[]; const tip=esc(r.name);
  (r.polys||[]).forEach(p=>{
    const pl=L.polyline(p,opt);
@@ -2005,6 +2006,7 @@ function _routePalette(){
 window.routeColorPicker=function(idx){
  const r=R[idx]; if(!r) return;
  const cur=r.color||'#2979ff';
+ const curW=r.weight||2;
  const swatches=_routePalette().map(([nm,hex])=>
    '<button class="swc" title="'+esc(nm)+'" style="background:'+hex+'" '
    +'onclick="window._routeColorApply('+idx+',\''+hex+'\');return false"></button>'
@@ -2014,10 +2016,15 @@ window.routeColorPicker=function(idx){
    +'<div class="rt-pal-grid">'+swatches+'</div>'
    +'<div class="rt-pal-custom">Custom <input type="color" value="'+cur+'" '
    +'oninput="window._routeColorApply('+idx+',this.value);"></div>'
+   +'<div style="font-size:11px;color:var(--mut);margin-top:10px">Route thickness: '
+   +'<span id="wtVal'+idx+'">'+curW+'</span> px</div>'
+   +'<input type="range" min="1" max="12" value="'+curW+'" style="width:100%" '
+   +'oninput="document.getElementById(\'wtVal'+idx+'\').textContent=this.value;'
+   +'window._routeWeightApply('+idx+',parseInt(this.value,10));">'
    +'</div>';
  const pl=(polysByIdx[idx]||[])[0]; if(!pl) return;
  try{
-   L.popup({maxWidth:240, minWidth:200, closeButton:true, autoClose:false})
+   L.popup({maxWidth:280, minWidth:240, closeButton:true, autoClose:false})
      .setLatLng(pl.getCenter()).setContent(html).openOn(map);
  }catch(e){}
 };
@@ -2032,31 +2039,8 @@ window._routeColorApply=function(idx, hex){
  const it=itemByIdx[idx]; if(it){ const sw=it.querySelector('.sw'); if(sw) sw.style.background=hex; }
  saveLocalRouteState();
 };
-// Route thickness picker. Weight is in Leaflet pixels AND is exported into KML
-// <LineStyle><width>, so Google My Maps preserves it on import.
-window.routeWeightPicker=function(idx){
- const r=R[idx]; if(!r) return;
- const cur=r.weight||2;
- const presets=[['Hair',1],['Thin',2],['',3],['Medium',4],['',5],['Main',6],['Bold',8]];
- const btns=presets.map(([lbl,w])=>{
-   const active=w===cur?' active':'';
-   return '<button class="wt'+active+'" title="'+lbl+' ('+w+'px)" '
-     +'onclick="window._routeWeightApply('+idx+','+w+');return false">'
-     +'<span class="wt-swatch" style="height:'+Math.min(w,8)+'px"></span>'
-     +'<span class="wt-lbl">'+(lbl||w)+'</span></button>';
- }).join('');
- const html='<div class="rt-pal">'
-   +'<div style="font-size:11px;color:var(--mut)">Route thickness</div>'
-   +'<div class="wt-grid">'+btns+'</div>'
-   +'<div class="rt-pal-custom">Custom <input type="range" min="1" max="12" value="'+cur+'" '
-   +'oninput="window._routeWeightApply('+idx+',parseInt(this.value,10));"></div>'
-   +'</div>';
- const pl=(polysByIdx[idx]||[])[0]; if(!pl) return;
- try{
-   L.popup({maxWidth:260, minWidth:220, closeButton:true, autoClose:false})
-     .setLatLng(pl.getCenter()).setContent(html).openOn(map);
- }catch(e){}
-};
+// Weight is in Leaflet pixels AND is exported into KML <LineStyle><width>, so
+// Google My Maps preserves it on import. Picker lives in the color popup now.
 window._routeWeightApply=function(idx, w){
  const r=R[idx]; if(!r) return;
  w=Math.max(1,Math.min(12,parseInt(w,10)||2));
@@ -2317,6 +2301,7 @@ async function _extendAppend(idx, clickLL){
    } else {
      r.polys.push([[fromPt[0],fromPt[1]], [clickLL.lat, clickLL.lng]]);
    }
+   _routeRecomputeDistance(r);
    buildRouteLayer(idx);
    _extendRefreshEndpointMarker(idx);
    return;
@@ -2338,6 +2323,7 @@ async function _extendAppend(idx, clickLL){
    if(!coords||!coords.length) throw new Error('ORS returned no route');
    const newPoly = coords.map(c=>[c[1], c[0]]);
    r.polys.push(newPoly);
+   _routeRecomputeDistance(r);
    buildRouteLayer(idx);
    _extendRefreshEndpointMarker(idx);
    _elevBannerHide();
@@ -2373,8 +2359,8 @@ function routeCreateNew(){
  if(nm==null || !nm.trim()) return;
  const gn=prompt('Group:', 'My routes');
  if(gn==null) return;
- const palette=_routePalette();
- const color=palette[Math.floor(Math.random()*palette.length)][1];
+ // Match this map's main-route convention (red, weight 3) so a freshly drawn
+ // route is immediately distinguishable from the muted secondary routes.
  const nowIso=(new Date()).toISOString();
  const r={
    id:'rt-new-'+nowIso.replace(/[^0-9]/g,'').slice(0,14),
@@ -2382,8 +2368,9 @@ function routeCreateNew(){
    group:gn.trim()||'My routes',
    polys:[],
    seed_id:null,
-   color, weight:2, opacity:0.9,
+   color:'#ff0000', weight:3, opacity:0.9,
    style:'solid', dash:[0,0],
+   distance_km:0,
    edited_at:nowIso,
    edit_ops:[{op:'create', at:nowIso}]
  };
