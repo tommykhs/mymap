@@ -1242,5 +1242,181 @@
       "icon": 1533,
       "category": "Transport"
     }
+  },
+  {
+    "name": "千光寺",
+    "coords": [
+      34.4104463,
+      133.1987066
+    ],
+    "place": {
+      "address": "〒722-0033 広島県尾道市東土堂町１５−１",
+      "rating": 4.4,
+      "website": "https://www.senkouji.jp/",
+      "url": "https://maps.google.com/?cid=12822827166751449678&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1706
+    }
+  },
+  {
+    "name": "大和ミュージアム（呉市海事歴史科学館）",
+    "coords": [
+      34.2411391,
+      132.5558555
+    ],
+    "place": {
+      "address": "〒737-0029 広島県呉市宝町５−２０",
+      "rating": 4.4,
+      "website": "https://yamato-museum.com/",
+      "url": "https://maps.google.com/?cid=7535584705867239353&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1834
+    }
+  },
+  {
+    "name": "三原城跡",
+    "coords": [
+      34.4012464,
+      133.0826314
+    ],
+    "place": {
+      "address": "〒723-0004 広島県三原市城町１丁目１",
+      "rating": 3.8,
+      "website": "https://www.city.mihara.hiroshima.jp/soshiki/50/139854.html",
+      "url": "https://maps.google.com/?cid=14716556291441836846&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1598
+    }
+  },
+  {
+    "name": "三原市すなみ海浜公園",
+    "coords": [
+      34.3528868,
+      133.081912
+    ],
+    "place": {
+      "address": "〒723-0032 広島県三原市須波西１丁目７−１",
+      "rating": 4.2,
+      "website": "https://www.city.mihara.hiroshima.jp/soshiki/25/121846.html",
+      "url": "https://maps.google.com/?cid=5898048759071175650&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1521
+    }
+  },
+  {
+    "name": "たけはら町並み保存地区（竹原市竹原地区重要伝統的建造物群保存地区）",
+    "coords": [
+      34.3469388,
+      132.9103019
+    ],
+    "place": {
+      "address": "〒725-0022 広島県竹原市本町３丁目８",
+      "rating": 4.2,
+      "website": "https://www.takeharakankou.jp/spot/4305",
+      "url": "https://maps.google.com/?cid=16049157012541070488&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1598
+    }
+  },
+  {
+    "name": "エデンの海 展望台",
+    "coords": [
+      34.3330171,
+      132.9781373
+    ],
+    "place": {
+      "address": "〒729-2315 広島県竹原市忠海長浜３丁目３",
+      "rating": 4.1,
+      "website": "",
+      "url": "https://maps.google.com/?cid=9186980184343094004&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523
+    }
+  },
+  {
+    "name": "安芸灘大橋",
+    "coords": [
+      34.2062174,
+      132.67910799999999
+    ],
+    "place": {
+      "address": "広島県呉市",
+      "rating": 3.6,
+      "website": "https://www.hprc.or.jp/akinada-bridge/",
+      "url": "https://maps.google.com/?cid=16204333371986796868&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528
+    }
+  },
+  {
+    "name": "日高神社 (日高庄八幡宮)",
+    "coords": [
+      34.1895859,
+      132.7579053
+    ],
+    "place": {
+      "address": "〒737-0402 広島県呉市蒲刈町大浦",
+      "rating": 4.4,
+      "website": "",
+      "url": "https://maps.google.com/?cid=7009492306538814496&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1677
+    }
+  },
+  {
+    "name": "呉市豊町御手洗重要伝統的建造物群保存地区",
+    "coords": [
+      34.1792221,
+      132.8679536
+    ],
+    "place": {
+      "address": "〒734-0302 広島県呉市豊町御手洗",
+      "rating": 4.3,
+      "website": "https://www.pref.hiroshima.lg.jp/site/bunkazai/bunkazai-shitei-shitei15.html",
+      "url": "https://maps.google.com/?cid=8212288134831212480&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1598
+    }
+  },
+  {
+    "name": "ナガタニ展望台",
+    "coords": [
+      34.179899,
+      132.878967
+    ],
+    "place": {
+      "address": "〒794-1101 愛媛県今治市関前岡村乙３３",
+      "rating": 3.9,
+      "website": "http://www.city.imabari.ehime.jp/kanko/spot/?gs=79",
+      "url": "https://maps.google.com/?cid=15143529081158897854&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523
+    }
+  },
+  {
+    "name": "尾道駅前レンタサイクル",
+    "coords": [
+      34.4042161,
+      133.19234559999998
+    ],
+    "place": {
+      "address": "〒722-0036 広島県尾道市東御所町１−１０",
+      "rating": 4,
+      "website": "https://shimanami-cycle.or.jp/rental/",
+      "url": "https://maps.google.com/?cid=18227010046973808696&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1522
+    }
   }
 ]
