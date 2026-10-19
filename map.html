@@ -344,6 +344,16 @@
  /* admin button "unsaved changes" badge */
  /* Both cloud-save buttons need position:relative so their dirty-badge
     (absolute positioned) sits on the corner instead of floating away. */
+ /* ---- Selected pin + active layer ---- */
+ .pin-selected{ filter: drop-shadow(0 0 6px #ff9500) brightness(1.08); transform-origin: 50% 100%; z-index: 1000 !important; }
+ .pin-selected img{ transform: scale(1.25); transform-origin: 50% 100%; }
+ #pinsSection .it.active{ background: rgba(255,149,0,0.18); border-left: 3px solid #ff9500; padding-left: 5px; }
+ #pinsSection .gh.active-layer{ background: rgba(255,149,0,0.12); }
+ #pinsSection .gh.active-layer .gn{ color: #ff9500; }
+ #pinsSection .gh .gp-target{ display:inline-flex; align-items:center; padding:0 4px; cursor:pointer; color:#9aa4b0; margin-right:2px; }
+ #pinsSection .gh .gp-target:hover{ color:#ff9500; }
+ #pinsSection .gh.active-layer .gp-target{ color:#ff9500; }
+ #pinsSection .gh .gp-target .material-symbols-outlined{ font-size:16px; }
  #adminBtn, #ghSave{position:relative}
  /* Louder always-visible cue when there are unsaved changes — a red tint /
     outline on the button itself, so a small badge isn't the only signal. */
@@ -505,7 +515,8 @@
     <input type="password" id="ghToken" placeholder="GitHub token (Contents: RW)" autocomplete="off">
     <button id="ghForget" class="tk-clear" title="Forget saved token" hidden><span class="material-symbols-outlined">close</span></button>
    </div>
-   <button id="ghSave" title="Save My places to the repo"><span class="material-symbols-outlined">save</span></button>
+   <button id="localSave" title="Save to LOCAL file (dev-server, no git). Edits land on disk and I can see them immediately." hidden style="background:#0ea5e9;color:#fff"><span class="material-symbols-outlined">hard_drive</span></button>
+   <button id="ghSave" title="Commit to GitHub repo (requires token)"><span class="material-symbols-outlined">cloud_upload</span></button>
    <button id="ghDiscard" title="Discard local changes (restore the repo's pins)"><span class="material-symbols-outlined">delete</span></button>
   </div>
   <p class="sub" id="ghMsg" style="margin:6px 0 0"></p>
@@ -563,6 +574,16 @@ function routeToFeature(r){
  return {type:'Feature', geometry:{type:'MultiLineString', coordinates:coords}, properties:props};
 }
 const MAP_ID=(new URLSearchParams(location.search).get('id'))||'japan-cycling';
+// `?reset=1` wipes THIS map's localStorage overrides (pins + route edits + deletes)
+// and reloads cleanly from the repo. Handy after someone edits data/maps/<id>/*.json
+// and the shipped data would otherwise be masked by stale local diffs.
+if((new URLSearchParams(location.search).get('reset'))==='1'){
+ try{ localStorage.removeItem('mymap.pins.'+MAP_ID);
+      localStorage.removeItem('mymap.routes.'+MAP_ID);
+      localStorage.removeItem('mymap.routes.'+MAP_ID+'.del'); }catch(e){}
+ const u=new URL(location.href); u.searchParams.delete('reset');
+ location.replace(u.toString()); throw new Error('reset');
+}
 // ---- route editing: localStorage layer + seed snapshot (parallel to pin model) ----
 // Editing is opt-in (Phase 1 ships the UI); this plumbing exists from Phase 0 so
 // dirty/save/discard all "just work" once split/reverse/etc. land.
@@ -623,7 +644,7 @@ function loadGoogle(){
  _googleLoad=new Promise((res,rej)=>{
    const s=document.createElement('script');
    s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(CFG.googleMapsApiKey)
-        +'&libraries=places&v=quarterly&loading=async';
+        +'&libraries=places&v=weekly&loading=async';
    s.async=true;
    s.onload=()=>res();
    s.onerror=()=>rej(new Error('Google Maps failed to load (check API key / referrer restriction / billing)'));
@@ -2587,6 +2608,7 @@ function addPin(o){
  m.bindPopup(pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
  m.bindTooltip(esc(p.name),{sticky:true,direction:'top',offset:[0,-12],className:'rt-tip'});
  m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
+ m.on('click',()=>setSelectedPin(p));
  m.addTo(pinLayer); p.marker=m; PINS.push(p);
  return p;
 }
@@ -2603,6 +2625,64 @@ const PIN_CATS=[
  {k:'FoodBeverage',        label:'Food & Beverage',        color:'#F4B400'},
  {k:'Other',               label:'My places',              color:'#9aa4b0'},
 ];
+// ---- Active layer + Selected pin ---------------------------------------------
+// ACTIVE_LAYER_KEY = where new pins (from search / map-click) will land. Click a
+// layer header's ◉ dot to set explicitly; selecting a pin auto-syncs to its cat.
+// Persisted per-map in localStorage.
+let ACTIVE_LAYER_KEY = (localStorage.getItem('mymap.activeLayer.'+MAP_ID)) || 'Other';
+let SELECTED_PIN = null;
+function setActiveLayer(k, {silent}={}){
+  if(!PIN_CATS.find(c=>c.k===k)) k='Other';
+  ACTIVE_LAYER_KEY = k;
+  try{ localStorage.setItem('mymap.activeLayer.'+MAP_ID, k); }catch(e){}
+  // sync dropdown
+  const sel=document.getElementById('targetLayer'); if(sel && sel.value!==k) sel.value=k;
+  // paint the active indicator on layer headers (handled by renderPinsList class)
+  document.querySelectorAll('#pinsSection .gh').forEach(h=>{
+    h.classList.toggle('active-layer', h.dataset.catKey===k);
+  });
+}
+function setSelectedPin(p, {flyTo}={}){
+  // clear previous marker highlight
+  if(SELECTED_PIN && SELECTED_PIN.marker){
+    const el=SELECTED_PIN.marker._icon; if(el) el.classList.remove('pin-selected');
+  }
+  if(SELECTED_PIN===p){
+    SELECTED_PIN=null;
+  } else {
+    SELECTED_PIN=p;
+    if(p && p.marker){
+      const el=p.marker._icon; if(el) el.classList.add('pin-selected');
+      const cat=(p.place||{}).category||'Other';
+      setActiveLayer(cat);
+    }
+  }
+  // re-paint the panel highlight + scroll into view
+  document.querySelectorAll('#pinsSection .it').forEach(el=>el.classList.remove('active'));
+  if(SELECTED_PIN){
+    const row=document.querySelector('#pinsSection .it[data-pin-id="'+SELECTED_PIN.id+'"]');
+    if(row){
+      row.classList.add('active');
+      // make sure its layer group is open
+      const box=row.parentElement; if(box && box.style.display==='none'){
+        box.style.display='';
+        const tw=box.previousElementSibling&&box.previousElementSibling.querySelector('.tw');
+        if(tw) tw.textContent='▼';
+      }
+      row.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+    if(flyTo && SELECTED_PIN.marker){ map.flyTo(SELECTED_PIN.coords, Math.max(map.getZoom(),15), {duration:.5}); }
+  }
+}
+// Clear selected pin when clicking empty map area; keep active layer.
+map.on('click',e=>{
+  // Only when the click didn't hit a marker (Leaflet fires map click after marker click too — guard with target)
+  if(e.originalEvent && e.originalEvent.target && e.originalEvent.target.closest('.leaflet-marker-icon')) return;
+  if(SELECTED_PIN) setSelectedPin(null);
+});
+// Esc deselects
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && SELECTED_PIN) setSelectedPin(null); });
+
 function renderPinsList(){
  let sec=document.getElementById('pinsSection');
  if(!PINS.length){ if(sec) sec.remove(); updateCounts(); return; }
@@ -2618,15 +2698,30 @@ function renderPinsList(){
  PIN_CATS.forEach(c=>{
    const arr=groups[c.k]; if(!arr.length) return;
    const h=document.createElement('div'); h.className='gh';
+   h.dataset.catKey=c.k;
+   if(ACTIVE_LAYER_KEY===c.k) h.classList.add('active-layer');
    h.innerHTML='<span class="tw">▼</span><span class="gn">'
      +'<span class="material-symbols-outlined" style="font-size:15px;vertical-align:-3px;color:'+c.color+'">push_pin</span> '+esc(c.label)+'</span>'
+     +'<span class="gp-target" title="Set as active layer — new pins land here"><span class="material-symbols-outlined">radio_button_unchecked</span></span>'
      +'<span class="gp-eye" title="Show / hide"><span class="material-symbols-outlined">visibility</span></span>'
      +'<span class="gcount">'+arr.length+'</span>';
    const box=document.createElement('div');
    arr.forEach(p=>{ const it=document.createElement('div'); it.className='it';
+     it.dataset.pinId=p.id;
+     if(SELECTED_PIN && SELECTED_PIN.id===p.id) it.classList.add('active');
      it.innerHTML='<img src="'+mmIconUrl(PIN_ICON_ID(p),PIN_COLOR(p),true)+'" style="width:18px;height:20px;object-fit:contain;flex:0 0 auto" alt="">'
        +'<span class="nm">'+esc(p.name)+'</span>';
-     it.onclick=()=>focusPin(p); box.appendChild(it); });
+     it.onclick=()=>{ setSelectedPin(p,{flyTo:true}); focusPin(p); }; box.appendChild(it); });
+   const target=h.querySelector('.gp-target');
+   const targetIc=target.querySelector('.material-symbols-outlined');
+   const refreshTarget=()=>{ targetIc.textContent = (ACTIVE_LAYER_KEY===c.k) ? 'radio_button_checked' : 'radio_button_unchecked'; };
+   refreshTarget();
+   target.onclick=ev=>{ ev.stopPropagation(); setActiveLayer(c.k);
+     document.querySelectorAll('#pinsSection .gp-target .material-symbols-outlined').forEach(el=>{
+       const headerKey=el.closest('.gh')?.dataset?.catKey;
+       el.textContent = (headerKey===c.k) ? 'radio_button_checked' : 'radio_button_unchecked';
+     });
+   };
    const eye=h.querySelector('.gp-eye'), eyeIc=eye.querySelector('.material-symbols-outlined');
    eye.onclick=ev=>{ ev.stopPropagation();
      const hide=!(arr[0].marker._hidden);
@@ -2637,7 +2732,7 @@ function renderPinsList(){
      eyeIc.textContent=hide?'visibility_off':'visibility';
      box.style.opacity=hide?.4:1;
    };
-   h.onclick=ev=>{ if(eye.contains(ev.target)) return;
+   h.onclick=ev=>{ if(eye.contains(ev.target)||target.contains(ev.target)) return;
      const v=box.style.display==='none'; box.style.display=v?'':'none';
      h.querySelector('.tw').textContent=v?'▼':'▶'; };
    sec.appendChild(h); sec.appendChild(box);
@@ -2850,13 +2945,19 @@ function previewPlace(pl,nm){
  box.innerHTML='<b>'+esc(nm)+'</b>'+(pl.rating?' ★'+pl.rating:'')
    +(pl.formattedAddress?'<div class="rt-desc">'+esc(pl.formattedAddress)+'</div>':'')
    +(pl.googleMapsURI?'<div class="rt-dl"><a href="'+esc(pl.googleMapsURI)+'" target="_blank"><span class="mi">open_in_new</span>Google Maps</a></div>':'');
- const btn=document.createElement('button'); btn.className='ps-add'; btn.textContent='＋ Add pin';
+ const btn=document.createElement('button'); btn.className='ps-add';
+ const activeCat=PIN_CATS.find(c=>c.k===ACTIVE_LAYER_KEY)||PIN_CATS[PIN_CATS.length-1];
+ btn.textContent='＋ Add to '+activeCat.label;
  btn.onclick=()=>{
-   const p=addPin({name:nm,coords:ll,place:{address:pl.formattedAddress||'',rating:pl.rating||'',
-     website:pl.websiteURI||'',url:pl.googleMapsURI||''}});
+   const cat=PIN_CATS.find(c=>c.k===ACTIVE_LAYER_KEY)||PIN_CATS[PIN_CATS.length-1];
+   const p=addPin({name:nm,coords:ll,place:{
+     address:pl.formattedAddress||'',rating:pl.rating||'',
+     website:pl.websiteURI||'',url:pl.googleMapsURI||'',
+     category:cat.k, color:cat.color
+   }});
    savePins(); renderPinsList(); clearPreview(); map.closePopup();
-   document.getElementById('psmsg').textContent='Added "'+nm+'"';
-   focusPin(p);
+   document.getElementById('psmsg').textContent='Added "'+nm+'" to '+cat.label;
+   setSelectedPin(p); focusPin(p);
  };
  box.appendChild(btn);
  L.popup({offset:[0,-10]}).setLatLng(ll).setContent(box).openOn(map);
@@ -3063,6 +3164,45 @@ function previewPlace(pl,nm){
  }
  saveBtn.onclick=save;
  window.__mmlog('admin: enabled, Save wired (repo '+repo.owner+'/'+repo.name+')');
+})();
+
+// ---- Save to local file (dev-server.py's POST /api/write) ----
+// Writes pins + routes straight to data/maps/<id>/*.json so file-side and UI-side
+// edits can land on the same file without the GitHub round-trip. Button only shows
+// when the dev server responds to a probe (so it stays hidden on production).
+(function(){
+ const localBtn=document.getElementById('localSave'); if(!localBtn) return;
+ const msg=document.getElementById('ghMsg');
+ const setMsg=(t,bad)=>{ if(msg){ msg.textContent=t||''; msg.style.color=bad?'#d33':''; } };
+ // probe: dev-server returns 200 on GET /api/write (serves 404 for GETs via SimpleHTTPRequestHandler default),
+ // but we don't want to hit the write endpoint — just check for the server banner via OPTIONS.
+ fetch('/api/write',{method:'OPTIONS'}).then(r=>{
+   if(r.ok || r.status===204) localBtn.hidden=false;
+ }).catch(()=>{});
+ async function writeFile(path,content){
+   const r=await fetch('/api/write',{method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({path,content})});
+   if(!r.ok){ const t=await r.text().catch(()=>''); throw new Error(path+' '+r.status+' '+t); }
+   return r.json();
+ }
+ localBtn.onclick=async ()=>{
+   const pinsDirty=pinDiffCount()>0, routesDirty=routeDiffCount()>0;
+   if(!pinsDirty && !routesDirty){ setMsg('Nothing to save locally.'); return; }
+   const pinsPath='data/maps/'+MAP_ID+'/pins.json';
+   const routesPath='data/maps/'+MAP_ID+'/routes.geojson';
+   const pinsJson=JSON.stringify(PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})),null,2)+'\n';
+   const routesJson=JSON.stringify({type:'FeatureCollection',features:R.map(routeToFeature)},null,2)+'\n';
+   const what=[]; if(pinsDirty) what.push(PINS.length+' pin(s)'); if(routesDirty) what.push(R.length+' route(s)');
+   setMsg('Saving to local file: '+what.join(' + ')+'…');
+   localBtn.disabled=true;
+   try{
+     if(pinsDirty){ await writeFile(pinsPath,pinsJson); SEED_PINS=JSON.parse(pinsJson); localStorage.removeItem(PIN_KEY); }
+     if(routesDirty){ await writeFile(routesPath,routesJson); SEED_ROUTES=R.map(rt=>JSON.parse(JSON.stringify(rt))); localStorage.removeItem(RKEY); localStorage.removeItem(RDEL_KEY); }
+     updateDirtyBadge(); setMsg('✓ Saved locally ('+what.join(' + ')+')');
+     window.__mmlog('local-save: ok '+what.join(' + '));
+   }catch(e){ setMsg('Local save failed: '+(e.message||e),true); window.__mmlog('local-save: '+e); }
+   finally{ localBtn.disabled=false; }
+ };
 })();
 
 // header counts — icons for groups / routes / pins (pins update live)

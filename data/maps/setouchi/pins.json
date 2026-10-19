@@ -967,7 +967,10 @@
       "address": "〒729-0416 広島県三原市本郷町善入寺６４−３１",
       "rating": 3.7,
       "website": "http://www.hij.airport.jp/",
-      "url": "https://maps.google.com/?cid=11446563014474813844&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3"
+      "url": "https://maps.google.com/?cid=11446563014474813844&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "color": "#263238",
+      "icon": 1504,
+      "category": "Transport"
     }
   }
 ]
