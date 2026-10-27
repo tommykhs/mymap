@@ -347,6 +347,15 @@
  .pe-x{background:none;border:none;color:var(--mut);font-size:20px;cursor:pointer;line-height:1}
  .pe-x:hover{color:var(--fg)}
  .pe-body{padding:10px 14px;overflow-y:auto}
+ .pe-section-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);
+   font-weight:600;margin:0 0 6px}
+ .pe-cats{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+ .pe-cat{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:14px;
+   font:inherit;font-size:12px;color:var(--fg);background:var(--bg2);border:1px solid var(--bd);
+   cursor:pointer;line-height:1}
+ .pe-cat:hover{background:var(--hv)}
+ .pe-cat.on{border-color:var(--fg);font-weight:600}
+ .pe-cat .pe-cat-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
  .pe-colors{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
  .pe-col{width:22px;height:22px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
  .pe-col.on{border-color:var(--fg)}
@@ -523,7 +532,11 @@
 <div id="pinEditModal" class="pe-modal" hidden><div class="pe-dialog">
   <div class="pe-head"><span id="pinEditName"></span><button id="pinEditClose" class="pe-x">&times;</button></div>
   <div class="pe-body">
+    <div class="pe-section-lbl">Layer</div>
+    <div id="pinEditCats" class="pe-cats"></div>
+    <div class="pe-section-lbl">Color</div>
     <div id="pinEditColors" class="pe-colors"></div>
+    <div class="pe-section-lbl">Icon</div>
     <div id="pinEditIcons" class="pe-icons"></div>
   </div>
 </div></div>
@@ -2657,6 +2670,7 @@ function pinPopupHTML(p){
  const gmHtml = pl.url ? '<a href="'+esc(pl.url)+'" target="_blank" title="Open in Google Maps" class="rt-gm"><span class="mi">place</span></a>' : '';
  const actions='<span class="rt-actions">'
    +gmHtml
+   +'<button class="pin-act" title="Move to layer…" onclick="pinLayerPicker('+p.id+');return false"><span class="mi">layers</span></button>'
    +'<button class="pin-act" title="Icon / Color" onclick="pinEdit('+p.id+');return false"><span class="mi">palette</span></button>'
    +'<button class="pin-act" title="Delete" onclick="pinDelete('+p.id+');return false"><span class="mi">delete</span></button>'
    +'</span>';
@@ -2690,6 +2704,7 @@ const PIN_CATS=[
  {k:'BuildingCulture',     label:'Building & Culture',     color:'#2979FF'},
  {k:'ShoppingEntertainment',label:'Shopping & Entertainment',color:'#DB4437'},
  {k:'FoodBeverage',        label:'Food & Beverage',        color:'#F4B400'},
+ {k:'StampRally',          label:'Stamp Rally',            color:'#BA68C8'},
  {k:'Other',               label:'My places',              color:'#9aa4b0'},
 ];
 // ---- Active layer + Selected pin ---------------------------------------------
@@ -2833,6 +2848,35 @@ window.pinDescSave=function(id, text){
 };
 window.pinDelete=function(id){ const i=PINS.findIndex(x=>x.id===id); if(i<0) return;
  pinLayer.removeLayer(PINS[i].marker); PINS.splice(i,1); map.closePopup(); savePins(); renderPinsList(); };
+// Inline layer / category picker — same chips as the pin editor's Layer row,
+// but opens straight from the pin popup for a quick move. Changes category +
+// snaps colour to the layer palette so the pin blends into its new group.
+window.pinLayerPicker=function(id){
+ const p=PINS.find(x=>x.id===id); if(!p) return;
+ const curK=(p.place&&p.place.category)||'Other';
+ const chips=PIN_CATS.map(c=>
+   '<button class="pe-cat'+(c.k===curK?' on':'')+'" data-k="'+c.k+'" '
+   +'onclick="window._pinLayerApply('+id+',\''+c.k+'\');return false">'
+   +'<span class="pe-cat-dot" style="background:'+c.color+'"></span>'+esc(c.label)+'</button>'
+ ).join('');
+ const html='<div class="rt-pal">'
+   +'<div style="font-size:11px;color:var(--mut)">Move pin to layer</div>'
+   +'<div class="pe-cats" style="margin:0">'+chips+'</div>'
+   +'</div>';
+ try{
+   L.popup({maxWidth:260, minWidth:220, closeButton:true, autoClose:false})
+     .setLatLng(p.coords).setContent(html).openOn(map);
+ }catch(e){}
+};
+window._pinLayerApply=function(id, k){
+ const p=PINS.find(x=>x.id===id); if(!p) return;
+ const cat=PIN_CATS.find(c=>c.k===k); if(!cat) return;
+ p.place=p.place||{};
+ p.place.category=k;
+ p.place.color=cat.color;   // snap to layer's palette so the pin matches the group
+ applyPinStyle(p);           // repaints marker + popup content + renders panel + saves
+ map.closePopup();
+};
 // ---- icon + color picker (Google My Maps "Newer" library) ----
 function applyPinStyle(p){ p.marker.setIcon(pinIcon(PIN_ICON_ID(p),PIN_COLOR(p)));
  p.marker.setPopupContent(pinPopupHTML(p)); savePins(); renderPinsList(); }
@@ -2842,7 +2886,7 @@ let ICON_LIB_FULL=null;
 async function ensureIconLib(){
  if(ICON_LIB_FULL) return ICON_LIB_FULL;
  try{
-   const r=await fetch('data/icons.json'); if(r.ok){
+   const r=await fetch('data/icons.json',{cache:'no-store'}); if(r.ok){
      const arr=await r.json();
      ICON_LIB_FULL=arr.map(o=>[o.id,o.name,o.label]);
      ICON_LIB_FULL.forEach(x=>ICON_NAME[x[0]]=x[1]);
@@ -2859,8 +2903,17 @@ function pushRecentIcon(id){
 async function openPinEditor(id){
  const p=PINS.find(x=>x.id===id); if(!p) return;
  const modal=document.getElementById('pinEditModal');
+ const catw=document.getElementById('pinEditCats');
  const cw=document.getElementById('pinEditColors'), iw=document.getElementById('pinEditIcons');
  document.getElementById('pinEditName').textContent=p.name;
+ // categories (layer)
+ const renderCats=()=>{ const curK=(p.place&&p.place.category)||'Other';
+   catw.innerHTML=PIN_CATS.map(c=>
+     '<button class="pe-cat'+(c.k===curK?' on':'')+'" data-k="'+c.k+'" title="'+esc(c.label)+'">'
+     +'<span class="pe-cat-dot" style="background:'+c.color+'"></span>'+esc(c.label)+'</button>'
+   ).join('');
+ };
+ renderCats();
  // colors
  const renderColors=()=>{ const curCol=PIN_COLOR(p);
    cw.innerHTML=PIN_PALETTE.map(c=>'<button class="pe-col'+(c.toLowerCase()===curCol.toLowerCase()?' on':'')+'" style="background:'+c+'" data-c="'+c+'" title="'+c+'"></button>').join('');
@@ -2892,6 +2945,17 @@ async function openPinEditor(id){
  const searchInput=document.getElementById('pinEditSearch');
  searchInput.addEventListener('input',e=>renderGrid(e.target.value));
  // delegated handlers — survive grid re-renders
+ catw.onclick=ev=>{ const b=ev.target.closest('.pe-cat'); if(!b) return;
+   const k=b.dataset.k; const cat=PIN_CATS.find(c=>c.k===k); if(!cat) return;
+   p.place=p.place||{};
+   p.place.category=k;
+   // Snap color to the layer's palette color so the pin matches the group.
+   p.place.color=cat.color;
+   applyPinStyle(p);   // re-tints marker + re-renders panel (pin moves to its new section)
+   renderCats();
+   renderColors();
+   renderGrid(searchInput.value);   // icons re-tint to the new color
+ };
  cw.onclick=ev=>{ const b=ev.target.closest('.pe-col'); if(!b) return;
    p.place=p.place||{}; p.place.color=b.dataset.c;
    applyPinStyle(p);
@@ -3281,18 +3345,67 @@ function previewPlace(pl,nm){
    if(!r.ok){ const t=await r.text().catch(()=>''); throw new Error(path+' '+r.status+' '+t); }
    return r.json();
  }
+ // Three-way merge of pins so edits made directly on disk (e.g. by Claude via
+ // Python) are preserved when the user clicks save. Keys are name+coords(4dp).
+ //  BASE = SEED_PINS      (what the browser loaded at page start)
+ //  LOCAL = current PINS  (browser's current state, with user edits)
+ //  REMOTE = disk now     (re-fetched right before writing)
+ // Rules:
+ //   - LOCAL add (not in BASE / not in REMOTE)         → keep (user added)
+ //   - REMOTE add (not in BASE / not in LOCAL)         → keep (claude added)
+ //   - Both LOCAL+REMOTE edited same pin               → LOCAL wins (user wins conflicts)
+ //   - LOCAL deleted a pin REMOTE didn't change        → honour delete
+ //   - REMOTE deleted + LOCAL unchanged                → honour delete
+ //   - Pin unchanged on both sides                     → keep
+ async function mergePinsWithDisk(){
+   const key=p=>(p.name||'')+'@'+p.coords[0].toFixed(4)+','+p.coords[1].toFixed(4);
+   const slim=p=>({name:p.name,coords:p.coords.slice(),place:p.place?JSON.parse(JSON.stringify(p.place)):null});
+   const norm=p=>JSON.stringify(p.place||null);
+   const remote=await fetch('data/maps/'+MAP_ID+'/pins.json',{cache:'no-store'})
+     .then(r=>r.ok?r.json():[]).catch(()=>null);
+   if(!Array.isArray(remote)){ return PINS.map(slim); }  // fallback: just write local
+   const base=SEED_PINS||[];
+   const bMap=new Map(base.map(p=>[key(p),norm(p)]));
+   const lMap=new Map(PINS.map(p=>[key(p),slim(p)]));
+   const rMap=new Map(remote.map(p=>[key(p),slim(p)]));
+   const out=[]; const seen=new Set();
+   // Walk LOCAL (user's view) first — user wins order & conflicts.
+   PINS.forEach(p=>{
+     const k=key(p); seen.add(k);
+     out.push(slim(p));
+   });
+   // Then add REMOTE pins the user didn't already have — these are Claude's additions
+   // (unless user intentionally deleted them: if BASE had them AND user removed them, skip).
+   remote.forEach(p=>{
+     const k=key(p); if(seen.has(k)) return;
+     const userIntentionallyDeleted = bMap.has(k) && !lMap.has(k);
+     if(userIntentionallyDeleted) return;
+     out.push(slim(p));
+   });
+   return out;
+ }
  localBtn.onclick=async ()=>{
    const pinsDirty=pinDiffCount()>0, routesDirty=routeDiffCount()>0;
    if(!pinsDirty && !routesDirty){ setMsg('Nothing to save locally.'); return; }
    const pinsPath='data/maps/'+MAP_ID+'/pins.json';
    const routesPath='data/maps/'+MAP_ID+'/routes.geojson';
-   const pinsJson=JSON.stringify(PINS.map(p=>({name:p.name,coords:p.coords,place:p.place||null})),null,2)+'\n';
    const routesJson=JSON.stringify({type:'FeatureCollection',features:R.map(routeToFeature)},null,2)+'\n';
    const what=[]; if(pinsDirty) what.push(PINS.length+' pin(s)'); if(routesDirty) what.push(R.length+' route(s)');
    setMsg('Saving to local file: '+what.join(' + ')+'…');
    localBtn.disabled=true;
    try{
-     if(pinsDirty){ await writeFile(pinsPath,pinsJson); SEED_PINS=JSON.parse(pinsJson); localStorage.removeItem(PIN_KEY); }
+     if(pinsDirty){
+       const merged=await mergePinsWithDisk();
+       const pinsJson=JSON.stringify(merged,null,2)+'\n';
+       await writeFile(pinsPath,pinsJson);
+       SEED_PINS=JSON.parse(pinsJson);
+       localStorage.removeItem(PIN_KEY);
+       if(merged.length!==PINS.length){
+         setMsg('✓ Saved; merged '+(merged.length-PINS.length)+' off-browser edit(s) from disk. Reloading…');
+         setTimeout(()=>location.reload(), 800);
+         return;
+       }
+     }
      if(routesDirty){ await writeFile(routesPath,routesJson); SEED_ROUTES=R.map(rt=>JSON.parse(JSON.stringify(rt))); localStorage.removeItem(RKEY); localStorage.removeItem(RDEL_KEY); }
      updateDirtyBadge(); setMsg('✓ Saved locally ('+what.join(' + ')+')');
      window.__mmlog('local-save: ok '+what.join(' + '));
@@ -3402,7 +3515,7 @@ function updateCounts(){
  // Always fetch the shipped seed (the repo's pins.json) so we can compute the
  // "unsaved local changes" diff and offer Discard. Runs in parallel with the
  // local restore so it doesn't delay first paint.
- const seedP=fetch('data/maps/'+MAP_ID+'/pins.json').then(r=>r.ok?r.json():[]).catch(()=>[]);
+ const seedP=fetch('data/maps/'+MAP_ID+'/pins.json',{cache:'no-store'}).then(r=>r.ok?r.json():[]).catch(()=>[]);
  const saved=loadPins();
  if(saved && saved.length){
    saved.forEach(o=>addPin({name:o.name,coords:o.coords,place:o.place}));

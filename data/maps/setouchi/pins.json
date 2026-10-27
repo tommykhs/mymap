@@ -1418,5 +1418,177 @@
       "color": "#263238",
       "icon": 1522
     }
+  },
+  {
+    "name": "イオン広店",
+    "coords": [
+      34.2338051,
+      132.6229956
+    ],
+    "place": {
+      "address": "〒737-0125 広島県呉市広本町２丁目１７−１",
+      "rating": 3.4,
+      "website": "https://www.aeon.com/store/%E3%82%A4%E3%82%AA%E3%83%B3/%E3%82%A4%E3%82%AA%E3%83%B3%E5%BA%83%E5%BA%97/",
+      "url": "https://maps.google.com/?cid=10567352462987114729&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437"
+    }
+  },
+  {
+    "name": "大三島ショッパーズ",
+    "coords": [
+      34.2498017,
+      133.0061484
+    ],
+    "place": {
+      "address": "〒794-1304 愛媛県今治市大三島町宮浦３３０４−１",
+      "rating": 3.7,
+      "website": "http://imadepa.net/shoplist/",
+      "url": "https://maps.google.com/?cid=11826845040578897095&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437"
+    }
+  },
+  {
+    "name": "大山祇神社",
+    "coords": [
+      34.2479179,
+      133.0057259
+    ],
+    "place": {
+      "address": "〒794-1393 愛媛県今治市大三島町宮浦３３２７",
+      "rating": 4.4,
+      "website": "https://oomishimagu.jp/",
+      "url": "https://maps.google.com/?cid=3498005260178545570&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "尾道駅観光案内所",
+    "coords": [
+      34.4047663,
+      133.193554
+    ],
+    "place": {
+      "address": "〒722-0036 広島県尾道市東御所町１−１",
+      "website": "http://www.ononavi.jp/sightseeing/infooffice/detail.html?detail_id=395",
+      "category": "StampRally",
+      "icon": 1608,
+      "color": "#BA68C8",
+      "course": "Shimanami",
+      "desc": "Onomichi Station Tourist Info / 尾道站旅遊諮詢中心。しまなみ島波スタンプラリー Shimanami コースの起点。9:00–18:00 daily."
+    }
+  },
+  {
+    "name": "HAKKOパーク（万田発酵）",
+    "coords": [
+      34.3282739,
+      133.1382235
+    ],
+    "place": {
+      "address": "〒722-2102 広島県尾道市因島重井町５８００−９５",
+      "website": "https://mandahakkopark.com/",
+      "category": "StampRally",
+      "icon": 1685,
+      "color": "#BA68C8",
+      "course": "Shimanami",
+      "desc": "Fermentation theme park (Manda Hakko) / 萬田發酵主題園區。11:00–15:00。水曜休。しまなみスタンプポイント。"
+    }
+  },
+  {
+    "name": "大山神社",
+    "coords": [
+      34.2939149,
+      133.1755182
+    ],
+    "place": {
+      "address": "〒722-2323 広島県尾道市因島土生町１４２４−２",
+      "website": "https://ooyamajinja.net/",
+      "category": "StampRally",
+      "icon": 1677,
+      "color": "#BA68C8",
+      "course": "Shimanami",
+      "desc": "Oyama Shrine / 大山神社。自転車神社とも呼ばれ、御朱印あり。8:30–16:30。しまなみスタンプポイント。"
+    }
+  },
+  {
+    "name": "平山郁夫美術館",
+    "coords": [
+      34.3057664,
+      133.0904194
+    ],
+    "place": {
+      "address": "〒722-2413 広島県尾道市瀬戸田町沢２００−２",
+      "website": "https://hirayama-museum.or.jp/",
+      "category": "StampRally",
+      "icon": 1636,
+      "color": "#BA68C8",
+      "course": "Shimanami",
+      "desc": "Hirayama Ikuo Art Museum / 平山郁夫美術館（生口島）。9:00–17:00。しまなみスタンプポイント。"
+    }
+  },
+  {
+    "name": "瀬戸田サンセットビーチ",
+    "coords": [
+      34.2813358,
+      133.0737412
+    ],
+    "place": {
+      "address": "〒722-2404 広島県尾道市瀬戸田町垂水１５０６−１５",
+      "website": "http://www.onomichi-sunset-beach.jp/",
+      "category": "StampRally",
+      "icon": 1521,
+      "color": "#BA68C8",
+      "course": "Shimanami",
+      "desc": "Setoda Sunset Beach / 瀬戸田日落海灘。生口島南西岸。しまなみスタンプポイント。"
+    }
+  },
+  {
+    "name": "せとうち交流館",
+    "coords": [
+      34.2597579,
+      133.2015495
+    ],
+    "place": {
+      "address": "〒794-2506 愛媛県越智郡上島町弓削下弓削１０３７−２",
+      "website": "https://www.town.kamijima.lg.jp/site/publicfacilities/963.html",
+      "category": "StampRally",
+      "icon": 1608,
+      "color": "#BA68C8",
+      "course": "Yumeshima",
+      "desc": "Setouchi Exchange Hall / 瀨戶內交流館（弓削島）。8:30–17:15。ゆめしまスタンプ起点。"
+    }
+  },
+  {
+    "name": "立石港務所",
+    "coords": [
+      34.2776781,
+      133.1776683
+    ],
+    "place": {
+      "address": "〒794-2550 愛媛県越智郡上島町生名１８８５−５",
+      "category": "StampRally",
+      "icon": 1569,
+      "color": "#BA68C8",
+      "course": "Yumeshima",
+      "desc": "Tateishi Port Office / 立石港務所（生名島）。ゆめしまスタンプポイント。"
+    }
+  },
+  {
+    "name": "リモーネプラザ（いわぎ物産センター）",
+    "coords": [
+      34.2452861,
+      133.1473411
+    ],
+    "place": {
+      "address": "〒794-2410 愛媛県越智郡上島町岩城１４２７−２ 岩城港務所内",
+      "website": "https://www.aoilemon.com/pages/180/",
+      "category": "StampRally",
+      "icon": 1685,
+      "color": "#BA68C8",
+      "course": "Yumeshima",
+      "desc": "Limone Plaza / 檸檬廣場（岩城島物産センター、青いレモン発祥）。8:30–17:00。ゆめしまスタンプポイント。"
+    }
   }
 ]

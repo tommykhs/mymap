@@ -15,7 +15,8 @@
     log(label + ' -> ' + url + (tries < MAX_TRIES ? ' [retry]' : ''));
     var ctrl = ('AbortController' in window) ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function(){ log(label + ' stalled — aborting'); ctrl.abort(); }, TIMEOUT) : null;
-    return fetch(url, ctrl ? {signal: ctrl.signal} : {}).then(function(r){
+    var opts = ctrl ? {signal: ctrl.signal, cache: 'no-store'} : {cache: 'no-store'};
+    return fetch(url, opts).then(function(r){
       if(!r.ok){ if(timer) clearTimeout(timer); throw new Error(label + ': HTTP ' + r.status); }
       log(label + ' ok (' + (r.headers.get('content-length') || '?') + ' B over the wire) — reading…');
       return Promise.resolve(fn(r)).then(function(v){ if(timer) clearTimeout(timer); return v; });
