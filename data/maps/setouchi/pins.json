@@ -2,257 +2,291 @@
   {
     "name": "鹿島明神社（Kashima Myōjin Shrine）",
     "coords": [
-      34.4748,
-      134.17153
+      34.4740093,
+      134.1698511
     ],
     "place": {
       "address": "OP・作中に何度も登場する聖地",
       "icon": 1677,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E9%B9%BF%E5%B3%B6%E6%98%8E%E7%A5%9E%E7%A4%BE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=503394600265480633&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "placeId": "ChIJCyC-y9WLUzURuXmsyrhq_AY",
+      "address_formatted": "日本、〒761-4100 香川県小豆郡土庄町鹿島甲２２６８"
     }
   },
   {
     "name": "エンジェルロード（Angel Road）",
     "coords": [
-      34.4856,
-      134.1789
+      34.4781355,
+      134.18876590000002
     ],
     "place": {
       "address": "OP（1期・3期）/劇場版キービジュアル。OPの猫「たえちゃん」",
       "icon": 1521,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E3%82%A8%E3%83%B3%E3%82%B8%E3%82%A7%E3%83%AB%E3%83%AD%E3%83%BC%E3%83%89%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=3737610553184265746&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "NaturalScenery",
-      "color": "#0F9D58"
+      "color": "#0F9D58",
+      "placeId": "ChIJISiqLJiJUzUREqZM0_6o3jM",
+      "address_formatted": "日本、〒761-4101 香川県小豆郡土庄町甲２４−９２"
     }
   },
   {
     "name": "富丘八幡神社（Tomioka Hachiman Shrine）",
     "coords": [
-      34.4843,
-      134.1834
+      34.4857641,
+      134.19541569999998
     ],
     "place": {
       "address": "2期最終話 夏祭りのシーン。石段から瀬戸内海を一望",
       "icon": 1677,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AF%8C%E4%B8%98%E5%85%AB%E5%B9%A1%E7%A5%9E%E7%A4%BE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=3810524097921115808&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "placeId": "ChIJCV1A0cCJUzURoGanYHqz4TQ",
+      "address_formatted": "日本、〒761-4121 香川県小豆郡土庄町淵崎甲甲２４２１"
     }
   },
   {
     "name": "柳隧道（Yanagi Tunnel）",
     "coords": [
-      34.4885,
-      134.1895
+      34.4857641,
+      134.19541569999998
     ],
     "place": {
       "address": "通学シーン・OP。二人の出会いの場所",
       "icon": 1899,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E6%9F%B3%E9%9A%A7%E9%81%93%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=3810524097921115808&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "placeId": "ChIJCV1A0cCJUzURoGanYHqz4TQ",
+      "address_formatted": "日本、〒761-4121 香川県小豆郡土庄町淵崎甲甲２４２１"
     }
   },
   {
     "name": "八幡橋（Hachiman Bridge）",
     "coords": [
-      34.48786,
-      134.19224
+      34.488216,
+      134.191048
     ],
     "place": {
       "address": "OP・作中の橋のシーン",
       "icon": 1899,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%85%AB%E5%B9%A1%E6%A9%8B%20%E6%B7%B5%E5%B4%8E%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=3944596534236881906&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "placeId": "ChIJZV0_BwCJUzUR8iNtBaYFvjY",
+      "address_formatted": "日本、〒761-4121 香川県小豆郡土庄町淵崎甲２０２２"
     }
   },
   {
     "name": "土庄中学校（Tonoshō Junior High (桃見中)）",
     "coords": [
-      34.48627,
-      134.19238
+      34.486319,
+      134.192062
     ],
     "place": {
       "address": "「桃見中学校」のモデル。原作者の母校",
       "icon": 1682,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E7%94%BA%E7%AB%8B%E5%9C%9F%E5%BA%84%E4%B8%AD%E5%AD%A6%E6%A0%A1%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=11582512340935162234&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "placeId": "ChIJt3A2FcCJUzURerkEeJtZvaA",
+      "address_formatted": "日本、〒761-4121 香川県小豆郡土庄町淵崎甲甲１９３６"
     }
   },
   {
     "name": "土庄町立中央図書館（Tonoshō Central Library）",
     "coords": [
-      34.48612,
+      34.4859563,
       134.18945
     ],
     "place": {
       "address": "5話 勉強回。館内が作中とほぼ一致",
       "icon": 1664,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E7%94%BA%E7%AB%8B%E4%B8%AD%E5%A4%AE%E5%9B%B3%E6%9B%B8%E9%A4%A8%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=9687397497539427147&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "placeId": "ChIJW4jNMJWJUzURS3vYrrKMcIY",
+      "address_formatted": "日本、〒761-4121 香川県小豆郡土庄町淵崎甲１４００−１"
     }
   },
   {
     "name": "BOOKSことぶき（Books Kotobuki）",
     "coords": [
-      34.48214,
-      134.18865
+      34.4821269,
+      134.1886901
     ],
     "place": {
       "address": "5話 西片が漫画を買う書店",
       "icon": 1526,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E3%83%96%E3%83%83%E3%82%AF%E3%82%B9%E3%81%93%E3%81%A8%E3%81%B6%E3%81%8D%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=18041818875807532571&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "ShoppingEntertainment",
-      "color": "#DB4437"
+      "color": "#DB4437",
+      "placeId": "ChIJadTsfZaJUzURGwZyiq1qYfo",
+      "address_formatted": "日本、〒761-4101 香川県小豆郡土庄町甲３６−１０"
     }
   },
   {
     "name": "西光寺（Saikōji Temple）",
     "coords": [
-      34.48307,
-      134.18727
+      34.4832446,
+      134.1870898
     ],
     "place": {
       "address": "OPに隣接の建物が登場",
       "icon": 1677,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E8%A5%BF%E5%85%89%E5%AF%BA%20%E5%9C%9F%E5%BA%84%E7%94%BA%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=257035923839603653&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "placeId": "ChIJa_CDoJaJUzURxVP5ls8skQM",
+      "address_formatted": "日本、〒761-4100 香川県小豆郡土庄町甲２００"
     }
   },
   {
     "name": "土庄港（Tonoshō Port）",
     "coords": [
-      34.48901,
-      134.17208
+      34.4892283,
+      134.1717634
     ],
     "place": {
       "address": "小豆島の玄関口（フェリー）。3期キービジュアル",
       "icon": 1569,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%9C%9F%E5%BA%84%E6%B8%AF%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=5812149016107928586&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "color": "#263238",
       "ferry": "https://www.shodoshima-ferry.co.jp/timetable/",
-      "category": "Transport"
+      "category": "Transport",
+      "placeId": "ChIJW6GiXieKUzURCsy_brzmqFA",
+      "address_formatted": "日本、〒761-4101 香川県小豆郡土庄町甲"
     }
   },
   {
     "name": "とのしょうBASE（Tonosho BASE）",
     "coords": [
-      34.48925,
-      134.17179
+      34.489373199999996,
+      134.1741408
     ],
     "place": {
       "address": "聖地巡礼の拠点（マップ・グッズ）。ターミナル2F",
       "icon": 1608,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E3%81%A8%E3%81%AE%E3%81%97%E3%82%87%E3%81%86BASE%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=15621731110503430415&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "placeId": "ChIJI8MUVWiJUzURD7k5cq2Jy9g",
+      "address_formatted": "日本、〒761-4104 香川県小豆郡土庄町甲５９７８−４２"
     }
   },
   {
     "name": "バジリコカフェ（Basilico Cafe）",
     "coords": [
-      34.4845,
-      134.185
+      34.483705199999996,
+      134.1990931
     ],
     "place": {
       "address": "劇場版 ペットショップの舞台",
       "icon": 1534,
       "guide": "https://tamapongift.com/article/2023/12/karakai-seichi.html",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E3%83%90%E3%82%B8%E3%83%AA%E3%82%B3%20%E5%9C%9F%E5%BA%84%E7%94%BA%20%E5%B0%8F%E8%B1%86%E5%B3%B6%20%E5%9C%9F%E5%BA%84%E7%94%BA",
+      "url": "https://maps.google.com/?cid=14186288453489811550&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "category": "FoodBeverage",
-      "color": "#F4B400"
+      "color": "#F4B400",
+      "placeId": "ChIJOYckyveJUzURXmB8ry_S38Q",
+      "address_formatted": "日本、〒761-4121 香川県小豆郡土庄町渕崎甲２４１８−８ アズキノイス1F"
     }
   },
   {
     "name": "宮浦港（Miyanoura Port・直島）",
     "coords": [
-      34.45635,
-      133.97414
+      34.4569171,
+      133.97456979999998
     ],
     "place": {
       "address": "直島の玄関口（フェリー）。レンタサイクル拠点",
       "icon": 1569,
       "color": "#263238",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%AE%E6%B5%A6%E6%B8%AF%20%E7%9B%B4%E5%B3%B6",
+      "url": "https://maps.google.com/?cid=10150558418253767379&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "ferry": "https://www.shikokukisen.com/instant/",
-      "category": "Transport"
+      "category": "Transport",
+      "placeId": "ChIJPwahtNfvUzUR0-Ld9xkH3ow",
+      "address_formatted": "日本、〒761-3110 香川県香川郡直島町"
     }
   },
   {
     "name": "家浦港（Ieura Port・豊島）",
     "coords": [
-      34.48945,
-      134.06119
+      34.489332399999995,
+      134.0610475
     ],
     "place": {
       "address": "豊島の玄関口（フェリー）。レンタサイクル拠点",
       "icon": 1569,
       "color": "#263238",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%B6%E6%B5%A6%E6%B8%AF%20%E8%B1%8A%E5%B3%B6",
+      "url": "https://maps.google.com/?cid=5259350540267610541&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "ferry": "https://www.shodoshima-ferry.co.jp/timetable/",
-      "category": "Transport"
+      "category": "Transport",
+      "placeId": "ChIJtQlaRX7zUzURreHofXP3_Eg",
+      "address_formatted": "日本、〒761-4661 香川県小豆郡土庄町豊島家浦"
     }
   },
   {
     "name": "宇野港（Uno Port・岡山 玉野市）",
     "coords": [
-      34.4903,
-      133.9457
+      34.4929802,
+      133.951654
     ],
     "place": {
       "address": "本州側の玄関口。直島・豊島・小豆島へのフェリー発着",
       "icon": 1569,
       "color": "#263238",
       "ferry": "https://www.shikokukisen.com/instant/",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%AE%87%E9%87%8E%E6%B8%AF%20%E7%8E%89%E9%87%8E%E5%B8%82",
-      "category": "Transport"
+      "url": "https://maps.google.com/?cid=12729140658366446366&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "category": "Transport",
+      "placeId": "ChIJnVlWsXHwUzURHvvppfz9prA",
+      "address_formatted": "日本、〒706-0002 岡山県玉野市築港１丁目２"
     }
   },
   {
     "name": "唐櫃港（Karato Port・豊島）",
     "coords": [
-      34.4957,
-      134.0935
+      34.4899779,
+      134.0956149
     ],
     "place": {
       "address": "豊島のもう一つの港（豊島美術館側）。土庄行きフェリー発着",
       "icon": 1569,
       "color": "#263238",
       "ferry": "https://www.shodoshima-ferry.co.jp/timetable/",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E5%94%90%E6%AB%83%E6%B8%AF%20%E8%B1%8A%E5%B3%B6",
-      "category": "Transport"
+      "url": "https://maps.google.com/?cid=2830595818824467348&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "category": "Transport",
+      "placeId": "ChIJqRPUybT0UzURlAO9a-ZLSCc",
+      "address_formatted": "日本、〒761-4662 香川県小豆郡土庄町豊島唐櫃"
     }
   },
   {
     "name": "本村港（Honmura Port・直島）",
     "coords": [
-      34.4612,
-      133.997
+      34.4616878,
+      133.9980055
     ],
     "place": {
       "address": "直島のもう一つの港（家プロジェクト側）。旅客船のみ＝車・自転車は不可",
       "icon": 1569,
       "color": "#263238",
       "ferry": "https://t-ferry.com/schedule/",
-      "url": "https://www.google.com/maps/search/?api=1&query=%E6%9C%AC%E6%9D%91%E6%B8%AF%20%E7%9B%B4%E5%B3%B6",
-      "category": "Transport"
+      "url": "https://maps.google.com/?cid=17532158977246775753&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "category": "Transport",
+      "placeId": "ChIJC0BCMADxUzURyUl4ULO9TvM",
+      "address_formatted": "日本、〒761-3110 香川県香川郡直島町本村"
     }
   },
   {
@@ -834,15 +868,17 @@
   {
     "name": "鬼ノ城跡",
     "coords": [
-      34.72656,
-      133.76381
+      34.7265625,
+      133.7638125
     ],
     "place": {
       "address": "〒719-1101 岡山県総社市黒尾",
-      "url": "https://www.google.com/maps/search/?api=1&query=34.72656%2C133.76381",
+      "url": "https://maps.google.com/?cid=15701910022644241137&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
       "color": "#2979FF",
       "icon": 1599,
-      "category": "BuildingCulture"
+      "category": "BuildingCulture",
+      "placeId": "ChIJp-DdcAOrVjUR8RLbKvlj6Nk",
+      "address_formatted": "日本、〒719-1101 岡山県総社市奥坂 PQG7+JG"
     }
   },
   {
@@ -1431,7 +1467,8 @@
       "website": "https://www.aeon.com/store/%E3%82%A4%E3%82%AA%E3%83%B3/%E3%82%A4%E3%82%AA%E3%83%B3%E5%BA%83%E5%BA%97/",
       "url": "https://maps.google.com/?cid=10567352462987114729&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "ShoppingEntertainment",
-      "color": "#DB4437"
+      "color": "#DB4437",
+      "icon": 1685
     }
   },
   {
@@ -1446,7 +1483,8 @@
       "website": "http://imadepa.net/shoplist/",
       "url": "https://maps.google.com/?cid=11826845040578897095&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "ShoppingEntertainment",
-      "color": "#DB4437"
+      "color": "#DB4437",
+      "icon": 1685
     }
   },
   {
@@ -1461,7 +1499,8 @@
       "website": "https://oomishimagu.jp/",
       "url": "https://maps.google.com/?cid=3498005260178545570&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "icon": 1677
     }
   },
   {
@@ -1477,14 +1516,17 @@
       "icon": 1608,
       "color": "#BA68C8",
       "course": "Shimanami",
-      "desc": "Onomichi Station Tourist Info / 尾道站旅遊諮詢中心。しまなみ島波スタンプラリー Shimanami コースの起点。9:00–18:00 daily."
+      "desc": "Onomichi Station Tourist Info / 尾道站旅遊諮詢中心。しまなみ島波スタンプラリー Shimanami コースの起点。9:00–18:00 daily.",
+      "url": "https://maps.google.com/?cid=3053442970909689284&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJU3S68DUAUTURxEX8RjQCYCo",
+      "address_formatted": "日本、〒722-0036 広島県尾道市東御所町１−１"
     }
   },
   {
     "name": "HAKKOパーク（万田発酵）",
     "coords": [
       34.3282739,
-      133.1382235
+      133.13822349999998
     ],
     "place": {
       "address": "〒722-2102 広島県尾道市因島重井町５８００−９５",
@@ -1493,7 +1535,10 @@
       "icon": 1685,
       "color": "#BA68C8",
       "course": "Shimanami",
-      "desc": "Fermentation theme park (Manda Hakko) / 萬田發酵主題園區。11:00–15:00。水曜休。しまなみスタンプポイント。"
+      "desc": "Fermentation theme park (Manda Hakko) / 萬田發酵主題園區。11:00–15:00。水曜休。しまなみスタンプポイント。",
+      "url": "https://maps.google.com/?cid=6823518584560444813&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJgwew-MRVUDURjWUABwACsl4",
+      "address_formatted": "日本、〒722-2102 広島県尾道市因島重井町５８００−９５"
     }
   },
   {
@@ -1509,13 +1554,16 @@
       "icon": 1677,
       "color": "#BA68C8",
       "course": "Shimanami",
-      "desc": "Oyama Shrine / 大山神社。自転車神社とも呼ばれ、御朱印あり。8:30–16:30。しまなみスタンプポイント。"
+      "desc": "Oyama Shrine / 大山神社。自転車神社とも呼ばれ、御朱印あり。8:30–16:30。しまなみスタンプポイント。",
+      "url": "https://maps.google.com/?cid=16245903607550746616&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJ3TCFY0lTUDUR-J9Mr0ELdeE",
+      "address_formatted": "日本、〒722-2323 広島県尾道市因島土生町１４２４−２"
     }
   },
   {
     "name": "平山郁夫美術館",
     "coords": [
-      34.3057664,
+      34.305766399999996,
       133.0904194
     ],
     "place": {
@@ -1525,7 +1573,10 @@
       "icon": 1636,
       "color": "#BA68C8",
       "course": "Shimanami",
-      "desc": "Hirayama Ikuo Art Museum / 平山郁夫美術館（生口島）。9:00–17:00。しまなみスタンプポイント。"
+      "desc": "Hirayama Ikuo Art Museum / 平山郁夫美術館（生口島）。9:00–17:00。しまなみスタンプポイント。",
+      "url": "https://maps.google.com/?cid=17005184116448212693&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJTcmjooNRUDUR1bYCSduM_us",
+      "address_formatted": "日本、〒722-2413 広島県尾道市瀬戸田町沢２００−２"
     }
   },
   {
@@ -1541,7 +1592,10 @@
       "icon": 1521,
       "color": "#BA68C8",
       "course": "Shimanami",
-      "desc": "Setoda Sunset Beach / 瀬戸田日落海灘。生口島南西岸。しまなみスタンプポイント。"
+      "desc": "Setoda Sunset Beach / 瀬戸田日落海灘。生口島南西岸。しまなみスタンプポイント。",
+      "url": "https://maps.google.com/?cid=5550286784359102708&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJ0x8MUCdOUDUR9PhEd2yUBk0",
+      "address_formatted": "日本、〒722-2404 広島県尾道市瀬戸田町垂水１５０６−１５"
     }
   },
   {
@@ -1557,14 +1611,17 @@
       "icon": 1608,
       "color": "#BA68C8",
       "course": "Yumeshima",
-      "desc": "Setouchi Exchange Hall / 瀨戶內交流館（弓削島）。8:30–17:15。ゆめしまスタンプ起点。"
+      "desc": "Setouchi Exchange Hall / 瀨戶內交流館（弓削島）。8:30–17:15。ゆめしまスタンプ起点。",
+      "url": "https://maps.google.com/?cid=15685395386790857451&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJoy3fdh2tUTUR60o43_-3rdk",
+      "address_formatted": "日本、〒794-2506 愛媛県越智郡上島町弓削下弓削１０３７−２"
     }
   },
   {
     "name": "立石港務所",
     "coords": [
-      34.2776781,
-      133.1776683
+      34.2777051,
+      133.1775769
     ],
     "place": {
       "address": "〒794-2550 愛媛県越智郡上島町生名１８８５−５",
@@ -1572,7 +1629,10 @@
       "icon": 1569,
       "color": "#BA68C8",
       "course": "Yumeshima",
-      "desc": "Tateishi Port Office / 立石港務所（生名島）。ゆめしまスタンプポイント。"
+      "desc": "Tateishi Port Office / 立石港務所（生名島）。ゆめしまスタンプポイント。",
+      "url": "https://maps.google.com/?cid=14741594861471803407&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJlZUtANOsUTURDyjAFGyqlMw",
+      "address_formatted": "日本、〒794-2550 愛媛県越智郡上島町生名２１１１−４"
     }
   },
   {
@@ -1588,7 +1648,260 @@
       "icon": 1685,
       "color": "#BA68C8",
       "course": "Yumeshima",
-      "desc": "Limone Plaza / 檸檬廣場（岩城島物産センター、青いレモン発祥）。8:30–17:00。ゆめしまスタンプポイント。"
+      "desc": "Limone Plaza / 檸檬廣場（岩城島物産センター、青いレモン発祥）。8:30–17:00。ゆめしまスタンプポイント。",
+      "url": "https://maps.google.com/?cid=12027773144125059484&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJT7IeG2NNUDURnLGO3vI766Y",
+      "address_formatted": "日本、〒794-2410 愛媛県越智郡上島町岩城１４２７−２ 岩城港務所内"
+    }
+  },
+  {
+    "name": "北谷薬品·しまcafeきたたに",
+    "coords": [
+      34.1753497,
+      132.799137
+    ],
+    "place": {
+      "address": "〒734-0101 広島県呉市豊浜町大字豊島３５５４−４",
+      "rating": 4.5,
+      "website": "http://www.kitatani-cc.com/",
+      "url": "https://maps.google.com/?cid=5481037349798898935&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "FoodBeverage",
+      "color": "#F4B400",
+      "icon": 1534
+    }
+  },
+  {
+    "name": "新光時計店",
+    "coords": [
+      34.1794062,
+      132.8670511
+    ],
+    "place": {
+      "address": "〒734-0302 広島県呉市豊町御手洗２２６",
+      "rating": 4.3,
+      "website": "http://www.shinko-tokei.jp/",
+      "url": "https://maps.google.com/?cid=10968510897421937167&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1598
+    }
+  },
+  {
+    "name": "松濤園（下蒲刈・朝鮮通信使資料館）",
+    "coords": [
+      34.187439999999995,
+      132.68393
+    ],
+    "place": {
+      "address": "〒737-0301 広島県呉市下蒲刈町三之瀬２２７７−３",
+      "website": "http://www.shimokamagari.jp/facility/shoutouen.html",
+      "category": "BuildingCulture",
+      "icon": 1636,
+      "color": "#2979FF",
+      "desc": "Shōtōen 松濤園 — Korean envoy / Edo-period reception museum. 下蒲刈 三之瀬 historic port district.",
+      "url": "https://maps.google.com/?cid=1005909296186288341&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJdQF_2bYPUDUR1Why4yy19Q0",
+      "address_formatted": "日本、〒737-0301 広島県呉市下蒲刈町三之瀬２２７７−３"
+    }
+  },
+  {
+    "name": "県民の浜（上蒲刈・温泉+ビーチ）",
+    "coords": [
+      34.1638011,
+      132.7459361
+    ],
+    "place": {
+      "address": "〒737-0402 広島県呉市蒲刈町大浦 県民の浜",
+      "category": "NaturalScenery",
+      "icon": 1521,
+      "color": "#0F9D58",
+      "desc": "Kenmin-no-Hama — long sandy beach + hot spring (輝きの館) + planetarium. Major rest/overnight stop on 上蒲刈.",
+      "url": "https://maps.google.com/?cid=13530247925859292127&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJ534rM1QQUDUR3xPPX80Yxbs",
+      "address_formatted": "日本、〒737-0402 広島県呉市蒲刈町大浦 県民の浜"
+    }
+  },
+  {
+    "name": "恋ヶ浜（上蒲刈）",
+    "coords": [
+      34.172599999999996,
+      132.739779
+    ],
+    "place": {
+      "address": "〒737-0402 広島県呉市蒲刈町大浦",
+      "category": "NaturalScenery",
+      "icon": 1521,
+      "color": "#0F9D58",
+      "desc": "Koi-ga-hama scenic beach on 上蒲刈 north coast.",
+      "url": "https://maps.google.com/?cid=13639970090795795438&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJiwZP3I8RUDUR7gPWqIfoSr0",
+      "address_formatted": "日本、〒737-0402 広島県呉市蒲刈町大浦"
+    }
+  },
+  {
+    "name": "歴史の見える丘公園（大崎下島・展望台）",
+    "coords": [
+      34.1773221,
+      132.8653519
+    ],
+    "place": {
+      "address": "〒734-0302 広島県呉市豊町御手洗３６５",
+      "category": "NaturalScenery",
+      "icon": 1523,
+      "color": "#0F9D58",
+      "desc": "Hilltop park overlooking 御手洗 port district and the bridges — iconic 大崎下島 viewpoint. Short climb from 御手洗.",
+      "url": "https://maps.google.com/?cid=3801188058012505056&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJv_G6Hic-UDUR4NNKMmaIwDQ",
+      "address_formatted": "日本、〒734-0302 広島県呉市豊町御手洗３６５"
+    }
+  },
+  {
+    "name": "乙女座（御手洗・大正時代の劇場）",
+    "coords": [
+      34.1796667,
+      132.8674407
+    ],
+    "place": {
+      "address": "〒734-0302 広島県呉市豊町御手洗２４８",
+      "website": "https://www.city.kure.lg.jp/soshiki/53/shiseki20-yutaka.html",
+      "category": "BuildingCulture",
+      "icon": 1598,
+      "color": "#2979FF",
+      "desc": "Otomeza — restored Taisho-era (1937) theatre in 御手洗 historic preservation district. Interior tour available.",
+      "url": "https://maps.google.com/?cid=10382785826625512881&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJERG7xig-UDURsWX57rIQF5A",
+      "address_formatted": "日本、〒734-0302 広島県呉市豊町御手洗２４８"
+    }
+  },
+  {
+    "name": "千砂子波止（御手洗・歴史的防波堤）",
+    "coords": [
+      34.176953399999995,
+      132.8689082
+    ],
+    "place": {
+      "address": "〒734-0302 広島県呉市豊町御手洗３４０",
+      "website": "https://tagengo-omotenashi.com/item/1/1232?page=ja",
+      "category": "BuildingCulture",
+      "icon": 1598,
+      "color": "#2979FF",
+      "desc": "Chisako-Hato — Edo-period stone breakwater built in 1829. One of 御手洗 port district key sights.",
+      "url": "https://maps.google.com/?cid=1607971423531011228&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJ_4JP7yU-UDURnIyLhH2pUBY",
+      "address_formatted": "日本、〒734-0302 広島県呉市豊町御手洗３４０"
+    }
+  },
+  {
+    "name": "観音崎（岡村島・最東端の展望点）",
+    "coords": [
+      34.1746254,
+      132.8813355
+    ],
+    "place": {
+      "address": "〒794-1101 愛媛県今治市関前岡村",
+      "category": "NaturalScenery",
+      "icon": 1523,
+      "color": "#0F9D58",
+      "desc": "Kannon-saki cape on 岡村島 — eastern tip of 安芸灘とびしま海道, 瀬戸内 panorama.",
+      "url": "https://maps.google.com/?cid=16190085356453923923&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "placeId": "ChIJxYlNrjc-UDURU4ywWtq8ruA",
+      "address_formatted": "日本、〒794-1101 愛媛県今治市関前岡村"
+    }
+  },
+  {
+    "name": "人待瀬戸展望台",
+    "coords": [
+      34.192551,
+      132.862177
+    ],
+    "place": {
+      "address": "〒794-1101 愛媛県今治市関前岡村",
+      "rating": 3.9,
+      "website": "",
+      "url": "https://maps.google.com/?cid=3271620763450511956&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523
+    }
+  },
+  {
+    "name": "A-Coop 豊島店",
+    "coords": [
+      34.1700328,
+      132.7965638
+    ],
+    "place": {
+      "address": "〒734-0101 広島県呉市豊浜町大字豊島７−２",
+      "rating": 3.6,
+      "website": "",
+      "url": "https://maps.google.com/?cid=6538136544392735662&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1578
+    }
+  },
+  {
+    "name": "村尾昌文堂大長店",
+    "coords": [
+      34.183228,
+      132.85526199999998
+    ],
+    "place": {
+      "address": "〒734-0301 広島県呉市豊町大長５９０５−１",
+      "rating": 4.4,
+      "website": "",
+      "url": "https://maps.google.com/?cid=1150340396013873885&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1526
+    }
+  },
+  {
+    "name": "であいの館",
+    "coords": [
+      34.1831417,
+      132.6871694
+    ],
+    "place": {
+      "address": "〒737-0311 広島県呉市蒲刈町向９８５−１",
+      "rating": 3.7,
+      "website": "https://www.city.kure.lg.jp/soshiki/38/1-28-deai.html",
+      "url": "https://maps.google.com/?cid=3871301273298237484&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684
+    }
+  },
+  {
+    "name": "御手洗休憩所",
+    "coords": [
+      34.1798898,
+      132.865376
+    ],
+    "place": {
+      "address": "〒734-0302 広島県呉市豊町御手洗６５",
+      "rating": 4.3,
+      "website": "https://www.city.kure.lg.jp/soshiki/67/m000260.html",
+      "url": "https://maps.google.com/?cid=298918078178676549&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1608
+    }
+  },
+  {
+    "name": "ＪＡ広島市 みかんあいらんど",
+    "coords": [
+      34.183097499999995,
+      132.8582605
+    ],
+    "place": {
+      "address": "〒734-0301 広島県呉市豊町大長５９１５−３",
+      "rating": 4,
+      "website": "http://www.ja-h-yutaka.or.jp/tyokubaisyo.html",
+      "url": "https://maps.google.com/?cid=2168784450700706370&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1578
     }
   }
 ]

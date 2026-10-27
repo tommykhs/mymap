@@ -128,6 +128,34 @@
  .rt-tip{background:var(--surface)!important;color:var(--fg)!important;
    border:1px solid var(--bd)!important;font-size:11px!important;padding:3px 8px!important}
  .rt-tip:before{border-top-color:var(--bd)!important}
+ /* Selected route: neon-style glow — the line itself glows in its own color
+    (two inner currentColor shadows), with a bright white outer halo (dark
+    theme) or a dark soft shadow (light theme). The script sets each
+    polyline's inline style.color to the route colour so currentColor matches
+    the stroke. */
+ .leaflet-overlay-pane path.rt-active{
+   filter:
+     drop-shadow(0 0 2px currentColor)
+     drop-shadow(0 0 6px currentColor)
+     drop-shadow(0 0 10px #fff)
+     drop-shadow(0 0 18px rgba(255,255,255,0.9));
+ }
+ html.light .leaflet-overlay-pane path.rt-active{
+   filter:
+     drop-shadow(0 0 2px currentColor)
+     drop-shadow(0 0 5px currentColor)
+     drop-shadow(0 0 8px rgba(0,0,0,0.55))
+     drop-shadow(0 0 16px rgba(0,0,0,0.35));
+ }
+ /* Gently fade the non-selected routes while any route is selected, so the
+    halo'd one really stands out. Scoped to the overlay pane so pins/tiles
+    stay fully opaque. */
+ .leaflet-overlay-pane.has-selection path:not(.rt-active){ opacity:0.45 }
+ /* Merge-mode sidebar hints: source route gets a dashed outline + "source"
+    chip; candidate targets get a pointer cursor + accent border. */
+ .it.merge-source{outline:2px dashed var(--ac);outline-offset:-2px;background:var(--hv)}
+ .it.merge-target{cursor:crosshair;border:1px dashed var(--ac);border-radius:6px}
+ .it.merge-target:hover{background:var(--hv)}
  .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--popup-bg);color:var(--fg)}
  /* Visual separation from the (often dark) basemap: distinct brighter surface,
     crisp border, strong drop shadow + a highlight ring. Works both modes. */
@@ -1305,13 +1333,33 @@ await new Promise(resolve=>{
    if(i<N) requestAnimationFrame(chunk); else { window.__mmlog('all '+N+' routes drawn'); resolve(); }
  })();
 });
-// route-level highlight: bump weight modestly + switch to accent orange
+// route-level highlight: keep the route's own color, add a thick halo glow via
+// .rt-active (CSS drop-shadow filter; white on dark theme, black on light),
+// and bump weight by +2 so the selected polyline reads clearly in the stack.
 function styleRoute(i,sel){
  const base=R[i].color||accent();
  (polysByIdx[i]||[]).forEach(pl=>{
-   if(sel){ pl.setStyle({color:'#2979ff',weight:effWeight(R[i])+1,opacity:1}); pl.bringToFront(); }
-   else  { pl.setStyle({color:base,weight:effWeight(R[i]),opacity:R[i].opacity}); }
+   if(sel){
+     pl.setStyle({color:base,weight:effWeight(R[i])+2,opacity:1});
+     pl.bringToFront();
+     if(pl._path){
+       pl._path.classList.add('rt-active');
+       pl._path.style.color=base;    // feeds `currentColor` in the glow filter
+     }
+   } else {
+     pl.setStyle({color:base,weight:effWeight(R[i]),opacity:R[i].opacity});
+     if(pl._path){
+       pl._path.classList.remove('rt-active');
+       pl._path.style.color='';
+     }
+   }
  });
+}
+// Toggle the overlay pane's .has-selection flag so CSS can dim non-selected
+// routes while one is picked. Called by selectRoute after selectedIdx moves.
+function syncOverlaySelectionClass(){
+ const pane=map.getPanes&&map.getPanes().overlayPane;
+ if(pane) pane.classList.toggle('has-selection', selectedIdx!=null);
 }
 // re-apply zoom-adaptive weights to all routes (selected route keeps its +1)
 function applyWeights(){
@@ -1324,13 +1372,14 @@ map.on('zoomend', applyWeights);
 function selectRoute(i,opts){
  opts=opts||{};
  if(selectedIdx===i){ // toggle off on second map-click of the same route
-   if(opts.fromMap){ styleRoute(i,false); const it=itemByIdx[i]; if(it) it.classList.remove('active'); selectedIdx=null; return; }
+   if(opts.fromMap){ styleRoute(i,false); const it=itemByIdx[i]; if(it) it.classList.remove('active'); selectedIdx=null; syncOverlaySelectionClass(); return; }
  }
  if(selectedIdx!=null && selectedIdx!==i){
    styleRoute(selectedIdx,false);
    const prev=itemByIdx[selectedIdx]; if(prev) prev.classList.remove('active');
  }
  selectedIdx=i;
+ syncOverlaySelectionClass();
  // ensure the route's layer is on the map (in case it was hidden via list-click)
  if(!map.hasLayer(lg[i])) map.addLayer(lg[i]);
  styleRoute(i,true);
@@ -1422,6 +1471,8 @@ function buildRouteLayer(idx){
  });
  polysByIdx[idx]=plList;
  if(!map.hasLayer(lg[idx])) map.addLayer(lg[idx]);
+ // Preserve selection halo across rebuilds (edits, splits, color changes).
+ if(selectedIdx===idx) styleRoute(idx,true);
  return lg[idx];
 }
 // Rebuilds the sidebar route groups (everything except #pinsSection) from R.
@@ -1931,6 +1982,11 @@ function _mergeCleanup(restore){
  if(!_mergeState) return;
  const b=document.getElementById('vertBanner'); if(b) b.remove();
  document.removeEventListener('keydown', _mergeState.escHandler);
+ // Restore sidebar onclick handlers + drop the visual hint classes.
+ (_mergeState.sidebarHandlers||[]).forEach(([it,prev])=>{ it.onclick=prev; });
+ Object.values(itemByIdx).forEach(it=>{
+   if(it){ it.classList.remove('merge-source'); it.classList.remove('merge-target'); }
+ });
  _mergeState=null;
  if(restore) wipeAndRebuildRoutes();   // restores all polylines' click + popup
 }
@@ -1944,7 +2000,7 @@ window.routeMergeStart=function(idx){
  const r=R[idx]; if(!r || R.length<2) return;
  try{ map.closePopup(); }catch(e){}
  _keepRouteSelected(idx);
- _mergeState={routeIdxA:idx, escHandler:null};
+ _mergeState={routeIdxA:idx, escHandler:null, sidebarHandlers:[]};
  // Override every OTHER route's click to mean "pick me to merge".
  R.forEach((rB,i)=>{
    if(i===idx) return;
@@ -1954,15 +2010,45 @@ window.routeMergeStart=function(idx){
      pl.on('click', (ev)=>{ L.DomEvent.stopPropagation(ev); window._mergePick(i); });
    });
  });
+ // Also let the user pick from the sidebar — much easier when routes overlap
+ // on the map (e.g. split pieces of the same original route).
+ Object.keys(itemByIdx).forEach(k=>{
+   const i=+k; const it=itemByIdx[i];
+   if(!it) return;
+   if(i===idx){ it.classList.add('merge-source'); return; }
+   it.classList.add('merge-target');
+   const prev=it.onclick;
+   _mergeState.sidebarHandlers.push([it, prev]);
+   it.onclick=(ev)=>{ ev.stopPropagation(); window._mergePick(i); };
+ });
  const banner=document.createElement('div'); banner.id='vertBanner';
- banner.innerHTML='<span>⤢ Click another route to merge with <b>'+esc(r.name)+'</b>. ESC cancels.</span>'
+ banner.innerHTML='<span>⤢ Click another route (on the map or in the sidebar) to merge with <b>'+esc(r.name)+'</b>. ESC cancels.</span>'
    +'<button onclick="window._mergeCancel();return false">Cancel</button>';
  document.body.appendChild(banner);
  _mergeState.escHandler=(ev)=>{ if(ev.key==='Escape') window._mergeCancel(); };
  document.addEventListener('keydown', _mergeState.escHandler);
 };
 window._mergeCancel=function(){ _mergeCleanup(true); };
-window._mergePick=function(idxB){
+// Ask ORS to route between two [lat,lng] points on the configured profile.
+// Returns an array of [lat,lng] vertices on success, or null if no key / no
+// network / no route — caller falls back to a straight line in that case.
+async function _mergeOrsBridge(fromPt,toPt){
+ const cfg=window.MYMAP_CONFIG||{};
+ const key=cfg.openRouteServiceApiKey; if(!key) return null;
+ const profile=cfg.openRouteServiceProfile||'cycling-regular';
+ const url='https://api.openrouteservice.org/v2/directions/'+encodeURIComponent(profile)
+   +'?api_key='+encodeURIComponent(key)
+   +'&start='+fromPt[1].toFixed(6)+','+fromPt[0].toFixed(6)
+   +'&end='+toPt[1].toFixed(6)+','+toPt[0].toFixed(6);
+ try{
+   const res=await fetch(url); if(!res.ok) return null;
+   const j=await res.json();
+   const coords=j.features&&j.features[0]&&j.features[0].geometry&&j.features[0].geometry.coordinates;
+   if(!coords||!coords.length) return null;
+   return coords.map(c=>[c[1],c[0]]);
+ }catch(e){ return null; }
+}
+window._mergePick=async function(idxB){
  if(!_mergeState) return;
  const idxA=_mergeState.routeIdxA;
  const A=R[idxA], B=R[idxB];
@@ -1981,11 +2067,42 @@ window._mergePick=function(idxB){
  };
  const best=Object.keys(ds).reduce((m,k)=>ds[k]<ds[m]?k:m, 'aEnd_bStart');
  const rev=(polys)=>polys.slice().reverse().map(p=>p.slice().reverse());
- let polys;
- if(best==='aEnd_bStart')        polys = A.polys.concat(B.polys);
- else if(best==='aEnd_bEnd')     polys = A.polys.concat(rev(B.polys));
- else if(best==='aStart_bStart') polys = rev(A.polys).concat(B.polys);
- else                            polys = rev(A.polys).concat(rev(B.polys));
+ // Flip A and/or B so A's end meets B's start (the aEnd_bStart orientation).
+ const aAligned = (best==='aStart_bStart'||best==='aStart_bEnd') ? rev(A.polys) : A.polys.slice();
+ const bAligned = (best==='aEnd_bEnd'||best==='aStart_bEnd')     ? rev(B.polys) : B.polys.slice();
+ // Seam endpoints after alignment.
+ const seamFrom = aAligned[aAligned.length-1][aAligned[aAligned.length-1].length-1];
+ const seamTo   = bAligned[0][0];
+ const gapKm    = _endpointDistKm(seamFrom, seamTo);
+ // If there's a real gap (e.g. after deleting the middle split), fill it with
+ // an ORS-routed bridge so the merged line follows the road, not a straight
+ // crow-flies segment. <50 m is just rounding noise — skip the ORS call.
+ let bridgePts=null;
+ if(gapKm > 0.05){
+   try{ _elevBanner && _elevBanner('Bridging merge gap via ORS ('+gapKm.toFixed(2)+' km)…'); }catch(e){}
+   bridgePts = await _mergeOrsBridge(seamFrom, seamTo);
+   try{ _elevBannerHide && _elevBannerHide(); }catch(e){}
+ }
+ // Join aligned A and B as a single continuous polyline through the seam
+ // (and optional ORS bridge). Also fold any duplicate junction points.
+ const joinAligned=(aPolys,bPolys,bridge)=>{
+   if(!aPolys.length) return bPolys.slice();
+   if(!bPolys.length) return aPolys.slice();
+   const aHead=aPolys.slice(0,-1), aLast=aPolys[aPolys.length-1];
+   const bFirst=bPolys[0], bTail=bPolys.slice(1);
+   const same=(p,q)=>Math.abs(p[0]-q[0])<1e-7 && Math.abs(p[1]-q[1])<1e-7;
+   let merged=aLast.slice();
+   if(bridge && bridge.length){
+     const b0=bridge[0];
+     const start = same(merged[merged.length-1], b0) ? bridge.slice(1) : bridge;
+     merged = merged.concat(start);
+   }
+   const bStartPt=bFirst[0];
+   const next = same(merged[merged.length-1], bStartPt) ? bFirst.slice(1) : bFirst;
+   merged = merged.concat(next);
+   return aHead.concat([merged]).concat(bTail);
+ };
+ const polys = joinAligned(aAligned, bAligned, bridgePts);
  const nowIso=(new Date()).toISOString();
  const merged=JSON.parse(JSON.stringify(A));
  merged.polys=polys;
