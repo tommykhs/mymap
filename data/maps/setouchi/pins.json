@@ -1889,7 +1889,7 @@
     }
   },
   {
-    "name": "ＪＡ広島市 みかんあいらんど",
+    "name": "ＪＡ広島市 Mikan Island",
     "coords": [
       34.183097499999995,
       132.8582605
@@ -1902,6 +1902,21 @@
       "category": "ShoppingEntertainment",
       "color": "#DB4437",
       "icon": 1578
+    }
+  },
+  {
+    "name": "サイクリング休憩所",
+    "coords": [
+      34.1870221,
+      132.8228655
+    ],
+    "place": {
+      "address": "〒734-0304 広島県呉市豊町久比",
+      "rating": 4,
+      "website": "",
+      "url": "https://maps.google.com/?cid=11523578397857567695&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "NaturalScenery",
+      "color": "#0F9D58"
     }
   }
 ]

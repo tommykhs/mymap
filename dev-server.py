@@ -55,6 +55,12 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def end_headers(self):
+        # Dev server: never let the browser cache map.html / JS / CSS / data.
+        # Avoids the "I edited map.html but the page still runs the old copy"
+        # trap during quick-iteration work.
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.send_header('Pragma', 'no-cache')
+        self.send_header('Expires', '0')
         # keep fetches happy regardless of the origin the user loads the page from
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')

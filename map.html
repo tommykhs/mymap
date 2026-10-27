@@ -416,11 +416,15 @@
  #pinsSection .gh .gp-target:hover{ color:#ff9500; }
  #pinsSection .gh.active-layer .gp-target{ color:#ff9500; }
  #pinsSection .gh .gp-target .material-symbols-outlined{ font-size:16px; }
- #adminBtn, #ghSave{position:relative}
+ #adminBtn, #ghSave, #localSave{position:relative}
  /* Louder always-visible cue when there are unsaved changes — a red tint /
-    outline on the button itself, so a small badge isn't the only signal. */
+    outline on the button itself, so a small badge isn't the only signal.
+    #localSave has inline color so we also override that (!important). */
  #adminBtn:has(.dirty-badge), #ghSave:has(.dirty-badge){
    color:#e0564f; box-shadow:inset 0 0 0 1px rgba(224,86,79,.5);
+ }
+ #localSave:has(.dirty-badge){
+   box-shadow:inset 0 0 0 2px #e0564f, 0 0 0 2px rgba(224,86,79,.35);
  }
  /* admin: inline X inside the token input, shown only when a token is stored */
  .tk-wrap{flex:1;position:relative;display:flex;min-width:0}
@@ -1536,6 +1540,7 @@ function wipeAndRebuildRoutes(){
    else selectedIdx=null;
  }
  if(typeof refreshRouteDirtyDots==='function') refreshRouteDirtyDots();
+ if(typeof updateDirtyBadge==='function') updateDirtyBadge();
 }
 // Recompute distance_km from current polys (planar via turf). Doesn't touch
 // elev_up_m (the inserted split vertex has no altitude and would bias climb).
@@ -2311,8 +2316,10 @@ function _extendCleanup(restore){
  _extendState=null;
  if(idx!=null){
    if(wantsRestore) R[idx].polys = orig;
-   buildRouteLayer(idx);
  }
+ // Rebuild EVERY route so the swap-click overrides we installed on all other
+ // routes during extend mode are reverted (not just the extended route).
+ wipeAndRebuildRoutes();
 }
 function _extendRefreshEndpointMarker(idx){
  const r=R[idx]; if(!r||!r.polys||!r.polys.length){
@@ -2358,12 +2365,27 @@ window.routeExtendStart=function(idx, opts){
  _extendState.escHandler=(ev)=>{ if(ev.key==='Escape') window._extendCancel(); };
  document.addEventListener('keydown', _extendState.escHandler);
  _extendState.mapClickHandler=async (ev)=>{
-   if(_extendState.busy) return;
+   if(!_extendState || _extendState.busy) return;
    _extendState.busy=true;
    await _extendAppend(idx, ev.latlng);
-   _extendState.busy=false;
+   if(_extendState) _extendState.busy=false;
  };
  map.on('click', _extendState.mapClickHandler);
+ // Prevent clicks on OTHER routes from being swallowed by their click handler
+ // (which would call selectRoute). While extending, every other polyline
+ // behaves like empty map: its click triggers an extend step at the click
+ // point. Handlers are reinstated in _extendCleanup via wipeAndRebuildRoutes.
+ R.forEach((rB,i)=>{
+   if(i===idx) return;
+   (polysByIdx[i]||[]).forEach(pl=>{
+     pl.off('click');
+     pl.unbindPopup();
+     pl.on('click', (ev)=>{
+       L.DomEvent && L.DomEvent.stopPropagation && L.DomEvent.stopPropagation(ev);
+       if(_extendState && _extendState.mapClickHandler) _extendState.mapClickHandler(ev);
+     });
+   });
+ });
 };
 window._extendCancel=function(){
  const idx=_extendState && _extendState.routeIdx;
@@ -2412,6 +2434,10 @@ window._extendDone=async function(){
 async function _extendAppend(idx, clickLL){
  const r=R[idx]; if(!r) return;
  if(!_extendState.orig) _extendState.orig=JSON.parse(JSON.stringify(r.polys));
+ // Per-click snapshot so Cmd+Z inside extend mode can pop the last click
+ // without aborting the whole mode.
+ if(!_extendState.stepStack) _extendState.stepStack=[];
+ _extendState.stepStack.push(JSON.parse(JSON.stringify(r.polys)));
  // First click on a brand-new (empty) route -> just plant the start vertex.
  if(!r.polys.length){
    r.polys.push([[clickLL.lat, clickLL.lng]]);
@@ -2583,6 +2609,36 @@ function _updateUndoBtns(){
 }
 window._doUndo=_doUndo;
 window._doRedo=_doRedo;
+// In-edit-mode Cmd+Z handler: pop one step for the active mode without
+// leaving it. Returns true if it handled the key.
+function _doUndoInMode(){
+ if(_extendState){
+   const idx=_extendState.routeIdx;
+   const stack=_extendState.stepStack||[];
+   if(stack.length){
+     const prev=stack.pop();
+     R[idx].polys = prev;
+     if(typeof _routeRecomputeDistance==='function') _routeRecomputeDistance(R[idx]);
+     buildRouteLayer(idx);
+     _extendRefreshEndpointMarker(idx);
+     if(typeof setMsg==='function') try{ setMsg('↶ Undid last extend click'); }catch(e){}
+   } else {
+     // nothing to pop yet — cancel the whole mode (equivalent to ESC)
+     window._extendCancel && window._extendCancel();
+   }
+   return true;
+ }
+ if(_vertState){
+   // Vertex drags mutate in place with no per-step history; roll back the
+   // whole edit session (same as Cancel), which restores _vertState.orig.
+   window._vertCancel && window._vertCancel();
+   if(typeof setMsg==='function') try{ setMsg('↶ Reverted vertex edits'); }catch(e){}
+   return true;
+ }
+ if(_splitState){ window._splitCancelBtn && window._splitCancelBtn(); return true; }
+ if(_mergeState){ window._mergeCancel && window._mergeCancel(); return true; }
+ return false;
+}
 // Keyboard shortcut: Cmd/Ctrl+Z = undo, Cmd/Ctrl+Shift+Z = redo. Skip while
 // typing in an input or contenteditable so the browser's native text-undo wins.
 document.addEventListener('keydown', (ev)=>{
@@ -2591,7 +2647,11 @@ document.addEventListener('keydown', (ev)=>{
  const t=ev.target;
  if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
  ev.preventDefault();
- if(ev.shiftKey) _doRedo(); else _doUndo();
+ if(ev.shiftKey){ _doRedo(); return; }
+ // Inside a route-edit mode, Cmd+Z steps back within the mode (or cancels
+ // it when there's nothing to pop). Outside, it does the global history undo.
+ if(_doUndoInMode()) return;
+ _doUndo();
 });
 // Fit all routes into the part of the map NOT covered by the panel.
 // Leaflet sizes the zoom to the current viewport; we just inset the left
@@ -2709,10 +2769,13 @@ function pinDiffCount(){
 function diffCount(){ return pinDiffCount() + routeDiffCount(); }
 function updateDirtyBadge(){
  const n=diffCount();
- // Mirror the badge onto BOTH the outer cloud_upload entry point (adminBtn)
- // AND the Save button inside the admin panel (ghSave), so users see the
- // pending-change count whether the panel is collapsed or expanded.
- [['adminBtn','Save pins to repo (admin)'], ['ghSave','Save My places to the repo']].forEach(([id, baseTitle])=>{
+ // Mirror the badge onto the outer cloud_upload entry (adminBtn), the GitHub
+ // Save button inside the admin panel (ghSave), AND the dev-server-only
+ // "💾 Save to file (local)" button (localSave) so users see the pending-
+ // change count on whichever save button they use.
+ [['adminBtn','Save pins to repo (admin)'],
+  ['ghSave','Save My places to the repo'],
+  ['localSave','Save to local file']].forEach(([id, baseTitle])=>{
    const btn=document.getElementById(id); if(!btn) return;
    let b=btn.querySelector('.dirty-badge');
    if(n>0){
