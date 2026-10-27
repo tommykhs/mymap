@@ -2187,11 +2187,12 @@ window._routeWeightApply=function(idx, w){
  buildRouteLayer(idx);
  saveLocalRouteState();
 };
-// --- elevation recompute (Open-Elevation SRTM30m) -------------------------
-// Free public API at api.open-elevation.com. Same SRTM30m data as OpenTopoData,
-// but proper CORS headers (OpenTopoData blocks browser-origin fetches).
-// POST batches of 100 locations, ~1 req/sec to stay polite. Service is
-// community-hosted and occasionally down — error surfaces in the banner.
+// --- elevation recompute (Open-Elevation SRTM30m, Google fallback) --------
+// Primary: free public Open-Elevation at api.open-elevation.com (SRTM30m,
+// proper CORS). Community-hosted and rate-limits to 429 — we retry with
+// backoff then fall back to Google ElevationService (same client key the
+// basemap uses; needs Elevation API enabled in Cloud Console). Last resort
+// returns nulls for the batch so the caller can report "service down".
 function _elevBanner(text, isErr){
  let b=document.getElementById('elevBanner');
  if(!b){ b=document.createElement('div'); b.id='elevBanner'; document.body.appendChild(b); }
@@ -2200,6 +2201,92 @@ function _elevBanner(text, isErr){
  if(isErr) setTimeout(_elevBannerHide, 5000);
 }
 function _elevBannerHide(){ const b=document.getElementById('elevBanner'); if(b) b.remove(); }
+// Resolve altitudes for an array of [lat,lng] points. Returns a parallel
+// array of numbers (meters) or null for points that couldn't be resolved.
+// Tries the dev-server's /api/elevation proxy first (server-side OpenTopoData
+// → Open-Elevation, bypasses browser CORS/429), then direct Open-Elevation
+// with retry, then Google ElevationService.
+async function _tryDevServerElev(locs){
+ try{
+   const res=await fetch('/api/elevation',{
+     method:'POST', headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({locations: locs.map(([la,ln])=>[la,ln])})
+   });
+   if(!res.ok) return null;
+   const j=await res.json();
+   if(j && Array.isArray(j.elevations) && j.elevations.length===locs.length) return j.elevations;
+ }catch(e){}
+ return null;
+}
+async function _elevationLookup(locs, onProgress){
+ if(onProgress) onProgress('Elevation via dev-server…');
+ const devResult=await _tryDevServerElev(locs);
+ if(devResult){ return devResult; }
+ const BATCH=50;                 // smaller than before to be gentler on the free API
+ const total=Math.ceil(locs.length/BATCH);
+ const out=new Array(locs.length).fill(null);
+ const BACKOFFS=[1500, 4000, 10000];   // ms between retries on 429/5xx
+ async function fetchOpenElev(slice){
+   const body={ locations: slice.map(([la,ln])=>({latitude:+la.toFixed(6), longitude:+ln.toFixed(6)})) };
+   for(let attempt=0; attempt<=BACKOFFS.length; attempt++){
+     let res;
+     try{
+       res=await fetch('https://api.open-elevation.com/api/v1/lookup',{
+         method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'},
+         body:JSON.stringify(body)
+       });
+     }catch(e){ res={ok:false, status:0}; }
+     if(res.ok){
+       const j=await res.json();
+       if(j && Array.isArray(j.results)) return j.results.map(r=>r&&r.elevation!=null?r.elevation:null);
+     }
+     // Retry on 429 / 5xx / network error. Give up for 4xx-other.
+     if(res.status && res.status!==429 && res.status<500) throw new Error('Open-Elevation HTTP '+res.status);
+     if(attempt<BACKOFFS.length){
+       if(onProgress) onProgress('Open-Elevation '+(res.status||'offline')+' — retry in '+(BACKOFFS[attempt]/1000)+'s…');
+       await new Promise(rs=>setTimeout(rs, BACKOFFS[attempt]));
+     }
+   }
+   throw new Error('Open-Elevation unavailable after '+(BACKOFFS.length+1)+' tries');
+ }
+ async function fetchGoogleElev(slice){
+   await loadGoogle();
+   if(!window.google || !google.maps || !google.maps.ElevationService) throw new Error('Google Elevation unavailable');
+   const svc=new google.maps.ElevationService();
+   // ElevationService caps a batch at 512 points.
+   const req={ locations: slice.map(([la,ln])=>({lat:+la, lng:+ln})) };
+   return new Promise((res, rej)=>{
+     svc.getElevationForLocations(req, (results, status)=>{
+       if(status!=='OK' || !results) return rej(new Error('Google ElevationService '+status));
+       res(results.map(r=>(r && r.elevation!=null)?r.elevation:null));
+     });
+   });
+ }
+ let googleOnly=false;   // once Open-Elevation gives up, use Google for the rest
+ for(let bi=0; bi<total; bi++){
+   const slice=locs.slice(bi*BATCH, (bi+1)*BATCH);
+   if(onProgress) onProgress('Elevation batch '+(bi+1)+'/'+total+(googleOnly?' (Google)':'')+'…');
+   let batch=null;
+   if(!googleOnly){
+     try{ batch=await fetchOpenElev(slice); }
+     catch(e){
+       if(onProgress) onProgress('Open-Elevation gave up — switching to Google…');
+       googleOnly=true;
+     }
+   }
+   if(googleOnly){
+     try{ batch=await fetchGoogleElev(slice); }
+     catch(e){
+       if(onProgress) onProgress('Google Elevation unavailable: '+(e.message||e), true);
+       // Leave this batch as null (sparse profile) rather than aborting the whole op.
+       batch=new Array(slice.length).fill(null);
+     }
+   }
+   for(let i=0;i<batch.length;i++) out[bi*BATCH+i]=batch[i];
+   if(!googleOnly && bi+1<total) await new Promise(rs=>setTimeout(rs, 1200));   // polite spacing for Open-Elevation only
+ }
+ return out;
+}
 async function routeRecomputeElevation(idx){
  const r=R[idx]; if(!r || !r.polys || !r.polys.length) return;
  try{ map.closePopup(); }catch(e){}
@@ -2209,27 +2296,12 @@ async function routeRecomputeElevation(idx){
    poly.forEach((pt,vi)=>{ refs.push({pi,vi}); locs.push([pt[0],pt[1]]); });
  });
  if(!locs.length) return;
- const BATCH=100, total=Math.ceil(locs.length/BATCH);
- _elevBanner('Recomputing elevation: 0/'+total+' batches…');
- const alts=new Array(locs.length).fill(null);
+ _elevBanner('Recomputing elevation…');
+ let alts;
  try{
-   for(let bi=0; bi<total; bi++){
-     const slice=locs.slice(bi*BATCH, (bi+1)*BATCH);
-     const body={ locations: slice.map(([la,ln])=>({latitude:+la.toFixed(6), longitude:+ln.toFixed(6)})) };
-     const res=await fetch('https://api.open-elevation.com/api/v1/lookup',{
-       method:'POST',
-       headers:{'Content-Type':'application/json','Accept':'application/json'},
-       body:JSON.stringify(body)
-     });
-     if(!res.ok) throw new Error('Elevation HTTP '+res.status);
-     const j=await res.json();
-     if(!j||!Array.isArray(j.results)) throw new Error('Elevation response invalid');
-     j.results.forEach((row,i)=>{ if(row && row.elevation!=null) alts[bi*BATCH+i]=row.elevation; });
-     _elevBanner('Recomputing elevation: '+(bi+1)+'/'+total+' batches…');
-     if(bi+1<total) await new Promise(rs=>setTimeout(rs, 1100));   // ~1 req/sec
-   }
+   alts = await _elevationLookup(locs, (msg,bad)=>_elevBanner(msg,bad));
  }catch(e){
-   _elevBanner('Elevation fetch failed: '+(e.message||e)+' (Open-Elevation may be down — try again later)', true);
+   _elevBanner('Elevation fetch failed: '+(e.message||e)+' (both Open-Elevation and Google refused — try again later)', true);
    return;
  }
  refs.forEach((ref,i)=>{
@@ -2268,23 +2340,9 @@ async function _fillMissingAltitudes(idx){
  if(!refs.length) return false;     // nothing missing
  if(!hasAltAlready) return false;   // whole route is altitude-less; leave to manual ⛰
  _elevBanner('Filling altitudes for '+refs.length+' new vertex'+(refs.length>1?'es':'')+'…');
- const BATCH=100, total=Math.ceil(locs.length/BATCH);
- const alts=new Array(locs.length).fill(null);
+ let alts;
  try{
-   for(let bi=0; bi<total; bi++){
-     const slice=locs.slice(bi*BATCH, (bi+1)*BATCH);
-     const body={ locations: slice.map(([la,ln])=>({latitude:+la.toFixed(6), longitude:+ln.toFixed(6)})) };
-     const res=await fetch('https://api.open-elevation.com/api/v1/lookup',{
-       method:'POST',
-       headers:{'Content-Type':'application/json','Accept':'application/json'},
-       body:JSON.stringify(body)
-     });
-     if(!res.ok) throw new Error('Elevation HTTP '+res.status);
-     const j=await res.json();
-     if(!j||!Array.isArray(j.results)) throw new Error('Elevation response invalid');
-     j.results.forEach((row,i)=>{ if(row && row.elevation!=null) alts[bi*BATCH+i]=row.elevation; });
-     if(bi+1<total) await new Promise(rs=>setTimeout(rs, 1100));
-   }
+   alts = await _elevationLookup(locs, (msg,bad)=>_elevBanner(msg,bad));
  }catch(e){
    _elevBanner('Altitude fill failed: '+(e.message||e)+' (climb stays stale; try ⛰ later)', true);
    return false;
