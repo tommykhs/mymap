@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>MyMap</title>
 <link rel="icon" type="image/png" href="https://cdn.iconscout.com/icon/free/png-512/free-google-my-maps-logo-icon-svg-download-png-3955526.png">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -132,6 +132,14 @@
     styleRoute() (CSS drop-shadow was unreliable on SVG inside Leaflet).
     While any route is selected, dim the others so the outlined one pops. */
  .leaflet-overlay-pane.has-selection path:not(.rt-active){ opacity:0.4 }
+ /* Start / end endpoint dots — above route stroke AND casing, with a gentle
+    pulse on the start dot so you can always spot where to begin from. */
+ .rt-endpoint{position:relative;z-index:1200;pointer-events:none;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
+ .rt-endpoint-start{animation:rtPulse 1.8s ease-in-out infinite}
+ @keyframes rtPulse{
+   0%,100%{transform:scale(1)}
+   50%   {transform:scale(1.18)}
+ }
  /* --- Details side-sheet (replaces the floating popup) ---------------- */
  .details-sheet{position:fixed;right:-360px;top:44px;bottom:0;width:300px;
    max-width:88vw;background:var(--surface);border-left:1px solid var(--bd);
@@ -205,11 +213,11 @@
  .pin-act{flex:0 0 auto;background:none;border:none;color:var(--mut);
    cursor:pointer;padding:3px;border-radius:6px;display:flex;align-items:center;line-height:1}
  .pin-act:hover{color:var(--fg);background:var(--hv)}
- /* Starred action: route is in "My routes" — gold tint + subtle background,
-    and the star glyph itself is rendered FILLED (Material Symbols FILL axis).
-    Without this, the outlined-variant font draws "star" as a hollow outline. */
- .pin-act.is-starred{color:#f4b400;background:rgba(244,180,0,.15)}
- .pin-act.is-starred:hover{color:#ff9500;background:rgba(244,180,0,.25)}
+ /* Starred action: route is in "My routes" — swap the glyph to its FILLED form
+    (Material Symbols FILL axis, requires the font URL to request FILL@0..1)
+    and tint it gold. No background highlight — the filled star alone signals state. */
+ .pin-act.is-starred{color:#f4b400;background:transparent}
+ .pin-act.is-starred:hover{color:#ff9500;background:var(--hv)}
  .pin-act.is-starred .mi,
  .pin-act.is-starred .material-symbols-outlined{
    font-variation-settings:'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
@@ -899,15 +907,22 @@ let darkMap=(typeof ST.dark==='boolean')?ST.dark:true;   // dark by default; rem
 const ROUTE_LIGHT='#fc4c02';   // Strava orange — pops on light AND dark tiles
 const ROUTE_DARK ='#fc4c02';
 const accent=()=>ROUTE_LIGHT;  // single orange in both themes
+// "My routes" visual override — any route in that group displays in red,
+// regardless of its stored r.color. Non-destructive: toggling the star off
+// restores the original colour because r.color itself is never touched.
+const MINE_COLOR='#e0564f';
+function effRouteColor(r){
+ if(r && r.group==='My routes') return MINE_COLOR;
+ return (r && r.color) || accent();
+}
 function recolorRoutes(){
- const c=accent();
  // skip the currently-selected route so its highlight stays visible
  Object.keys(lg||{}).forEach(k=>{
    if(+k===selectedIdx) return;
-   const rc=R[+k].color||c;
+   const rc=effRouteColor(R[+k]);
    lg[k].eachLayer(p=>p.setStyle&&p.setStyle({color:rc}));
  });
- Object.keys(itemByIdx||{}).forEach(i=>{const sw=itemByIdx[i].querySelector('.sw'); if(sw) sw.style.background=R[i].color||c;});
+ Object.keys(itemByIdx||{}).forEach(i=>{const sw=itemByIdx[i].querySelector('.sw'); if(sw) sw.style.background=effRouteColor(R[i]);});
 }
 let curBase=null,curKey='',baseCtlEl=null,googleLayer=null;
 // Google base map (lazy: only built once the user picks it). Uses native night
@@ -1066,6 +1081,34 @@ map.on('popupopen', (e)=>{
  window._suppressNextPopupDeselect = true;
  if(ll) showNameChip(title || '', ll);
  const routeIdx = (sourceLayer && sourceLayer._routeIdx);
+ // Pins have no _routeIdx — a view-mode pin click copies the name AND opens the
+ // pin's Google Maps place link in a new tab (if the pin resolved to one),
+ // so you can jump straight into Maps for directions / reviews / photos.
+ if(routeIdx == null && title){
+   try{
+     if(navigator.clipboard && navigator.clipboard.writeText){
+       navigator.clipboard.writeText(title).then(
+         ()=>{ /* ok */ },
+         ()=>{}
+       );
+     } else {
+       // Fallback: hidden textarea + document.execCommand('copy')
+       const ta=document.createElement('textarea');
+       ta.value=title; ta.style.position='fixed'; ta.style.opacity='0';
+       document.body.appendChild(ta); ta.select();
+       try{ document.execCommand('copy'); }catch(e){}
+       document.body.removeChild(ta);
+     }
+     // Open the Google place pin in a new tab
+     const pinData = sourceLayer && sourceLayer._pinData;
+     const placeUrl = pinData && pinData.place && pinData.place.url;
+     if(placeUrl){
+       window.open(placeUrl, '_blank', 'noopener,noreferrer');
+     }
+     // Tweak the chip text so you can see the copy happened
+     if(_nameChip){ _nameChip.textContent = '📋 ↗ ' + title; }
+   }catch(e){}
+ }
  setTimeout(()=>{
    try{ map.closePopup(popup); }catch(e){}
    // In View mode we still want the dir arrows + km labels on the
@@ -1185,6 +1228,45 @@ function _showDirChevrons(idx){
  _clearDirChevrons();
  _dirChevronsIdx=idx;
  const r=R[idx]; if(!r||!r.polys||!r.polys.length) return;
+ // Start / end markers for the selected route. 20 px solid dots with a
+ // white border + an inner glyph (▶ play for start, ■ stop for end).
+ // For loop routes where start ≈ end, we auto-offset the two dots on
+ // screen so both remain visible side-by-side instead of overlapping.
+ // Start is added LAST → stays on top (handy for loops), and still pulses.
+ const firstPoly=r.polys[0], lastPoly=r.polys[r.polys.length-1];
+ const _endSvg=(fill, kind)=>{
+   const glyph = kind==='start'
+     ? '<path d="M8.5 6 L15 10 L8.5 14 Z" fill="#fff"/>'
+     : '<rect x="7" y="7" width="6" height="6" fill="#fff"/>';
+   return '<div class="rt-endpoint '+(kind==='start'?'rt-endpoint-start':'rt-endpoint-end')+'">'
+     +'<svg width="20" height="20" viewBox="0 0 20 20">'
+     +'<circle cx="10" cy="10" r="9" fill="'+fill+'" stroke="#fff" stroke-width="2"/>'
+     +glyph
+     +'</svg></div>';
+ };
+ const sPt = firstPoly && firstPoly.length ? firstPoly[0] : null;
+ const ePt = lastPoly  && lastPoly.length  ? lastPoly[lastPoly.length-1] : null;
+ // Detect "loop" where endpoints coincide (or nearly so). In that case we
+ // offset the start marker by ~14 px to the north-east on screen so the
+ // user can see both dots instead of a single stack.
+ let sAnchor=[10,10], eAnchor=[10,10];
+ if(sPt && ePt){
+   const dLat=Math.abs(sPt[0]-ePt[0]), dLng=Math.abs(sPt[1]-ePt[1]);
+   if(dLat<1e-4 && dLng<1e-4){
+     // iconAnchor offsets measured from top-left of the icon's 20×20 bounding
+     // box — shifting the anchor shifts the dot in the opposite direction.
+     sAnchor=[2, 18];       // start dot renders up-and-right
+     eAnchor=[18, 2];       // end dot renders down-and-left
+   }
+ }
+ if(ePt){
+   const ico=L.divIcon({html:_endSvg('#c62828','end'), className:'', iconSize:[20,20], iconAnchor:eAnchor});
+   _dirChevrons.push(L.marker([ePt[0],ePt[1]],{icon:ico, interactive:false, zIndexOffset:9000, keyboard:false}).addTo(map));
+ }
+ if(sPt){
+   const ico=L.divIcon({html:_endSvg('#1b7f3a','start'), className:'', iconSize:[20,20], iconAnchor:sAnchor});
+   _dirChevrons.push(L.marker([sPt[0],sPt[1]],{icon:ico, interactive:false, zIndexOffset:9001, keyboard:false}).addTo(map));
+ }
  // Planar approx is fine for marker placement at Japan latitudes.
  const segs=[]; let total=0;
  r.polys.forEach(poly=>{
@@ -1479,7 +1561,7 @@ await new Promise(resolve=>{
    for(;i<end;i++){
      const idx=i, r=R[idx];
      const g=L.layerGroup();
-     const opt={color:(r.color||accent()),weight:effWeight(r),opacity:r.opacity};
+     const opt={color:effRouteColor(r),weight:effWeight(r),opacity:r.opacity};
      const dsh=r.dash||[0,0];
      if(r.style && r.style!=='solid' || dsh[0]) opt.dashArray=(dsh[0]||8)+','+(dsh[1]||6);
      const plList=[]; const tip=esc(r.name);
@@ -1509,7 +1591,7 @@ function _outlineColor(){
 }
 function _clearSelectedOutline(){ _selectedOutlineLayer.clearLayers(); }
 function styleRoute(i,sel){
- const base=R[i].color||accent();
+ const base=effRouteColor(R[i]);
  const w=effWeight(R[i]);
  if(sel){
    _clearSelectedOutline();
@@ -1606,7 +1688,7 @@ Object.keys(groups).sort().forEach(gn=>{
  const box=document.createElement('div');
  groups[gn].forEach(i=>{const r=R[i];
    const it=document.createElement('div');it.className='it';
-   it.innerHTML='<span class="sw" style="background:'+(r.color||accent())+'"></span>'+
+   it.innerHTML='<span class="sw" style="background:'+effRouteColor(r)+'"></span>'+
      '<span class="nm">'+esc(r.name)+'</span>'+
      '<span class="it-dot" title="Local edits not yet saved"></span>'+
      '<span class="it-dl" title="Download GPX"><span class="material-symbols-outlined">download</span></span>';
@@ -1642,7 +1724,7 @@ function buildRouteLayer(idx){
  const r=R[idx]; if(!r) return null;
  if(lg[idx]){ try{ map.removeLayer(lg[idx]); }catch(e){} lg[idx].clearLayers(); }
  else lg[idx]=L.layerGroup();
- const opt={color:(r.color||accent()),weight:effWeight(r),opacity:(r.opacity!=null?r.opacity:0.9)};
+ const opt={color:effRouteColor(r),weight:effWeight(r),opacity:(r.opacity!=null?r.opacity:0.9)};
  const dsh=r.dash||[0,0];
  if(r.style && r.style!=='solid' || dsh[0]) opt.dashArray=(dsh[0]||8)+','+(dsh[1]||6);
  const plList=[]; const tip=esc(r.name);
@@ -1691,7 +1773,7 @@ function rebuildSidebarRouteGroups(){
    const box=document.createElement('div');
    indices.forEach(i=>{ const r=R[i];
      const it=document.createElement('div'); it.className='it';
-     it.innerHTML='<span class="sw" style="background:'+(r.color||accent())+'"></span>'
+     it.innerHTML='<span class="sw" style="background:'+effRouteColor(r)+'"></span>'
        +'<span class="nm">'+esc(r.name)+'</span>'
        +'<span class="it-dot" title="Local edits not yet saved"></span>'
        +'<span class="it-dl" title="Download GPX"><span class="material-symbols-outlined">download</span></span>';
@@ -3132,6 +3214,7 @@ function addPin(o){
  m.bindTooltip(esc(p.name),{sticky:true,direction:'top',offset:[0,-12],className:'rt-tip'});
  m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
  m.on('click',()=>setSelectedPin(p));
+ m._pinData = p;   // back-reference so the view-mode popup handler can read the Google place URL
  m.addTo(pinLayer); p.marker=m; PINS.push(p);
  return p;
 }
@@ -3450,7 +3533,7 @@ async function placeSearch(q){
    routeMatches.forEach(({r,i})=>{
      const d=document.createElement('div'); d.className='pr';
      const meta=[r.group||'', r.distance_km?r.distance_km+' km':''].filter(Boolean).join(' · ');
-     d.innerHTML='<span class="pr-sw" style="background:'+(r.color||accent())+'"></span>'
+     d.innerHTML='<span class="pr-sw" style="background:'+(effRouteColor(r))+'"></span>'
        +'<b>'+esc(r.name)+'</b><span class="a">'+esc(meta)+'</span>';
      d.onclick=()=>focusRoute(i);
      box.appendChild(d);
@@ -3598,7 +3681,7 @@ function previewPlace(pl,nm){
      routeMatches.forEach(({r,i})=>{
        const d=document.createElement('div'); d.className='pr';
        const meta=[r.group||'', r.distance_km?r.distance_km+' km':''].filter(Boolean).join(' · ');
-       d.innerHTML='<span class="pr-sw" style="background:'+(r.color||accent())+'"></span>'
+       d.innerHTML='<span class="pr-sw" style="background:'+(effRouteColor(r))+'"></span>'
          +'<b>'+esc(r.name)+'</b><span class="a">'+esc(meta)+'</span>';
        d.onclick=()=>focusRoute(i);
        resBox.appendChild(d);

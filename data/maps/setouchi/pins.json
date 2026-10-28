@@ -1055,21 +1055,6 @@
     }
   },
   {
-    "name": "家老渡港（Karouto Port・因島）",
-    "coords": [
-      34.2794038,
-      133.1987594
-    ],
-    "place": {
-      "address": "〒722-2322 広島県尾道市因島三庄町",
-      "website": "",
-      "url": "https://maps.google.com/?cid=10220897109767884400&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
-      "color": "#263238",
-      "icon": 1569,
-      "category": "Transport"
-    }
-  },
-  {
     "name": "兼吉港（Kaneyoshi・向島）",
     "coords": [
       34.4068599,
@@ -1916,7 +1901,818 @@
       "website": "",
       "url": "https://maps.google.com/?cid=11523578397857567695&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "NaturalScenery",
-      "color": "#0F9D58"
+      "color": "#0F9D58",
+      "icon": 1522,
+      "desc": "サイクリスト用の休憩スポット"
+    }
+  },
+  {
+    "name": "尾道渡船",
+    "coords": [
+      34.4048303,
+      133.2029635
+    ],
+    "place": {
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1569,
+      "desc": "尾道↔向島 渡し船",
+      "url": "https://maps.google.com/?cid=16956769232937338353",
+      "website": "http://www.onoport.jp/sightseeing/route-f.html",
+      "cid": "16956769232937338353"
+    }
+  },
+  {
+    "name": "向島運動公園",
+    "coords": [
+      34.3801235,
+      133.184525
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1521,
+      "desc": "瀬戸内海を望む運動公園",
+      "url": "https://maps.google.com/?cid=11079304160765243533",
+      "website": "http://www.onomichishitaikyo.org/unndoukouenn2.html",
+      "cid": "11079304160765243533"
+    }
+  },
+  {
+    "name": "forumiest table (旧立花食堂)",
+    "coords": [
+      34.35957,
+      133.1927034
+    ],
+    "place": {
+      "category": "FoodBeverage",
+      "color": "#F4B400",
+      "icon": 1534,
+      "desc": "海辺のカフェダイニング",
+      "url": "https://maps.google.com/?cid=4566276535247208290",
+      "website": "https://forumiest.jp/",
+      "cid": "4566276535247208290"
+    }
+  },
+  {
+    "name": "因島大橋",
+    "coords": [
+      34.3574151,
+      133.1804458
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "しまなみ最初の大橋、二層構造",
+      "url": "https://maps.google.com/?cid=18392388881384022780",
+      "website": "https://www.jb-honshi.co.jp/shimanami/about/shimanami/p02.html",
+      "cid": "18392388881384022780"
+    }
+  },
+  {
+    "name": "はっさく屋",
+    "coords": [
+      34.3554356,
+      133.1729556
+    ],
+    "place": {
+      "category": "FoodBeverage",
+      "color": "#F4B400",
+      "icon": 1577,
+      "desc": "名物はっさく大福",
+      "url": "https://maps.google.com/?cid=14043754650352324568",
+      "website": "http://0845.boo.jp/hassaku/",
+      "cid": "14043754650352324568"
+    }
+  },
+  {
+    "name": "因島水軍城",
+    "coords": [
+      34.3279766,
+      133.1664141
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1598,
+      "desc": "村上海賊の歴史",
+      "url": "https://maps.google.com/?cid=14365579775189128513",
+      "website": "https://kanko-innoshima.jp/sightseeing_leisure/suigunjo",
+      "cid": "14365579775189128513"
+    }
+  },
+  {
+    "name": "白滝山",
+    "coords": [
+      34.3446653,
+      133.1580107
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "五百羅漢と絶景",
+      "url": "https://maps.google.com/?cid=7361000956117760765",
+      "cid": "7361000956117760765"
+    }
+  },
+  {
+    "name": "生口橋",
+    "coords": [
+      34.3036367,
+      133.1498659
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "因島↔生口島",
+      "url": "https://maps.google.com/?cid=17351998276914057065",
+      "website": "https://www.jb-honshi.co.jp/shimanami/about/shimanami/p03.html",
+      "cid": "17351998276914057065"
+    }
+  },
+  {
+    "name": "しまなみドルチェ 瀬戸田本店",
+    "coords": [
+      34.3098446,
+      133.1159366
+    ],
+    "place": {
+      "category": "FoodBeverage",
+      "color": "#F4B400",
+      "icon": 1534,
+      "desc": "レモン系ジェラート",
+      "url": "https://maps.google.com/?cid=6814721872899583283",
+      "website": "http://www.setoda-dolce.com/",
+      "cid": "6814721872899583283"
+    }
+  },
+  {
+    "name": "耕三寺／耕三寺博物館",
+    "coords": [
+      34.3048856,
+      133.0903366
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "「西の日光」極彩色伽藍",
+      "url": "https://maps.google.com/?cid=297123292266268359",
+      "website": "http://www.kousanji.or.jp/",
+      "cid": "297123292266268359"
+    }
+  },
+  {
+    "name": "未来心の丘",
+    "coords": [
+      34.3032374,
+      133.0889489
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "大理石の丘、SNS 名所",
+      "url": "https://maps.google.com/?cid=15674338994123964729",
+      "website": "http://www.kousanji.or.jp/hill_of_hope.html",
+      "cid": "15674338994123964729"
+    }
+  },
+  {
+    "name": "しおまち商店街",
+    "coords": [
+      34.3043975,
+      133.0862731
+    ],
+    "place": {
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1686,
+      "desc": "レモンスイーツ・古民家カフェ",
+      "url": "https://maps.google.com/?cid=14367459729320651529",
+      "website": "https://shiomachi-shotengai.jp/",
+      "cid": "14367459729320651529"
+    }
+  },
+  {
+    "name": "多々羅大橋",
+    "coords": [
+      34.259778,
+      133.0641938
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "広島↔愛媛 県境、多々羅鳴き龍",
+      "url": "https://maps.google.com/?cid=14704010056835338424",
+      "website": "https://www.ononavi.jp/sightseeing/shimanami/detail.html?detail_id=475",
+      "cid": "14704010056835338424"
+    }
+  },
+  {
+    "name": "道の駅 多々羅しまなみ公園",
+    "coords": [
+      34.254162,
+      133.0540416
+    ],
+    "place": {
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "レモン・海鮮・補給",
+      "url": "https://maps.google.com/?cid=4631298090120556845",
+      "website": "https://imabari-shimanami.jp/tatara/",
+      "cid": "4631298090120556845"
+    }
+  },
+  {
+    "name": "ところミュージアム大三島",
+    "coords": [
+      34.2150871,
+      132.951982
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "瀬戸内の斜面現代アート",
+      "url": "https://maps.google.com/?cid=3949829026888729224",
+      "website": "http://museum.city.imabari.ehime.jp/tokoro/",
+      "cid": "3949829026888729224"
+    }
+  },
+  {
+    "name": "今治市伊東豊雄建築ミュージアム",
+    "coords": [
+      34.2138971,
+      132.9504257
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "伊東豊雄 設計",
+      "url": "https://maps.google.com/?cid=16266557751763011618",
+      "website": "https://www.tima-imabari.jp/",
+      "cid": "16266557751763011618"
+    }
+  },
+  {
+    "name": "大三島橋",
+    "coords": [
+      34.216339,
+      133.055708
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "大三島↔伯方",
+      "url": "https://maps.google.com/?cid=9353146687413525024",
+      "cid": "9353146687413525024"
+    }
+  },
+  {
+    "name": "道の駅 伯方S・Cパーク",
+    "coords": [
+      34.2027466,
+      133.0755003
+    ],
+    "place": {
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "塩ソフト・海水浴場",
+      "url": "https://maps.google.com/?cid=9879987237943774408",
+      "website": "https://imabari-shimanami.jp/hakata/",
+      "cid": "9879987237943774408"
+    }
+  },
+  {
+    "name": "伯方・大島大橋",
+    "coords": [
+      34.1925134,
+      133.0726673
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "伯方↔大島",
+      "url": "https://maps.google.com/?cid=13961378431226113714",
+      "website": "https://www.jb-honshi.co.jp/shimanami/about/shimanami/p06.html",
+      "cid": "13961378431226113714"
+    }
+  },
+  {
+    "name": "今治市村上海賊ミュージアム",
+    "coords": [
+      34.168955,
+      133.087651
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "日本遺産 村上海賊",
+      "url": "https://maps.google.com/?cid=5737800012178025700",
+      "website": "https://www.city.imabari.ehime.jp/museum/suigun/",
+      "cid": "5737800012178025700"
+    }
+  },
+  {
+    "name": "亀老山展望公園",
+    "coords": [
+      34.1199263,
+      133.0334642
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "しまなみ屈指の絶景",
+      "url": "https://maps.google.com/?cid=9080194427832090148",
+      "website": "https://www.city.imabari.ehime.jp/kanko/spot/?a=182",
+      "cid": "9080194427832090148"
+    }
+  },
+  {
+    "name": "来島海峡第一大橋",
+    "coords": [
+      34.1254109,
+      133.011478
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "世界初の三連吊橋",
+      "url": "https://maps.google.com/?cid=14747948125706901073",
+      "website": "http://www.jb-honshi.co.jp/shimanami/about/shimanami/p07.html",
+      "cid": "14747948125706901073"
+    }
+  },
+  {
+    "name": "来島海峡展望館",
+    "coords": [
+      34.1139731,
+      132.9776694
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "糸山公園、橋の全景",
+      "url": "https://maps.google.com/?cid=5018226734698336301",
+      "website": "https://gogo-shimanami.jp/omiyage/",
+      "cid": "5018226734698336301"
+    }
+  },
+  {
+    "name": "サンライズ糸山",
+    "coords": [
+      34.110061,
+      132.9777431
+    ],
+    "place": {
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1522,
+      "desc": "レンタサイクル返却・休憩拠点",
+      "url": "https://maps.google.com/?cid=1184842059830513525",
+      "website": "https://www.sunrise-itoyama.jp/",
+      "cid": "1184842059830513525"
+    }
+  },
+  {
+    "name": "弓削港",
+    "coords": [
+      34.2587689,
+      133.2009196
+    ],
+    "place": {
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1569,
+      "desc": "ゆめしま海道の玄関口",
+      "url": "https://maps.google.com/?cid=4042125686166865977",
+      "cid": "4042125686166865977"
+    }
+  },
+  {
+    "name": "弓削神社",
+    "coords": [
+      34.2532196,
+      133.2086404
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1677,
+      "desc": "弓削島の総鎮守",
+      "url": "https://maps.google.com/?cid=3718408490639589300",
+      "website": "http://ehime-jinjacho.jp/jinja/?p=1525",
+      "cid": "3718408490639589300"
+    }
+  },
+  {
+    "name": "松原海岸",
+    "coords": [
+      34.2529267,
+      133.2096673
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1521,
+      "desc": "穏やかな瀬戸内の浜",
+      "url": "https://maps.google.com/?cid=3108319099456989264",
+      "cid": "3108319099456989264"
+    }
+  },
+  {
+    "name": "弓削大橋",
+    "coords": [
+      34.2535006,
+      133.2000735
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "弓削↔佐島",
+      "url": "https://maps.google.com/?cid=16677711571611355417",
+      "cid": "16677711571611355417"
+    }
+  },
+  {
+    "name": "佐島",
+    "coords": [
+      34.2375729,
+      133.1868232
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "小さな漁師島",
+      "url": "https://maps.google.com/?cid=16892971551409396932",
+      "cid": "16892971551409396932"
+    }
+  },
+  {
+    "name": "生名橋",
+    "coords": [
+      34.2574642,
+      133.1872103
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "佐島↔生名島",
+      "url": "https://maps.google.com/?cid=2897497610809155732",
+      "cid": "2897497610809155732"
+    }
+  },
+  {
+    "name": "生名(立石)港",
+    "coords": [
+      34.2777016,
+      133.1775786
+    ],
+    "place": {
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1569,
+      "desc": "生名島北側 フェリー発着",
+      "url": "https://maps.google.com/?cid=14076707398197585977",
+      "cid": "14076707398197585977"
+    }
+  },
+  {
+    "name": "岩城橋",
+    "coords": [
+      34.2602189,
+      133.1663795
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1528,
+      "desc": "2022 年開通",
+      "url": "https://www.google.com/maps/search/?api=1&query=34.2602189,133.1663795",
+      "website": "https://www.google.com/maps/search/?api=1&query=34.2602189,133.1663795"
+    }
+  },
+  {
+    "name": "積善山",
+    "coords": [
+      34.2567016,
+      133.1473173
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1634,
+      "desc": "瀬戸内海の多島美 360°",
+      "url": "https://maps.google.com/?cid=13217628908879932858",
+      "cid": "13217628908879932858"
+    }
+  },
+  {
+    "name": "積善山展望台",
+    "coords": [
+      34.2565303,
+      133.1473322
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "山頂展望台",
+      "url": "https://maps.google.com/?cid=12049616383858867939",
+      "website": "https://www.nijinet.or.jp/Portals/0/pdf/yama100/sheet/054.pdf",
+      "cid": "12049616383858867939"
+    }
+  },
+  {
+    "name": "伯方塩業 大三島工場",
+    "coords": [
+      34.240655,
+      132.993744
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1598,
+      "desc": "「伯方の塩」の塩田工場見学",
+      "url": "https://maps.google.com/?cid=5270519434007718165",
+      "cid": "5270519434007718165",
+      "website": "https://www.hakatanoshio.co.jp/factory/"
+    }
+  },
+  {
+    "name": "道の駅 よしうみいきいき館",
+    "coords": [
+      34.1274537,
+      133.02204079999998
+    ],
+    "place": {
+      "address": "〒794-2114 愛媛県今治市吉海町名４５２０−２",
+      "rating": 3.9,
+      "website": "https://imabari-shimanami.jp/ikiiki/",
+      "url": "https://maps.google.com/?cid=3469347924243283992&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "大島の道の駅・海鮮BBQで有名"
+    }
+  },
+  {
+    "name": "よしうみバラ公園",
+    "coords": [
+      34.153981,
+      133.0412553
+    ],
+    "place": {
+      "address": "〒794-2103 愛媛県今治市吉海町福田１２９０",
+      "rating": 4,
+      "website": "http://www.city.imabari.ehime.jp/kouen/yosiumi/",
+      "url": "https://maps.google.com/?cid=9115538161312263260&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1582,
+      "desc": "400 種・6,500 本のバラ園"
+    }
+  },
+  {
+    "name": "折古の浜海水浴場",
+    "coords": [
+      34.2787028,
+      133.1709461
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1521,
+      "desc": "静かな浜辺",
+      "url": "https://maps.google.com/?cid=13036047170805181817",
+      "cid": "13036047170805181817"
+    }
+  },
+  {
+    "name": "久司山展望台",
+    "coords": [
+      34.2374806,
+      133.1972522
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "弓削島南端の絶景展望台 ⭐4.7",
+      "url": "https://maps.google.com/?cid=10499013263983176928",
+      "cid": "10499013263983176928"
+    }
+  },
+  {
+    "name": "船隠し公園",
+    "coords": [
+      34.2375008,
+      133.2006556
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1720,
+      "desc": "海賊の船隠し伝説の公園",
+      "url": "https://maps.google.com/?cid=3193174558517414491",
+      "cid": "3193174558517414491"
+    }
+  },
+  {
+    "name": "YUMESHIMA CIRCLE IWAGI",
+    "coords": [
+      34.2575243,
+      133.1654981
+    ],
+    "place": {
+      "address": "〒794-2410 愛媛県越智郡上島町岩城 7558+25",
+      "rating": 4.1,
+      "website": "https://www.kamijima.info/yumeshima_art2020-22/",
+      "url": "https://maps.google.com/?cid=1202591777358366453&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "児玉製パン所",
+    "coords": [
+      34.285474199999996,
+      133.1786119
+    ],
+    "place": {
+      "category": "FoodBeverage",
+      "color": "#F4B400",
+      "icon": 1577,
+      "desc": "地元ベーカリー",
+      "url": "https://maps.google.com/?cid=8438183728017579728&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "8438183728017579728"
+    }
+  },
+  {
+    "name": "スポレク公園展望台",
+    "coords": [
+      34.262071299999995,
+      133.1755111
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "岩城島の高評価展望台 ⭐4.9",
+      "url": "https://maps.google.com/?cid=17968254122021483117&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "17968254122021483117"
+    }
+  },
+  {
+    "name": "折古の浜海水浴場",
+    "coords": [
+      34.2885439,
+      133.2006518
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1521,
+      "desc": "静かな浜辺",
+      "url": "https://maps.google.com/?cid=13036047170805181817&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "13036047170805181817"
+    }
+  },
+  {
+    "name": "いきなスポレク公園",
+    "coords": [
+      34.2613358,
+      133.1724055
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1720,
+      "desc": "生名島の運動公園",
+      "url": "https://maps.google.com/?cid=17192667815975787786&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "17192667815975787786"
+    }
+  },
+  {
+    "name": "book cafe okappa",
+    "coords": [
+      34.2516111,
+      133.1873717
+    ],
+    "place": {
+      "category": "FoodBeverage",
+      "color": "#F4B400",
+      "icon": 1534,
+      "desc": "本に囲まれたブックカフェ ⭐4.7",
+      "url": "https://maps.google.com/?cid=9464238106841266282&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "9464238106841266282"
+    }
+  },
+  {
+    "name": "久司山展望台",
+    "coords": [
+      34.2443855,
+      133.2059844
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "弓削島南端の絶景展望台 ⭐4.7",
+      "url": "https://maps.google.com/?cid=10499013263983176928&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "10499013263983176928"
+    }
+  },
+  {
+    "name": "船隠し公園",
+    "coords": [
+      34.296442,
+      133.20781499999998
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1720,
+      "desc": "海賊の船隠し伝説の公園",
+      "url": "https://maps.google.com/?cid=3193174558517414491&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "3193174558517414491"
+    }
+  },
+  {
+    "name": "上島町ゆげ海の駅舎 ふらっと (Yuge Sea Station)",
+    "coords": [
+      34.258329599999996,
+      133.2044254
+    ],
+    "place": {
+      "address": "〒794-2506 愛媛県越智郡上島町弓削下弓削２０３−１",
+      "rating": 4.1,
+      "website": "http://yugeseastation.com/",
+      "url": "https://maps.google.com/?cid=9129552494279301759&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "A-Coop弓削店",
+    "coords": [
+      34.259693399999996,
+      133.2025202
+    ],
+    "place": {
+      "address": "〒794-2506 愛媛県越智郡上島町弓削下弓削１１９",
+      "rating": 3.6,
+      "website": "https://www.ja-ochiima.or.jp/shop/a-coop/",
+      "url": "https://maps.google.com/?cid=16278167504573098104&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437"
+    }
+  },
+  {
+    "name": "防波堤アート「天の花」",
+    "coords": [
+      34.29027120000001,
+      133.2238753
+    ],
+    "place": {
+      "address": "〒794-2501 愛媛県越智郡上島町弓削久司浦",
+      "rating": 3.9,
+      "website": "https://www.kamijima.info/bwp2019/",
+      "url": "https://maps.google.com/?cid=14173999333370142927&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF"
+    }
+  },
+  {
+    "name": "家老渡港",
+    "coords": [
+      34.2794038,
+      133.1987594
+    ],
+    "place": {
+      "address": "日本、〒722-2322 広島県尾道市因島三庄町",
+      "rating": 4,
+      "website": "",
+      "url": "https://maps.google.com/?cid=10220897109767884400&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "Transport",
+      "color": "#263238"
     }
   }
 ]
