@@ -1517,7 +1517,7 @@
       "address": "〒722-2102 広島県尾道市因島重井町５８００−９５",
       "website": "https://mandahakkopark.com/",
       "category": "StampRally",
-      "icon": 1685,
+      "icon": 1720,
       "color": "#BA68C8",
       "course": "Shimanami",
       "desc": "Fermentation theme park (Manda Hakko) / 萬田發酵主題園區。11:00–15:00。水曜休。しまなみスタンプポイント。",
@@ -1904,22 +1904,6 @@
       "color": "#0F9D58",
       "icon": 1522,
       "desc": "サイクリスト用の休憩スポット"
-    }
-  },
-  {
-    "name": "尾道渡船",
-    "coords": [
-      34.4048303,
-      133.2029635
-    ],
-    "place": {
-      "category": "Transport",
-      "color": "#263238",
-      "icon": 1569,
-      "desc": "尾道↔向島 渡し船",
-      "url": "https://maps.google.com/?cid=16956769232937338353",
-      "website": "http://www.onoport.jp/sightseeing/route-f.html",
-      "cid": "16956769232937338353"
     }
   },
   {
@@ -2738,10 +2722,25 @@
       "rating": 4.2,
       "website": "https://www.fukuyama-u.ac.jp/marine-bio-center/",
       "url": "https://maps.google.com/?cid=9854773140503791890&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
-      "category": "BuildingCulture",
-      "color": "#2979FF",
-      "icon": 1636,
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1779,
       "desc": "因島の水族館・海洋生物を展示"
+    }
+  },
+  {
+    "name": "後藤飲料水工業所（後藤鉱泉所）",
+    "coords": [
+      34.400441799999996,
+      133.20418429999998
+    ],
+    "place": {
+      "address": "〒722-0073 広島県尾道市向島町７５５−２",
+      "rating": 4.4,
+      "website": "https://www.instagram.com/maru5_gotokosensho_official/",
+      "url": "https://maps.google.com/?cid=11348537752894785785&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "FoodBeverage",
+      "color": "#F4B400"
     }
   }
 ]

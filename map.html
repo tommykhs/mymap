@@ -2094,6 +2094,32 @@ window._splitConfirm=async function(){
 //   • Shift-click    -> delete that vertex (needs at least 2 left).
 //   • Click the line -> insert a new vertex at the snap point.
 // Done commits, Cancel/ESC restores. Multi-poly routes show vertices for ALL polys.
+// Haversine helper reused by the long-straight-edge guards (delete + dragend).
+// Returns meters between two [lat, lng] vertices.
+function _edgeMeters(a, b){
+ if(!a || !b) return 0;
+ const R=6371000, toRad=Math.PI/180;
+ const la1=a[0]*toRad, la2=b[0]*toRad;
+ const dLa=(b[0]-a[0])*toRad, dLo=(b[1]-a[1])*toRad;
+ const h=Math.sin(dLa/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin(dLo/2)**2;
+ return 2*R*Math.asin(Math.sqrt(h));
+}
+// Soft, non-blocking toast at the top of the route-edit banner — surfaces
+// problem edges without hijacking the user's drag flow. Auto-fades after ~4 s.
+function _vertFlashWarning(msg){
+ const b=document.getElementById('vertBanner'); if(!b) return;
+ let w=document.getElementById('vertBannerWarn');
+ if(!w){ w=document.createElement('div'); w.id='vertBannerWarn';
+   w.style.cssText='position:absolute;top:100%;left:0;right:0;margin-top:4px;'
+     +'padding:6px 10px;background:#5a2a0a;color:#ffd38a;border-radius:6px;'
+     +'font-size:11px;line-height:1.3;pointer-events:none;'
+     +'box-shadow:0 2px 6px rgba(0,0,0,.3);transition:opacity .3s';
+   b.appendChild(w);
+ }
+ w.textContent=msg; w.style.opacity='1';
+ clearTimeout(w._fadeTimer);
+ w._fadeTimer=setTimeout(()=>{ w.style.opacity='0'; }, 4000);
+}
 let _vertState=null;
 function _vertCleanup(){
  if(!_vertState) return;
@@ -2120,12 +2146,41 @@ function _vertSpawnMarker(idx, polyIdx, vertIdx, isEnd){
    else R[idx].polys[polyIdx][m._vertIdx]=[ll.lat, ll.lng];
    const pl=(polysByIdx[idx]||[])[polyIdx]; if(pl) pl.setLatLngs(R[idx].polys[polyIdx]);
  });
+ // When a drag ends: if either neighbor edge is now a long straight-line jump
+ // (>150 m), warn the user. This is exactly how routes end up "broken" — the
+ // vertex got dragged off-road, leaving a straight-line shortcut.
+ m.on('dragend', ()=>{
+   const poly=R[idx].polys[polyIdx];
+   const vi=m._vertIdx;
+   const warnings=[];
+   if(vi>0){
+     const d=_edgeMeters(poly[vi-1], poly[vi]);
+     if(d>150) warnings.push('previous edge: '+Math.round(d)+' m');
+   }
+   if(vi<poly.length-1){
+     const d=_edgeMeters(poly[vi], poly[vi+1]);
+     if(d>150) warnings.push('next edge: '+Math.round(d)+' m');
+   }
+   if(warnings.length){
+     _vertFlashWarning('⚠ Long straight edge — '+warnings.join(', ')+'. The vertex may be off-road.');
+   }
+ });
  // Tap (or shift-click on desktop) -> open a small popup with a Delete button.
  // Shift-click skips the popup for power users; everyone else gets one tap to
  // open + one tap to confirm — works the same on touch and desktop.
  const tryDelete = ()=>{
    const cPoly=R[idx].polys[m._polyIdx];
    if(cPoly.length<=2){ alert('Cannot delete — a line needs at least 2 points.'); return; }
+   // Guard: if deleting this vertex joins two neighbors into a > 150 m
+   // straight line, the route will look broken on the map. Confirm first.
+   const vi=m._vertIdx;
+   if(vi>0 && vi<cPoly.length-1){
+     const d=_edgeMeters(cPoly[vi-1], cPoly[vi+1]);
+     if(d>150){
+       const ok=confirm('Deleting this vertex will create a '+Math.round(d)+' m straight-line edge between its neighbors. The route will look broken. Delete anyway?');
+       if(!ok) return;
+     }
+   }
    cPoly.splice(m._vertIdx, 1);
    _vertRebuildPolyMarkers(idx, m._polyIdx);
    const pl=(polysByIdx[idx]||[])[m._polyIdx]; if(pl) pl.setLatLngs(cPoly);
