@@ -2003,21 +2003,6 @@
     }
   },
   {
-    "name": "白滝山",
-    "coords": [
-      34.3446653,
-      133.1580107
-    ],
-    "place": {
-      "category": "NaturalScenery",
-      "color": "#0F9D58",
-      "icon": 1523,
-      "desc": "五百羅漢と絶景",
-      "url": "https://maps.google.com/?cid=7361000956117760765",
-      "cid": "7361000956117760765"
-    }
-  },
-  {
     "name": "生口橋",
     "coords": [
       34.3036367,
@@ -2740,6 +2725,23 @@
       "color": "#2979FF",
       "icon": 1636,
       "desc": "因島出身の囲碁棋士・本因坊秀策の記念館"
+    }
+  },
+  {
+    "name": "福山大学 マリンバイオセンター水族館",
+    "coords": [
+      34.3491164,
+      133.1751006
+    ],
+    "place": {
+      "address": "〒722-2101 広島県尾道市因島大浜町４５２−１０ 福山大学内海生物資源研究所",
+      "rating": 4.2,
+      "website": "https://www.fukuyama-u.ac.jp/marine-bio-center/",
+      "url": "https://maps.google.com/?cid=9854773140503791890&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "因島の水族館・海洋生物を展示"
     }
   }
 ]
