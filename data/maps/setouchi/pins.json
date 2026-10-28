@@ -2547,7 +2547,9 @@
       "website": "https://www.kamijima.info/yumeshima_art2020-22/",
       "url": "https://maps.google.com/?cid=1202591777358366453&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "icon": 1509,
+      "desc": "岩城島のサークルアート・ランドマーク"
     }
   },
   {
@@ -2666,8 +2668,10 @@
       "rating": 4.1,
       "website": "http://yugeseastation.com/",
       "url": "https://maps.google.com/?cid=9129552494279301759&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
-      "category": "BuildingCulture",
-      "color": "#2979FF"
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "弓削島「海の駅」・観光案内・物販"
     }
   },
   {
@@ -2682,7 +2686,9 @@
       "website": "https://www.ja-ochiima.or.jp/shop/a-coop/",
       "url": "https://maps.google.com/?cid=16278167504573098104&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "ShoppingEntertainment",
-      "color": "#DB4437"
+      "color": "#DB4437",
+      "icon": 1685,
+      "desc": "弓削島のスーパー・補給拠点"
     }
   },
   {
@@ -2697,7 +2703,9 @@
       "website": "https://www.kamijima.info/bwp2019/",
       "url": "https://maps.google.com/?cid=14173999333370142927&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "icon": 1509,
+      "desc": "防波堤のアートインスタレーション"
     }
   },
   {
@@ -2712,7 +2720,26 @@
       "website": "",
       "url": "https://maps.google.com/?cid=10220897109767884400&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "Transport",
-      "color": "#263238"
+      "color": "#263238",
+      "icon": 1569,
+      "desc": "弓削島↔因島フェリー発着港"
+    }
+  },
+  {
+    "name": "本因坊秀策囲碁記念館",
+    "coords": [
+      34.3280885,
+      133.18390309999998
+    ],
+    "place": {
+      "address": "〒722-2213 広島県尾道市因島外浦町１２１−１",
+      "rating": 4,
+      "website": "http://honinbo.shusaku.in/",
+      "url": "https://maps.google.com/?cid=12225964691731535072&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "因島出身の囲碁棋士・本因坊秀策の記念館"
     }
   }
 ]
