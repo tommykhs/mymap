@@ -29253,7 +29253,7 @@
       "properties": {
         "id": 418,
         "name": "さざなみ海道",
-        "group": "Setouchi routes",
+        "group": "My routes",
         "distance_km": 82,
         "elev_up_m": 145,
         "intro_url": "https://setouchivelo.jp/route/route-166/",
@@ -108855,7 +108855,7 @@
       "properties": {
         "id": "1001-b-b-a-m-a-m-a-m",
         "name": "安芸灘とびしま海道（本線・岡村港まで）",
-        "group": "Setouchi routes",
+        "group": "My routes",
         "distance_km": 41.6,
         "elev_up_m": 243,
         "intro_url": "https://setouchivelo.jp/route/route-164/",
