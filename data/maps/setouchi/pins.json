@@ -2740,7 +2740,9 @@
       "website": "https://www.instagram.com/maru5_gotokosensho_official/",
       "url": "https://maps.google.com/?cid=11348537752894785785&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "FoodBeverage",
-      "color": "#F4B400"
+      "color": "#F4B400",
+      "icon": 1534,
+      "desc": "因島の老舗ラムネ・瓶詰飲料製造所"
     }
   }
 ]
