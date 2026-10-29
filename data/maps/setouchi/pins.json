@@ -2765,5 +2765,138 @@
       "icon": 1522,
       "desc": "しまなみブルーライン U ターンポイント"
     }
+  },
+  {
+    "name": "吉備津彦神社",
+    "coords": [
+      34.676863399999995,
+      133.86408409999999
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1677,
+      "desc": "備前一宮・鉄道&cycling 起点",
+      "url": "https://maps.google.com/?cid=2049276458791501975&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "2049276458791501975",
+      "website": "http://www.kibitsuhiko.or.jp/",
+      "rating": 4.3
+    }
+  },
+  {
+    "name": "備中国分寺",
+    "coords": [
+      34.666388999999995,
+      133.782188
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1706,
+      "desc": "五重塔・吉備路の象徴",
+      "url": "https://maps.google.com/?cid=7429256935011174691&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "7429256935011174691",
+      "website": "https://www.city.soja.okayama.jp/site/kanko/3601.html",
+      "rating": 4.2
+    }
+  },
+  {
+    "name": "吉備津神社",
+    "coords": [
+      34.6707293,
+      133.850597
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1677,
+      "desc": "桃太郎伝説・比翼入母屋造の本殿",
+      "url": "https://maps.google.com/?cid=45828749229339892&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "45828749229339892",
+      "website": "http://kibitujinja.com/",
+      "rating": 4.4
+    }
+  },
+  {
+    "name": "作山古墳",
+    "coords": [
+      34.6647795,
+      133.76938339999998
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1599,
+      "desc": "日本第10位の前方後円墳",
+      "url": "https://maps.google.com/?cid=14731266787397372803&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "14731266787397372803",
+      "website": "http://www.city.soja.okayama.jp/bunka/kanko/shitei_bunkazai/kuni/kuni_07.html",
+      "rating": 3.8
+    }
+  },
+  {
+    "name": "造山古墳",
+    "coords": [
+      34.6738024,
+      133.80401380000004
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1599,
+      "desc": "日本第4位の前方後円墳",
+      "url": "https://maps.google.com/?cid=3302588881615588288&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "3302588881615588288",
+      "rating": 4.1
+    }
+  },
+  {
+    "name": "鬼城山ビジターセンター",
+    "coords": [
+      34.72588288241783,
+      133.75871658325198
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1608,
+      "desc": "鬼ノ城登り口・休憩所",
+      "url": "https://maps.google.com/?cid=2410487870845733441&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "2410487870845733441",
+      "website": "https://soja-kankou.com/2023/06/21/%E9%AC%BC%E3%83%8E%E5%9F%8E/",
+      "rating": 3.9
+    }
+  },
+  {
+    "name": "Aeon 岡山",
+    "coords": [
+      34.6619963,
+      133.91762839999998
+    ],
+    "place": {
+      "address": "〒700-0907 岡山県岡山市北区下石井１丁目２−１",
+      "rating": 4,
+      "website": "https://okayama.aeonmall.jp/?utm_source=google_maps&utm_medium=organic&utm_campaign=website",
+      "url": "https://maps.google.com/?cid=10230153240605563922&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "大型ショッピングモール（岡山駅近く）"
+    }
+  },
+  {
+    "name": "高梁川トラベル",
+    "coords": [
+      34.5979963,
+      133.7697227
+    ],
+    "place": {
+      "address": "〒710-0055 岡山県倉敷市阿知２丁目２０−９ LOGIN Kurashiki",
+      "rating": 5,
+      "website": "https://yoshiiya.net/tour/",
+      "url": "https://maps.google.com/?cid=6034487158292702956&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "Transport",
+      "color": "#263238"
+    }
   }
 ]
