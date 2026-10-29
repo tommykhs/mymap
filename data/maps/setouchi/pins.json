@@ -2744,5 +2744,39 @@
       "icon": 1534,
       "desc": "因島の老舗ラムネ・瓶詰飲料製造所"
     }
+  },
+  {
+    "name": "岩子島 巌島神社",
+    "coords": [
+      34.3773738,
+      133.1568903
+    ],
+    "place": {
+      "address": "〒722-0072 広島県尾道市向島町岩子島字浦浜１９４４",
+      "rating": 3.8,
+      "website": "",
+      "url": "https://maps.google.com/?cid=3643592464743523157&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1677,
+      "desc": "岩子島の総鎮守・海を望む鳥居"
+    }
+  },
+  {
+    "name": "ブルーライン Uターン場",
+    "coords": [
+      34.2297303,
+      133.1865714
+    ],
+    "place": {
+      "address": "〒794-2520 愛媛県越智郡上島町弓削佐島１８５８",
+      "rating": 4.1,
+      "website": "https://onomichijp.com/island/sashima/u-turn_blue_line.html",
+      "url": "https://maps.google.com/?cid=7385707258129532048&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1522,
+      "desc": "しまなみブルーライン U ターンポイント"
+    }
   }
 ]
