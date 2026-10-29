@@ -308,8 +308,8 @@
   {
     "name": "「赤かぼちゃ」草間彌生",
     "coords": [
-      34.4559716,
-      133.97380529999998
+      34.43126619807117,
+      133.86772155761722
     ],
     "place": {
       "address": "〒761-3110 香川県香川郡直島町宮浦２２４９−４９",
@@ -2896,7 +2896,475 @@
       "website": "https://yoshiiya.net/tour/",
       "url": "https://maps.google.com/?cid=6034487158292702956&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "Transport",
-      "color": "#263238"
+      "color": "#263238",
+      "icon": 1522
+    }
+  },
+  {
+    "name": "岡山後楽園",
+    "coords": [
+      34.667333899999996,
+      133.93617
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1582,
+      "desc": "日本三名園・大名庭園",
+      "url": "https://maps.google.com/?cid=8403141796006900841&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "8403141796006900841",
+      "website": "https://www.okayama-korakuen.jp/",
+      "rating": 4.4
+    }
+  },
+  {
+    "name": "岡山城",
+    "coords": [
+      34.6651878,
+      133.9360657
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1598,
+      "desc": "黒い天守・金のシャチホコ",
+      "url": "https://maps.google.com/?cid=10268029904158733754&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "10268029904158733754",
+      "website": "https://okayama-castle.jp/",
+      "rating": 4.3
+    }
+  },
+  {
+    "name": "林原美術館",
+    "coords": [
+      34.663542,
+      133.933314
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "東洋美術・刀剣",
+      "url": "https://maps.google.com/?cid=16928801561726466247&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "16928801561726466247",
+      "website": "https://www.hayashibara-museumofart.jp/",
+      "rating": 4
+    }
+  },
+  {
+    "name": "岡山県立美術館",
+    "coords": [
+      34.6678937,
+      133.9301662
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "県立近代美術館",
+      "url": "https://maps.google.com/?cid=14082082702137878372&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "14082082702137878372",
+      "website": "https://okayama-kenbi.info/",
+      "rating": 4.1
+    }
+  },
+  {
+    "name": "岡山神社",
+    "coords": [
+      34.6677536,
+      133.9313728
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1677,
+      "desc": "岡山総鎮守",
+      "url": "https://maps.google.com/?cid=14595113917736270635&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "14595113917736270635",
+      "website": "https://www.okayama-jinjya.or.jp/",
+      "rating": 4.2
+    }
+  },
+  {
+    "name": "表町商店街",
+    "coords": [
+      34.6608477,
+      133.92921289999998
+    ],
+    "place": {
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "岡山最大の商店街",
+      "url": "https://maps.google.com/?cid=9377162177357490468&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "9377162177357490468",
+      "website": "http://www.omotecho.or.jp/",
+      "rating": 3.6
+    }
+  },
+  {
+    "name": "奉還町商店街",
+    "coords": [
+      34.6690889,
+      133.9173554
+    ],
+    "place": {
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "岡山駅西口のレトロ商店街",
+      "url": "https://maps.google.com/?cid=2624129092694041981&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "2624129092694041981",
+      "website": "http://www.houkancho.com/top.html",
+      "rating": 3.8
+    }
+  },
+  {
+    "name": "天満屋 岡山本店",
+    "coords": [
+      34.6618525,
+      133.92896109999998
+    ],
+    "place": {
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "岡山の老舗百貨店",
+      "url": "https://maps.google.com/?cid=14165970715983062745&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "14165970715983062745",
+      "website": "https://www.tenmaya.co.jp/okayama/",
+      "rating": 3.8
+    }
+  },
+  {
+    "name": "旭川さくらみち",
+    "coords": [
+      34.66300950000001,
+      133.9393014
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1522,
+      "desc": "旭川沿いサイクリング道",
+      "url": "https://maps.google.com/?cid=9897506195521247748&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "9897506195521247748",
+      "rating": 4.4
+    }
+  },
+  {
+    "name": "操山公園 里山ｾﾝﾀｰ",
+    "coords": [
+      34.6629411,
+      133.9621759
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1596,
+      "desc": "操山ハイキング起点",
+      "url": "https://maps.google.com/?cid=14464474622106762303&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "14464474622106762303",
+      "website": "https://www.okayama-park.or.jp/misao/",
+      "rating": 3.9
+    }
+  },
+  {
+    "name": "岡山市半田山植物園",
+    "coords": [
+      34.6917015,
+      133.9319159
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1582,
+      "desc": "岡山市内の植物園・展望",
+      "url": "https://maps.google.com/?cid=14254488015518696468&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "14254488015518696468",
+      "website": "https://www.okayama-park.or.jp/handayama/",
+      "rating": 4.1
+    }
+  },
+  {
+    "name": "吾妻寿司 さんすて岡山店",
+    "coords": [
+      34.6651823,
+      133.9178636
+    ],
+    "place": {
+      "category": "FoodBeverage",
+      "color": "#F4B400",
+      "icon": 1577,
+      "desc": "ばらずし発祥・名店",
+      "url": "https://maps.google.com/?cid=7477473691610520136&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "7477473691610520136",
+      "website": "http://azumazushi.ecgo.jp/",
+      "rating": 4
+    }
+  },
+  {
+    "name": "えびめしや 万成店",
+    "coords": [
+      34.6784879,
+      133.89325940000003
+    ],
+    "place": {
+      "category": "FoodBeverage",
+      "color": "#F4B400",
+      "icon": 1577,
+      "desc": "岡山名物エビめし",
+      "url": "https://maps.google.com/?cid=17884325145353282391&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "17884325145353282391",
+      "website": "http://www.indeira.net/ebimeshiya/",
+      "rating": 3.8
+    }
+  },
+  {
+    "name": "岡山桃太郎空港",
+    "coords": [
+      34.7579784,
+      133.8558042
+    ],
+    "place": {
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1504,
+      "desc": "岡山市郊外の空港",
+      "url": "https://maps.google.com/?cid=12967398088653519625&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "12967398088653519625",
+      "website": "http://www.okayama-airport.org/",
+      "rating": 3.9
+    }
+  },
+  {
+    "name": "児島ジーンズストリート",
+    "coords": [
+      34.4695944,
+      133.8015776
+    ],
+    "place": {
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "ジーンズ発祥地のストリート・工房群",
+      "url": "https://maps.google.com/?cid=14932881632856374506&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "14932881632856374506",
+      "website": "http://jeans-street.com/smp/",
+      "rating": 3.8
+    }
+  },
+  {
+    "name": "児島学生服資料館",
+    "coords": [
+      34.480133699999996,
+      133.821471
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "学生服の歴史博物館",
+      "url": "https://maps.google.com/?cid=5830078763579033037&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "5830078763579033037",
+      "website": "https://gakusei-fuku.jp/",
+      "rating": 4.1
+    }
+  },
+  {
+    "name": "Betty Smith ジーンズミュージアム&ヴィレッジ",
+    "coords": [
+      34.4764832,
+      133.8232415
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "ジーンズミュージアム・体験",
+      "url": "https://maps.google.com/?cid=11314819375610304507&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "11314819375610304507",
+      "website": "https://betty.co.jp/village/",
+      "rating": 4.2
+    }
+  },
+  {
+    "name": "鷲羽山 第2展望台",
+    "coords": [
+      34.4338963,
+      133.81410689999998
+    ],
+    "place": {
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523,
+      "desc": "歩いて 10 分の第2展望台",
+      "url": "https://maps.google.com/?cid=17414785837638364843&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "17414785837638364843",
+      "website": "https://okayama-kurashiki.com/washuzandainitembodai/",
+      "rating": 4.4
+    }
+  },
+  {
+    "name": "ブラジリアンパーク 鷲羽山ハイランド",
+    "coords": [
+      34.445783,
+      133.797572
+    ],
+    "place": {
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437",
+      "icon": 1684,
+      "desc": "瀬戸大橋近くの遊園地",
+      "url": "https://maps.google.com/?cid=7871707363275866344&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "7871707363275866344",
+      "website": "https://www.w-highland.co.jp/",
+      "rating": 3.9
+    }
+  },
+  {
+    "name": "妹尾駅",
+    "coords": [
+      34.6083403,
+      133.8715115
+    ],
+    "place": {
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1716,
+      "desc": "岡山→玉野間の中継駅",
+      "url": "https://maps.google.com/?cid=1804645635211126949&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "1804645635211126949",
+      "rating": 3.5
+    }
+  },
+  {
+    "name": "早島駅",
+    "coords": [
+      34.602216999999996,
+      133.8332558
+    ],
+    "place": {
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1716,
+      "desc": "岡山→児島ハブ",
+      "url": "https://maps.google.com/?cid=5402218281341140193&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "5402218281341140193",
+      "rating": 3.5
+    }
+  },
+  {
+    "name": "ＪＲ児島駅",
+    "coords": [
+      34.46291720000001,
+      133.80725999999999
+    ],
+    "place": {
+      "category": "Transport",
+      "color": "#263238",
+      "icon": 1716,
+      "desc": "岡山↔四国の鉄道結節",
+      "url": "https://maps.google.com/?cid=7753892159210887711&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "7753892159210887711",
+      "rating": 3.3
+    }
+  },
+  {
+    "name": "渋川マリン水族館（玉野海洋博物館）",
+    "coords": [
+      34.4548984,
+      133.90543929999998
+    ],
+    "place": {
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1636,
+      "desc": "渋川の水族館",
+      "url": "https://maps.google.com/?cid=7302422536540596196&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
+      "cid": "7302422536540596196",
+      "website": "https://www.city.tamano.lg.jp/site/kaihaku/",
+      "rating": 3.9
+    }
+  },
+  {
+    "name": "玉比咩神社",
+    "coords": [
+      34.4818188,
+      133.9292519
+    ],
+    "place": {
+      "address": "〒706-0012 岡山県玉野市玉５丁目１−１７",
+      "rating": 4.2,
+      "website": "http://www.jinja-net.jp/jinjacho-okayama2/jsearch3okayama.php?jinjya=6550",
+      "url": "https://maps.google.com/?cid=1243549288549097308&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1677
+    }
+  },
+  {
+    "name": "海の駅 シーサイドマート 玉野魚市場",
+    "coords": [
+      34.490443899999995,
+      133.9495987
+    ],
+    "place": {
+      "address": "〒706-0011 岡山県玉野市宇野１丁目７−５",
+      "rating": 3.7,
+      "website": "https://www.tamanouoitiba.co.jp/",
+      "url": "https://maps.google.com/?cid=5812318013602626340&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1685
+    }
+  },
+  {
+    "name": "瀬戸内国際芸術祭 un04 宇野のチヌ/宇野のコチヌ 淀川テクニック",
+    "coords": [
+      34.4910875,
+      133.95334
+    ],
+    "place": {
+      "address": "〒706-0002 岡山県玉野市築港１丁目１−４",
+      "rating": 4.1,
+      "website": "https://setouchi-artfest.jp/artworks-artists/artworks/uno-port/95.html",
+      "url": "https://maps.google.com/?cid=4527746103811420562&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1509
+    }
+  },
+  {
+    "name": "藤戸寺",
+    "coords": [
+      34.560084599999996,
+      133.80958909999998
+    ],
+    "place": {
+      "address": "１, 藤戸-５７-57 藤戸町藤戸 倉敷市 岡山県 710-0133",
+      "rating": 4,
+      "website": "",
+      "url": "https://maps.google.com/?cid=11565502533001904123&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1706
+    }
+  },
+  {
+    "name": "水島緑地福田公園",
+    "coords": [
+      34.5318472,
+      133.76955279999999
+    ],
+    "place": {
+      "address": "〒712-8046 岡山県倉敷市福田町古新田古新田１０２７",
+      "rating": 3.8,
+      "website": "http://www.city.kurashiki.okayama.jp/4715.htm",
+      "url": "https://maps.google.com/?cid=150874329526671192&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1720
     }
   }
 ]
