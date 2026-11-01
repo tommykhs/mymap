@@ -235,7 +235,15 @@
  .pin-scene{margin-top:5px;padding:4px 6px;border-radius:4px;font-size:11px;line-height:1.4;
    color:#ffd9e6;background:rgba(233,30,99,.14);border-left:2px solid #E91E63;
    display:flex;gap:5px;align-items:flex-start}
- .pin-scene .mi{font-size:14px;flex:0 0 auto;color:#E91E63;margin-top:1px}
+ /* .mi carries no global font-family here — without declaring it the ligature
+    renders as the literal word "movie". */
+ .pin-scene .mi{font-family:'Material Symbols Outlined';font-weight:normal;
+   font-size:14px;flex:0 0 auto;color:#E91E63;margin-top:1px;
+   -webkit-font-feature-settings:'liga';font-feature-settings:'liga'}
+ .pin-scene .pin-scene-text{flex:1 1 auto;cursor:text;outline:none;border-radius:3px;
+   padding:1px 3px;margin:-1px -3px;white-space:pre-wrap;word-break:break-word}
+ .pin-scene .pin-scene-text:hover{background:rgba(233,30,99,.16)}
+ .pin-scene .pin-scene-text:focus{background:rgba(233,30,99,.22)}
  .pin-photo{display:block;position:relative;margin-top:6px;border-radius:5px;overflow:hidden;line-height:0}
  .pin-photo img{width:100%;height:120px;object-fit:cover;display:block}
  .pin-photo-by{position:absolute;right:4px;bottom:3px;font-size:9px;line-height:1.3;
@@ -2151,9 +2159,22 @@ window._splitConfirm=async function(){
 // backfill afterwards. (The older GET form used by _mergeOrsBridge is limited
 // to a single start/end pair and returns 2D.)
 // pts: [[lat,lng], ...] in travel order. Returns [[lat,lng,ele], ...] or null.
+// Travel modes offered wherever a route is drawn or re-drawn. A route stores
+// its own choice in `routing_profile`, so a walking leg keeps routing as a
+// walking leg the next time it is extended or rerouted.
+const ORS_PROFILES=[
+ ['cycling-regular','Bike'],['cycling-road','Road bike'],['cycling-mountain','MTB'],
+ ['foot-walking','Walk'],['foot-hiking','Hike'],['driving-car','Car'],
+];
 function _orsProfileFor(r){
  const cfg=window.MYMAP_CONFIG||{};
  return (r && r.routing_profile) || cfg.openRouteServiceProfile || 'cycling-regular';
+}
+// <select> for the edit banners. `id` is what the caller wires onchange to.
+function _orsProfileSelect(id, current){
+ return '<select id="'+id+'" title="Travel mode for new segments">'
+   +ORS_PROFILES.map(([v,l])=>'<option value="'+v+'"'+(v===current?' selected':'')+'>'+l+'</option>').join('')
+   +'</select>';
 }
 async function _orsRoute(pts, profile){
  const cfg=window.MYMAP_CONFIG||{};
@@ -2380,7 +2401,8 @@ function _vertUpdateBanner(){
  const r=R[_vertState.routeIdx]; if(!r) return;
  let total=0; r.polys.forEach(p=>total+=p.length);
  const span=document.getElementById('vertBannerMsg'); if(span) span.innerHTML=
-   '✎ Drag · click line to insert · tap a dot to delete ('+total+' points). <b>Done</b> saves · ESC cancels.';
+   '✎ <b>Drag a blue dot</b> to reshape · click the <b>line</b> to insert a dot · tap a dot to delete ('
+   +total+' points). <b>Done</b> saves · ESC cancels.';
 }
 function _vertHandleMapClick(ev){
  if(!_vertState) return;
@@ -2432,19 +2454,23 @@ window.routeEditVerticesStart=function(idx){
  // Replace each polyline's click with an inserter (and unbind its popup so the
  // route popup doesn't open mid-edit). buildRouteLayer() in Done/Cancel restores
  // the original click + popup.
+ // Crosshair ONLY over the route itself: that is the only place a click does
+ // anything (it inserts a vertex). A crosshair over the whole map implied
+ // clicking anywhere was meaningful, when empty map just pans as usual.
  (polysByIdx[idx]||[]).forEach(pl=>{
    pl.off('click');
    pl.unbindPopup();
    pl.on('click', (ev)=>{ L.DomEvent.stopPropagation(ev); _vertHandleMapClick(ev); });
+   // Routes render on a canvas (preferCanvas), so there is no per-line element
+   // to style — toggle the container cursor on hover instead.
+   pl.on('mouseover', ()=>{ try{ map.getContainer().style.cursor='crosshair'; }catch(e){} });
+   pl.on('mouseout',  ()=>{ try{ map.getContainer().style.cursor=''; }catch(e){} });
  });
- // Crosshair cursor while in edit mode — visual cue that clicks now do
- // something different (insert a vertex / tap a dot to act on it).
- try{ map.getContainer().style.cursor='crosshair'; }catch(e){}
  const hasORS=!!((window.MYMAP_CONFIG||{}).openRouteServiceApiKey);
  const banner=document.createElement('div'); banner.id='vertBanner';
- banner.innerHTML='<span id="vertBannerMsg">✎ Drag · click line to insert · tap a dot to delete ('+totalVerts+' points). <b>Done</b> saves · ESC cancels.</span>'
+ banner.innerHTML='<span id="vertBannerMsg">✎ <b>Drag a blue dot</b> to reshape · click the <b>line</b> to insert a dot · tap a dot to delete ('+totalVerts+' points). <b>Done</b> saves · ESC cancels.</span>'
    +'<label class="rt-snap" title="'+(hasORS
-       ? 'Re-route the dragged point through ORS so it follows the road. Turn off for legs that should stay straight (ferry, ropeway).'
+       ? 'Applies when you DRAG a dot: the moved point is re-routed along the road instead of cutting a straight line. Turn off for legs that should stay straight (ferry, ropeway). Clicking the map does nothing in this mode.'
        : 'Add openRouteServiceApiKey to config.js to enable road snapping.')+'">'
    +'<input type="checkbox" id="vertSnapCb"'+(hasORS?' checked':' disabled')+'>'
    +'<span class="mi">route</span>Snap</label>'
@@ -2656,18 +2682,16 @@ window.routeRerouteStart=function(idx){
  _rrState.mapClick=(ev)=>{ if(_rrState) _rrAddVia(ev.latlng); };
  map.on('click', _rrState.mapClick);
  try{ map.getContainer().style.cursor='crosshair'; }catch(e){}
- const PROFILES=[['cycling-regular','Bike'],['cycling-road','Road bike'],
-   ['cycling-mountain','MTB'],['foot-walking','Walk'],['driving-car','Car']];
  const banner=document.createElement('div'); banner.id='vertBanner';
  banner.innerHTML='<span id="vertBannerMsg">⟲ Drag <b>A</b>/<b>B</b> to bracket the section to replace.</span>'
-   +'<select id="rrProfile" title="Routing profile for the replacement section">'
-   +PROFILES.map(([v,l])=>'<option value="'+v+'"'+(v===_rrState.profile?' selected':'')+'>'+l+'</option>').join('')
-   +'</select>'
+   +_orsProfileSelect('rrProfile', _rrState.profile)
    +'<button class="ok" onclick="window._rrApply();return false">Apply</button>'
    +'<button onclick="window._rrCancel();return false">Cancel</button>';
  document.body.appendChild(banner);
  const sel=document.getElementById('rrProfile');
- if(sel) sel.onchange=()=>{ _rrState.profile=sel.value; _rrPreview(); };
+ // Remember the choice on the route so extending or rerouting it later starts
+ // from the same travel mode.
+ if(sel) sel.onchange=()=>{ _rrState.profile=sel.value; r.routing_profile=sel.value; _rrPreview(); };
  _rrState.escHandler=(ev)=>{ if(ev.key==='Escape') window._rrCancel(); };
  document.addEventListener('keydown', _rrState.escHandler);
  _rrPreview();
@@ -3148,9 +3172,14 @@ window.routeExtendStart=function(idx, opts){
    ? '⤴ Click on the map to extend <b>'+esc(r.name)+'</b> from its end (yellow dot). ESC cancels.'
    : '✏ Click on the map to set the start of <b>'+esc(r.name)+'</b>, then keep clicking to extend.';
  banner.innerHTML='<span>'+initialMsg+'</span>'
+   +(key ? _orsProfileSelect('extProfile', _orsProfileFor(r)) : '')
    +'<button class="ok" onclick="window._extendDone();return false">Done</button>'
    +'<button onclick="window._extendCancel();return false">Cancel</button>';
  document.body.appendChild(banner);
+ // Mode applies to segments drawn from here on; earlier ones keep the geometry
+ // they were routed with.
+ const extSel=document.getElementById('extProfile');
+ if(extSel) extSel.onchange=()=>{ r.routing_profile=extSel.value; };
  _extendState.escHandler=(ev)=>{ if(ev.key==='Escape') window._extendCancel(); };
  document.addEventListener('keydown', _extendState.escHandler);
  _extendState.mapClickHandler=async (ev)=>{
@@ -3236,7 +3265,7 @@ async function _extendAppend(idx, clickLL){
  }
  const cfg=window.MYMAP_CONFIG||{};
  const key=cfg.openRouteServiceApiKey;
- const profile=cfg.openRouteServiceProfile||'cycling-regular';
+ const profile=_orsProfileFor(r);   // the route's own travel mode, set in the banner
  const lastPoly=r.polys[r.polys.length-1];
  const fromPt=lastPoly[lastPoly.length-1];
  // No ORS key (only happens via Create-new flow): append a straight line.
@@ -3316,6 +3345,9 @@ function routeCreateNew(){
    color:'#ff0000', weight:3, opacity:0.9,
    style:'solid', dash:[0,0],
    distance_km:0,
+   // Starting travel mode; the draw banner's picker changes it, and the route
+   // keeps it for later extends and reroutes.
+   routing_profile: cfg.openRouteServiceProfile || 'cycling-regular',
    edited_at:nowIso,
    edit_ops:[{op:'create', at:nowIso}]
  };
@@ -3625,6 +3657,12 @@ function pinIcon(id,color){
 // Header: drag + inline-editable name. Description below (inline-editable too).
 // External links row at the bottom, with the Icon/Color + Delete actions pushed
 // to the right side. Google-Maps link is icon-only (red Maps pin).
+// Re-render an OPEN popup in place. Popups are bound to a function, so calling
+// setPopupContent() with a string here would replace that binding and freeze
+// the markup again; update() just re-runs the function.
+function pinPopupRefresh(p){
+ try{ const pop=p.marker && p.marker.getPopup(); if(pop) pop.update(); }catch(e){}
+}
 function pinPopupHTML(p){
  const pl=p.place||{};
  const desc=(pl.address||pl.desc||'');
@@ -3636,7 +3674,13 @@ function pinPopupHTML(p){
    +'</div>'
    +'<div class="pin-desc" contenteditable="true" spellcheck="false" title="Click to edit description"'
    +' onblur="pinDescSave('+p.id+',this.innerText)">'+esc(desc)+'</div>';
- if(pl.scene) h+='<div class="pin-scene"><span class="mi">movie</span>'+esc(pl.scene)+'</div>';
+ // The scene strip is editable in place, like the name and description above —
+ // it holds the anime reference, while .pin-desc holds your own notes, so the
+ // two should never carry the same text.
+ if(pl.scene) h+='<div class="pin-scene"><span class="mi">movie</span>'
+   +'<span class="pin-scene-text" contenteditable="true" spellcheck="false"'
+   +' title="Click to edit the scene note"'
+   +' onblur="pinSceneSave('+p.id+',this.innerText)">'+esc(pl.scene)+'</span></div>';
  if(pl.photos && pl.photos.length && CFG.googleMapsApiKey){
    const ph=pl.photos[0];
    const src='https://places.googleapis.com/v1/'+ph.ref
@@ -3672,7 +3716,10 @@ function addPin(o){
    place:o.place?JSON.parse(JSON.stringify(o.place)):null,
    seed_id:(o.seed_id==null?null:o.seed_id)};
  const m=L.marker(p.coords,{icon:pinIcon(PIN_ICON_ID(p),PIN_COLOR(p)),draggable:true});
- m.bindPopup(pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
+ // Bind a function, not a string: Leaflet re-runs it on every open, so inline
+ // edits (name, description, scene) are still there when the popup is reopened.
+ // A static string would freeze the markup as it was when the pin was created.
+ m.bindPopup(()=>pinPopupHTML(p),{maxWidth:280,minWidth:200,autoPan:true,offset:[0,-26]});
  m.bindTooltip(esc(p.name),{sticky:true,direction:'top',offset:[0,-12],className:'rt-tip'});
  m.on('dragend',()=>{ const ll=m.getLatLng(); p.coords=[ll.lat,ll.lng]; savePins(); });
  m.on('click',()=>setSelectedPin(p));
@@ -3820,13 +3867,13 @@ function renderPinsList(){
 window.pinRename=function(id){ const p=PINS.find(x=>x.id===id); if(!p) return;
  const v=prompt('Rename place:',p.name); if(v==null) return;
  p.name=v.trim()||p.name;
- p.marker.setPopupContent(pinPopupHTML(p)); p.marker.setTooltipContent(esc(p.name));
+ pinPopupRefresh(p); p.marker.setTooltipContent(esc(p.name));
  savePins(); renderPinsList(); };
 window.pinEditDesc=function(id){ const p=PINS.find(x=>x.id===id); if(!p) return;
  const cur=(p.place&&(p.place.address||p.place.desc))||'';
  const v=prompt('Description:',cur); if(v==null) return;
  p.place=p.place||{}; p.place.address=v.trim();
- p.marker.setPopupContent(pinPopupHTML(p)); savePins(); };
+ pinPopupRefresh(p); savePins(); };
 // inline contenteditable saves (Google My Maps-style: click, type, blur to save)
 window.pinNameSave=function(id, text){
  const p=PINS.find(x=>x.id===id); if(!p) return;
@@ -3841,6 +3888,15 @@ window.pinDescSave=function(id, text){
  const cur=(p.place&&(p.place.address||p.place.desc))||'';
  if(v===cur) return;
  p.place=p.place||{}; p.place.address=v; savePins();
+};
+window.pinSceneSave=function(id, text){
+ const p=PINS.find(x=>x.id===id); if(!p) return;
+ const v=(text||'').trim();
+ const cur=(p.place&&p.place.scene)||'';
+ if(v===cur) return;
+ p.place=p.place||{};
+ if(v) p.place.scene=v; else delete p.place.scene;
+ savePins();
 };
 window.pinDelete=function(id){ const i=PINS.findIndex(x=>x.id===id); if(i<0) return;
  pinLayer.removeLayer(PINS[i].marker); PINS.splice(i,1); map.closePopup(); savePins(); renderPinsList(); };
@@ -3875,7 +3931,7 @@ window._pinLayerApply=function(id, k){
 };
 // ---- icon + color picker (Google My Maps "Newer" library) ----
 function applyPinStyle(p){ p.marker.setIcon(pinIcon(PIN_ICON_ID(p),PIN_COLOR(p)));
- p.marker.setPopupContent(pinPopupHTML(p)); savePins(); renderPinsList(); }
+ pinPopupRefresh(p); savePins(); renderPinsList(); }
 // Full 398-icon catalog lives in data/icons.json — load on first picker open so
 // map.html stays lean. Falls back to the inline ICON_LIB if the fetch fails.
 let ICON_LIB_FULL=null;
@@ -4367,6 +4423,25 @@ function previewPlace(pl,nm){
    const lMap=new Map(PINS.map(p=>[key(p),slim(p)]));
    const rMap=new Map(remote.map(p=>[key(p),slim(p)]));
    const out=[]; const seen=new Set();
+   // Guard against clobbering off-browser edits. SEED_PINS is the version this
+   // tab loaded; `remote` is what is on disk right now. If a pin's content
+   // changed between the two, someone edited pins.json outside this tab (a
+   // script, another tab, a git pull) after this page loaded. We cannot tell
+   // that apart from the user's own edits once it is in localStorage, so ask
+   // instead of silently overwriting — this is how a stale tab reverts work.
+   const changedOnDisk=[];
+   rMap.forEach((rp,k)=>{
+     if(bMap.has(k) && bMap.get(k)!==norm(rp)) changedOnDisk.push(rp.name||k);
+   });
+   if(changedOnDisk.length){
+     const list=changedOnDisk.slice(0,6).join('\n  • ');
+     const more=changedOnDisk.length>6?'\n  …and '+(changedOnDisk.length-6)+' more':'';
+     const ok=confirm(changedOnDisk.length+' pin(s) changed on disk after this tab loaded:\n\n  • '
+       +list+more
+       +'\n\nSaving now overwrites those changes with what this tab holds.\n'
+       +'Cancel, then reload the page to pick them up first.\n\nOverwrite anyway?');
+     if(!ok) throw new Error('save cancelled — reload to pick up on-disk pin changes');
+   }
    // Walk LOCAL (user's view) first — user wins order & conflicts.
    PINS.forEach(p=>{
      const k=key(p); seen.add(k);
