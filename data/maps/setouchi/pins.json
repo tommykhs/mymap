@@ -4091,5 +4091,35 @@
       "category": "BuildingCulture",
       "color": "#2979FF"
     }
+  },
+  {
+    "name": "ゆめタウン高松",
+    "coords": [
+      34.316773999999995,
+      134.0419589
+    ],
+    "place": {
+      "address": "〒761-8072 香川県高松市三条町６０８−１",
+      "rating": 3.9,
+      "website": "http://www.izumi.jp/tenpo/takamatsu",
+      "url": "https://maps.google.com/?cid=10276653206823534814&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437"
+    }
+  },
+  {
+    "name": "イオンモール高松",
+    "coords": [
+      34.3520547,
+      134.0047999
+    ],
+    "place": {
+      "address": "〒761-8012 香川県高松市香西本町１−１",
+      "rating": 3.7,
+      "website": "http://www.aeon.jp/sc/takamatsu/",
+      "url": "https://maps.google.com/?cid=9728319596442871263&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "ShoppingEntertainment",
+      "color": "#DB4437"
+    }
   }
 ]

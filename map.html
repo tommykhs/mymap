@@ -731,6 +731,7 @@ function featureToRoute(f){
  return {id:p.id,name:p.name,group:p.group,source:p.source,distance_km:p.distance_km,
    elev_up_m:p.elev_up_m,intro_url:p.intro_url,difficulty:p.difficulty,profile:p.profile,
    rwgps_url:p.rwgps_url,strava_url:p.strava_url,desc:p.desc,
+   routing_profile:p.routing_profile,
    weight:p.weight||2,color:p.color,opacity:(p.opacity!=null?p.opacity:0.9),
    dash:p.dash||[0,0],style:p.style||'solid',polys:polys,
    // edit metadata — survives across split/rename/etc. so the dirty diff matches
@@ -741,10 +742,13 @@ function featureToRoute(f){
    elev_src:p.elev_src};
 }
 function routeToFeature(r){
- const coords=(r.polys||[]).map(poly=>poly.map(pt=>pt.length>2?[pt[1],pt[0],pt[2]]:[pt[1],pt[0]]));
+ // Drop 1-vertex subpaths. featureToRoute filters them on load anyway, so
+ // writing them out only leaves dead stubs in the file (and skews the profile).
+ const coords=(r.polys||[]).filter(poly=>poly.length>=2)
+   .map(poly=>poly.map(pt=>pt.length>2?[pt[1],pt[0],pt[2]]:[pt[1],pt[0]]));
  const props={};
  ['id','name','group','source','distance_km','elev_up_m','intro_url','difficulty','profile',
-  'rwgps_url','strava_url','desc','elev_src',
+  'rwgps_url','strava_url','desc','elev_src','routing_profile',
   'seed_id','edited_at','edit_ops','original_distance_km','original_elev_up_m']
    .forEach(k=>{ if(r[k]!=null && !(Array.isArray(r[k])&&!r[k].length)) props[k]=r[k]; });
  if((r.weight||2)!==2) props.weight=r.weight;
@@ -1579,7 +1583,10 @@ function toGPX(r){
  return s;
 }
 function toFeature(r){
- const coords=(r.polys||[]).map(poly=>poly.map(pt=>pt.length>2?[pt[1],pt[0],pt[2]]:[pt[1],pt[0]]));
+ // Drop 1-vertex subpaths. featureToRoute filters them on load anyway, so
+ // writing them out only leaves dead stubs in the file (and skews the profile).
+ const coords=(r.polys||[]).filter(poly=>poly.length>=2)
+   .map(poly=>poly.map(pt=>pt.length>2?[pt[1],pt[0],pt[2]]:[pt[1],pt[0]]));
  const props={};
  ['id','name','group','source','distance_km','elev_up_m','intro_url','difficulty','profile'].forEach(k=>{
    if(r[k]!=null) props[k]=r[k];
@@ -3296,7 +3303,11 @@ async function _extendAppend(idx, clickLL){
    const coords = j.features && j.features[0] && j.features[0].geometry && j.features[0].geometry.coordinates;
    if(!coords||!coords.length) throw new Error('ORS returned no route');
    const newPoly = coords.map(c=>[c[1], c[0]]);
-   r.polys.push(newPoly);
+   // The first click on a brand-new route plants a lone start vertex. Replace
+   // that stub rather than pushing beside it — the routed leg already starts
+   // there, and a 1-vertex subpath draws nothing but lingers in the saved file.
+   if(lastPoly.length===1) r.polys[r.polys.length-1]=newPoly;
+   else r.polys.push(newPoly);
    _routeRecomputeDistance(r);
    buildRouteLayer(idx);
    _extendRefreshEndpointMarker(idx);
