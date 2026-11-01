@@ -3738,7 +3738,8 @@
       "website": "https://tvc-service.com/",
       "url": "https://maps.google.com/?cid=3776816502585276152&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "Transport",
-      "color": "#263238"
+      "color": "#263238",
+      "icon": 1522
     }
   },
   {
@@ -3768,8 +3769,9 @@
       "rating": 4.4,
       "website": "https://setouchi-artfest.jp/artworks/detail/b6375f29-8f32-455a-a407-ef4f5e2ebdf1",
       "url": "https://maps.google.com/?cid=16221839126658156747&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
-      "category": "NaturalScenery",
-      "color": "#0F9D58"
+      "category": "BuildingCulture",
+      "color": "#2979FF",
+      "icon": 1509
     }
   },
   {
@@ -4030,7 +4032,8 @@
       "website": "",
       "url": "https://maps.google.com/?cid=4108095867836739864&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "icon": 1598
     }
   },
   {
@@ -4045,7 +4048,8 @@
       "website": "http://setouchi-artfest.jp/artworks-artists/artworks/teshima/19.html",
       "url": "https://maps.google.com/?cid=4812471229209102678&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "icon": 1509
     }
   },
   {
@@ -4059,8 +4063,9 @@
       "rating": 3.1,
       "website": "https://lighthouse-japan.com/kagawa/okadohana/okadohana.html",
       "url": "https://maps.google.com/?cid=9798941470002387533&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
-      "category": "BuildingCulture",
-      "color": "#2979FF"
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1523
     }
   },
   {
@@ -4075,7 +4080,8 @@
       "website": "https://www.my-kagawa.jp/point/314/",
       "url": "https://maps.google.com/?cid=2601988699621027684&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "BuildingCulture",
-      "color": "#2979FF"
+      "color": "#2979FF",
+      "icon": 1636
     }
   },
   {
@@ -4089,8 +4095,9 @@
       "rating": 4.2,
       "website": "https://www.facebook.com/nanpudai.shodoisland",
       "url": "https://maps.google.com/?cid=13368130295310181323&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
-      "category": "BuildingCulture",
-      "color": "#2979FF"
+      "category": "NaturalScenery",
+      "color": "#0F9D58",
+      "icon": 1521
     }
   },
   {
@@ -4105,7 +4112,8 @@
       "website": "http://www.izumi.jp/tenpo/takamatsu",
       "url": "https://maps.google.com/?cid=10276653206823534814&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "ShoppingEntertainment",
-      "color": "#DB4437"
+      "color": "#DB4437",
+      "icon": 1684
     }
   },
   {
@@ -4120,7 +4128,8 @@
       "website": "http://www.aeon.jp/sc/takamatsu/",
       "url": "https://maps.google.com/?cid=9728319596442871263&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "ShoppingEntertainment",
-      "color": "#DB4437"
+      "color": "#DB4437",
+      "icon": 1684
     }
   }
 ]
