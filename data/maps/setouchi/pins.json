@@ -3366,5 +3366,50 @@
       "color": "#2979FF",
       "icon": 1720
     }
+  },
+  {
+    "name": "TVC直島ﾚﾝﾀﾙ 宮浦店",
+    "coords": [
+      34.4576657,
+      133.974807
+    ],
+    "place": {
+      "address": "〒761-3110 香川県香川郡直島町２２４９−６",
+      "rating": 4.5,
+      "website": "https://tvc-service.com/",
+      "url": "https://maps.google.com/?cid=3776816502585276152&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "Transport",
+      "color": "#263238"
+    }
+  },
+  {
+    "name": "豊島SS レンタサイクル・レンタカー Teshima SS Rental Bicycles & Rental Cars",
+    "coords": [
+      34.4872528,
+      134.0602829
+    ],
+    "place": {
+      "address": "〒761-4661 香川県小豆郡土庄町豊島家浦２１４８−１",
+      "rating": 3.5,
+      "website": "https://teshimass.art/",
+      "url": "https://maps.google.com/?cid=13612823639334056136&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "Transport",
+      "color": "#263238"
+    }
+  },
+  {
+    "name": "海を夢見る人々の場所（瀬戸内国際芸術祭2022 作品No. te19）",
+    "coords": [
+      34.4680622,
+      134.0702112
+    ],
+    "place": {
+      "address": "〒761-4663 香川県小豆郡土庄町豊島甲生",
+      "rating": 4.4,
+      "website": "https://setouchi-artfest.jp/artworks/detail/b6375f29-8f32-455a-a407-ef4f5e2ebdf1",
+      "url": "https://maps.google.com/?cid=16221839126658156747&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
+      "category": "NaturalScenery",
+      "color": "#0F9D58"
+    }
   }
 ]
