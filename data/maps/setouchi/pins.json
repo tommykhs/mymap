@@ -575,9 +575,9 @@
       "rating": 4.5,
       "website": "https://island-landm1.com/",
       "url": "https://maps.google.com/?cid=14409127307663658521&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
-      "color": "#757575",
-      "icon": 1602,
-      "category": "Accommodation"
+      "color": "#263238",
+      "icon": 1522,
+      "category": "Transport"
     }
   },
   {
@@ -911,9 +911,9 @@
     "place": {
       "address": "〒761-4433 香川県小豆郡小豆島町神懸通 寒霞渓ロープウェイ",
       "url": "https://maps.google.com/?cid=3003169873843306889&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
-      "color": "#0F9D58",
-      "icon": 1634,
-      "category": "NaturalScenery"
+      "color": "#263238",
+      "icon": 1533,
+      "category": "Transport"
     }
   },
   {
@@ -939,9 +939,9 @@
     "place": {
       "address": "〒761-4433 香川県小豆郡小豆島町神懸通乙３２７−１",
       "url": "https://maps.google.com/?cid=2873618705592762546&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA",
-      "color": "#0F9D58",
-      "icon": 1634,
-      "category": "NaturalScenery"
+      "color": "#263238",
+      "icon": 1533,
+      "category": "Transport"
     }
   },
   {
@@ -3753,7 +3753,8 @@
       "website": "https://teshimass.art/",
       "url": "https://maps.google.com/?cid=13612823639334056136&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQQAhgBIAA&hl=ja&gl=jp&source=apiv3",
       "category": "Transport",
-      "color": "#263238"
+      "color": "#263238",
+      "icon": 1522
     }
   },
   {
