@@ -3755,8 +3755,11 @@ const PIN_CATS=[
 // ---- Active layer + Selected pin ---------------------------------------------
 // ACTIVE_LAYER_KEY = where new pins (from search / map-click) will land. Click a
 // layer header's ◉ dot to set explicitly; selecting a pin auto-syncs to its cat.
-// Persisted per-map in localStorage.
-let ACTIVE_LAYER_KEY = (localStorage.getItem('mymap.activeLayer.'+MAP_ID)) || 'Other';
+// Persisted per-map in localStorage. Guarded like every other read in this file:
+// Safari blocks storage outright in a cross-site iframe ("Prevent Cross-Site
+// Tracking", on by default), and this line runs at load, so an unguarded throw
+// here kills the whole script and the map never draws when embedded.
+let ACTIVE_LAYER_KEY = (()=>{ try{ return localStorage.getItem('mymap.activeLayer.'+MAP_ID)||'Other'; }catch(e){ return 'Other'; } })();
 let SELECTED_PIN = null;
 function setActiveLayer(k, {silent}={}){
   if(!PIN_CATS.find(c=>c.k===k)) k='Other';
@@ -4271,7 +4274,10 @@ function previewPlace(pl,nm){
  const setMsg=(m,err)=>{ msgEl.textContent=m; msgEl.style.color=err?'#e0564f':'#4ade80';
    msgEl.style.fontWeight='600'; window.__mmlog('admin: '+m, !!err); };
  // inline X (ghForget) lives inside the token input; only visible when a token is stored
- const refreshTkClr=()=>{ document.getElementById('ghForget').hidden = !localStorage.getItem(TKEY); };
+ // Guarded: this runs at load (just below), and Safari throws on any storage
+ // access in a cross-site iframe — see the note on ACTIVE_LAYER_KEY.
+ const refreshTkClr=()=>{ let t=null; try{ t=localStorage.getItem(TKEY); }catch(e){}
+   document.getElementById('ghForget').hidden = !t; };
  refreshTkClr();
  btn.onclick=()=>{ box.hidden=!box.hidden; if(!box.hidden){ tIn.value=localStorage.getItem(TKEY)||''; tIn.focus(); setMsg(''); refreshTkClr(); } };
  document.getElementById('ghForget').onclick=()=>{ localStorage.removeItem(TKEY); tIn.value=''; setMsg('Token forgotten.'); refreshTkClr(); };
