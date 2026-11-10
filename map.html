@@ -3696,8 +3696,21 @@ function pinPopupHTML(p){
    const ph=pl.photos[0];
    const src='https://places.googleapis.com/v1/'+ph.ref
      +'/media?maxHeightPx=240&key='+encodeURIComponent(CFG.googleMapsApiKey);
+   // referrerpolicy="unsafe-url" is load-bearing, not a nicety.
+   //
+   // The Maps key is locked in Cloud Console to an HTTP referrer WITH a path:
+   // https://tommykhs.github.io/mymap/* . But the browser default policy,
+   // strict-origin-when-cross-origin, strips the path off cross-origin
+   // subresource requests -- places.googleapis.com would receive only
+   // https://tommykhs.github.io/ , which does NOT match, so every photo came
+   // back 403 and rendered as a broken-image box. (Verified: origin-only 403,
+   // full path 200.) It never showed up in local dev because the restriction
+   // also lists http://localhost:8801/* , and there origin-only already
+   // matches -- so the bug was invisible until GitHub Pages.
+   //
+   // Scoped to this one <img>: nothing else on the page leaks a full URL.
    h+='<a class="pin-photo" href="'+esc(pl.url||'#')+'" target="_blank" rel="noopener">'
-     +'<img src="'+esc(src)+'" alt="" loading="lazy">'
+     +'<img src="'+esc(src)+'" alt="" loading="lazy" referrerpolicy="unsafe-url">'
      +(ph.by?'<span class="pin-photo-by">📷 '+esc(ph.by)+'</span>':'')
      +'</a>';
  }
